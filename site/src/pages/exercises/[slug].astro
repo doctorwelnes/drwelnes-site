@@ -1,0 +1,51 @@
+---
+import { getCollection } from "astro:content";
+import { toEmbedUrl } from "../../lib/video";
+
+export async function getStaticPaths() {
+  const items = await getCollection("exercises");
+  return items.map((entry) => ({ params: { slug: entry.slug }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+---
+
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{entry.data.title}</title>
+  </head>
+  <body>
+    <main style="max-width: 900px; margin: 0 auto; padding: 24px; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;">
+      <nav style="display: flex; gap: 12px; margin-bottom: 16px;">
+        <a href="/" style="text-decoration: none;">Главная</a>
+        <a href="/exercises" style="text-decoration: none;">Упражнения</a>
+      </nav>
+
+      <h1 style="margin: 0 0 8px;">{entry.data.title}</h1>
+      {entry.data.description && (
+        <p style="margin: 0 0 16px; color: #4b5563;">{entry.data.description}</p>
+      )}
+
+      {entry.data.videoUrl && (
+        <div style="margin: 16px 0;">
+          <iframe
+            width="100%"
+            height="420"
+            src={toEmbedUrl(entry.data.videoUrl)}
+            title={entry.data.title}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+            style="border: 0; border-radius: 12px;"
+          />
+        </div>
+      )}
+
+      <article style="line-height: 1.6;">
+        <Content />
+      </article>
+    </main>
+  </body>
+</html>

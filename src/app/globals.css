@@ -22,5 +22,24 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, -apple-system, Segoe UI, Roboto, Arial,
+    sans-serif;
+}
+
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  a {
+    @apply text-zinc-900 underline-offset-4 hover:underline;
+  }
+
+  button:disabled {
+    @apply cursor-not-allowed opacity-60;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-zinc-900/20 ring-offset-2 ring-offset-zinc-50;
+  }
 }

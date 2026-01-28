@@ -1,0 +1,76 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Root: Dev (Next.js)",
+      "type": "npm",
+      "script": "dev",
+      "path": ".",
+      "group": "build",
+      "isBackground": true,
+      "problemMatcher": [
+        "$tsc"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Root: Lint",
+      "type": "npm",
+      "script": "lint",
+      "path": ".",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Root: Build",
+      "type": "npm",
+      "script": "build",
+      "path": ".",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Site: Dev (Astro)",
+      "type": "npm",
+      "script": "dev",
+      "path": "site",
+      "group": "build",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Site: Build",
+      "type": "npm",
+      "script": "build",
+      "path": "site",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Site: Preview",
+      "type": "npm",
+      "script": "preview",
+      "path": "site",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    }
+  ]
+}

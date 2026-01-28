@@ -1,0 +1,61 @@
+backend:
+  name: github
+  repo: doctorwelnes/drwelnes-site
+  branch: master
+
+publish_mode: editorial_workflow
+
+media_folder: "src/content/uploads"
+public_folder: "/uploads"
+
+site_url: "https://drwelnes.ru"
+display_url: "https://drwelnes.ru"
+
+# OAuth будет настроен на VPS (мы сделаем отдельный сервис)
+# base_url: "https://drwelnes.ru"
+# auth_endpoint: "api/auth"
+
+collections:
+  - name: "recipes"
+    label: "Рецепты"
+    folder: "src/content/recipes"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    fields:
+      - { name: "title", label: "Заголовок", widget: "string" }
+      - { name: "description", label: "Описание", widget: "string", required: false }
+      - { name: "videoUrl", label: "Ссылка на видео", widget: "string", required: false }
+      - { name: "tags", label: "Теги", widget: "list", required: false }
+      - { name: "publishedAt", label: "Дата публикации", widget: "datetime", required: false }
+      - { name: "body", label: "Текст", widget: "markdown" }
+
+  - name: "exercises"
+    label: "Упражнения"
+    folder: "src/content/exercises"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    fields:
+      - { name: "title", label: "Заголовок", widget: "string" }
+      - { name: "description", label: "Описание", widget: "string", required: false }
+      - { name: "videoUrl", label: "Ссылка на видео", widget: "string", required: false }
+      - { name: "tags", label: "Теги", widget: "list", required: false }
+      - { name: "publishedAt", label: "Дата публикации", widget: "datetime", required: false }
+      - { name: "body", label: "Текст", widget: "markdown" }
+
+  - name: "theory"
+    label: "Теория"
+    folder: "src/content/theory"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    fields:
+      - { name: "title", label: "Заголовок", widget: "string" }
+      - { name: "description", label: "Описание", widget: "string", required: false }
+      - { name: "tags", label: "Теги", widget: "list", required: false }
+      - { name: "publishedAt", label: "Дата публикации", widget: "datetime", required: false }
+      - { name: "body", label: "Текст", widget: "markdown" }
