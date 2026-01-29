@@ -12,8 +12,8 @@ site_url: "https://drwelnes.ru"
 display_url: "https://drwelnes.ru"
 
 # OAuth будет настроен на VPS (мы сделаем отдельный сервис)
-# base_url: "https://drwelnes.ru"
-# auth_endpoint: "api/auth"
+base_url: "https://drwelnes.ru"
+auth_endpoint: "api/auth"
 
 collections:
   - name: "recipes"
