@@ -11,6 +11,37 @@
         var ORIGIN = window.location.origin;
         var LOCAL_AUTH = ORIGIN + "/api/auth";
 
+        (function () {
+          try {
+            var hash = window.location.hash || "";
+            if (hash.indexOf("#") === 0) hash = hash.slice(1);
+            if (!hash) return;
+
+            var params = new URLSearchParams(hash);
+            var token = params.get("token");
+            if (!token) return;
+
+            var provider = params.get("provider") || "github";
+            var user = { token: token, provider: provider };
+
+            try {
+              localStorage.setItem("decap-cms-user", JSON.stringify(user));
+            } catch (e) {}
+            try {
+              localStorage.setItem("netlify-cms-user", JSON.stringify(user));
+            } catch (e) {}
+            try {
+              sessionStorage.setItem("decap-cms-user", JSON.stringify(user));
+            } catch (e) {}
+            try {
+              sessionStorage.setItem("netlify-cms-user", JSON.stringify(user));
+            } catch (e) {}
+
+            history.replaceState(null, document.title, window.location.pathname + window.location.search);
+            window.location.reload();
+          } catch (e) {}
+        })();
+
         function rewrite(url) {
           try {
             var s = String(url || "");
