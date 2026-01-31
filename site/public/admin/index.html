@@ -33,7 +33,7 @@
             var provider = getCookie("decap_provider") || "github";
             if (!token) return;
 
-            var user = { token: token, provider: provider };
+            var user = { token: token, provider: provider, backendName: "github" };
 
             try { localStorage.setItem("decap-cms-user", JSON.stringify(user)); } catch (e) {}
             try { localStorage.setItem("netlify-cms-user", JSON.stringify(user)); } catch (e) {}
