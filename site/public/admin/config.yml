@@ -5,7 +5,7 @@ backend:
 
 publish_mode: editorial_workflow
 
-media_folder: "site/src/content/uploads"
+media_folder: "site/public/uploads"
 public_folder: "/uploads"
 
 site_url: "https://drwelnes.ru"
