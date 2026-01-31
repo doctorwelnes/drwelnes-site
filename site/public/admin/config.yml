@@ -5,7 +5,7 @@ backend:
 
 publish_mode: editorial_workflow
 
-media_folder: "src/content/uploads"
+media_folder: "site/src/content/uploads"
 public_folder: "/uploads"
 
 site_url: "https://drwelnes.ru"
@@ -18,7 +18,7 @@ auth_endpoint: "api/auth"
 collections:
   - name: "recipes"
     label: "Рецепты"
-    folder: "src/content/recipes"
+    folder: "site/src/content/recipes"
     create: true
     slug: "{{slug}}"
     extension: "md"
@@ -33,7 +33,7 @@ collections:
 
   - name: "exercises"
     label: "Упражнения"
-    folder: "src/content/exercises"
+    folder: "site/src/content/exercises"
     create: true
     slug: "{{slug}}"
     extension: "md"
@@ -48,7 +48,7 @@ collections:
 
   - name: "theory"
     label: "Теория"
-    folder: "src/content/theory"
+    folder: "site/src/content/theory"
     create: true
     slug: "{{slug}}"
     extension: "md"
