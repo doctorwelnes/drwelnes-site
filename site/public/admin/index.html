@@ -63,6 +63,13 @@
         var _open = window.open;
         window.open = function (url, name, features) {
           var next = rewrite(url);
+          try {
+            var s = String(next || "");
+            if (s.indexOf(LOCAL_AUTH) === 0) {
+              window.location.href = next;
+              return null;
+            }
+          } catch (e) {}
           return _open.call(window, next, name, features);
         };
 
