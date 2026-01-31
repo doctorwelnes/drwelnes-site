@@ -6,6 +6,53 @@
     <title>Dr. Wellness Admin</title>
   </head>
   <body>
+    <script>
+      (function () {
+        var ORIGIN = "https://drwelnes.ru";
+        var LOCAL_AUTH = ORIGIN + "/api/auth";
+
+        function rewrite(url) {
+          try {
+            var s = String(url || "");
+            if (s.indexOf("https://api.netlify.com/auth") === 0) return LOCAL_AUTH;
+            if (s.indexOf("https://api.netlify.com") === 0 && s.indexOf("/auth") !== -1) return LOCAL_AUTH;
+            if (s.indexOf("api.netlify.com/auth") !== -1) return LOCAL_AUTH;
+            return url;
+          } catch (e) {
+            return url;
+          }
+        }
+
+        var _open = window.open;
+        window.open = function (url, name, features) {
+          return _open.call(window, rewrite(url), name, features);
+        };
+
+        var _assign = window.location.assign.bind(window.location);
+        window.location.assign = function (url) {
+          return _assign(rewrite(url));
+        };
+
+        var _replace = window.location.replace.bind(window.location);
+        window.location.replace = function (url) {
+          return _replace(rewrite(url));
+        };
+
+        document.addEventListener(
+          "click",
+          function (e) {
+            var a = e.target && e.target.closest ? e.target.closest("a") : null;
+            if (!a || !a.href) return;
+            var newUrl = rewrite(a.href);
+            if (newUrl !== a.href) {
+              e.preventDefault();
+              window.location.href = newUrl;
+            }
+          },
+          true
+        );
+      })();
+    </script>
     <script src="https://unpkg.com/decap-cms@^3.6.0/dist/decap-cms.js"></script>
   </body>
 </html>
