@@ -23,6 +23,19 @@
           }
         }
 
+        window.addEventListener(
+          "message",
+          function (event) {
+            try {
+              if (event && event.origin && event.origin !== ORIGIN) return;
+              if (event && event.data === "authorizing:github" && event.source && event.source.postMessage) {
+                event.source.postMessage("authorizing:github:ack", ORIGIN);
+              }
+            } catch (e) {}
+          },
+          false
+        );
+
         var _open = window.open;
         window.open = function (url, name, features) {
           return _open.call(window, rewrite(url), name, features);
