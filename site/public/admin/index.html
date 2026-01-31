@@ -11,37 +11,43 @@
         var ORIGIN = window.location.origin;
         var LOCAL_AUTH = ORIGIN + "/api/auth";
 
+        function getCookie(name) {
+          try {
+            var m = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+            return m ? decodeURIComponent(m[2]) : null;
+          } catch (e) {
+            return null;
+          }
+        }
+
+        function clearCookie(name) {
+          try {
+            document.cookie = name + "=; Path=/admin; Max-Age=0; Secure; SameSite=Lax";
+          } catch (e) {}
+        }
+
+        // 1) Если OAuth callback поставил cookie — сохраняем токен для Decap и перезагружаем /admin
         (function () {
           try {
-            var hash = window.location.hash || "";
-            if (hash.indexOf("#") === 0) hash = hash.slice(1);
-            if (!hash) return;
-
-            var params = new URLSearchParams(hash);
-            var token = params.get("token");
+            var token = getCookie("decap_token");
+            var provider = getCookie("decap_provider") || "github";
             if (!token) return;
 
-            var provider = params.get("provider") || "github";
             var user = { token: token, provider: provider };
 
-            try {
-              localStorage.setItem("decap-cms-user", JSON.stringify(user));
-            } catch (e) {}
-            try {
-              localStorage.setItem("netlify-cms-user", JSON.stringify(user));
-            } catch (e) {}
-            try {
-              sessionStorage.setItem("decap-cms-user", JSON.stringify(user));
-            } catch (e) {}
-            try {
-              sessionStorage.setItem("netlify-cms-user", JSON.stringify(user));
-            } catch (e) {}
+            try { localStorage.setItem("decap-cms-user", JSON.stringify(user)); } catch (e) {}
+            try { localStorage.setItem("netlify-cms-user", JSON.stringify(user)); } catch (e) {}
+            try { sessionStorage.setItem("decap-cms-user", JSON.stringify(user)); } catch (e) {}
+            try { sessionStorage.setItem("netlify-cms-user", JSON.stringify(user)); } catch (e) {}
 
-            history.replaceState(null, document.title, window.location.pathname + window.location.search);
+            clearCookie("decap_token");
+            clearCookie("decap_provider");
+
             window.location.reload();
           } catch (e) {}
         })();
 
+        // 2) Жёстко блокируем уход в Netlify OAuth
         function rewrite(url) {
           try {
             var s = String(url || "");
@@ -54,29 +60,9 @@
           }
         }
 
-        window.addEventListener(
-          "message",
-          function (event) {
-            try {
-              if (event && event.origin && event.origin !== ORIGIN) return;
-              if (event && event.data === "authorizing:github" && event.source && event.source.postMessage) {
-                event.source.postMessage("authorizing:github:ack", ORIGIN);
-              }
-            } catch (e) {}
-          },
-          false
-        );
-
         var _open = window.open;
         window.open = function (url, name, features) {
           var next = rewrite(url);
-          try {
-            var s = String(next || "");
-            if (s.indexOf(LOCAL_AUTH) === 0) {
-              window.location.href = next;
-              return null;
-            }
-          } catch (e) {}
           return _open.call(window, next, name, features);
         };
 
@@ -105,6 +91,7 @@
         );
       })();
     </script>
+
     <script src="https://unpkg.com/decap-cms@^3.6.0/dist/decap-cms.js"></script>
   </body>
 </html>
