@@ -3,6 +3,7 @@ title: Оладьи с яйцом и луком
 description: вкусно
 videoFile: https://drwelnes.ru/uploads/videos/--2026-02-01T15-04-36-367Z.mp4
 videoUrl: ""
+category: перекусы
 tags:
   - рецепт
   - оладьи
