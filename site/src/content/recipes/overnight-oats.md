@@ -2,7 +2,7 @@
 title: Овсянка на ночь о11111
 description: Быстрый рецепт на завтрак
 videoFile: /uploads/videos/oats.mp4
-videoUrl: https://youtube.com/shorts/40MPwCunMSY?si=6ST_-nYcpwZd2njX
+videoUrl: ""
 tags:
   - завтрак
   - быстро
