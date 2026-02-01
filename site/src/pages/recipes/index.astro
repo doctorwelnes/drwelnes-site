@@ -9,6 +9,10 @@ const sorted = items
     const bd = b.data.publishedAt ? new Date(b.data.publishedAt).getTime() : 0;
     return bd - ad;
   });
+
+const snacks = sorted.filter((e) => e.data.category === "перекусы");
+const desserts = sorted.filter((e) => e.data.category === "десерты");
+const other = sorted.filter((e) => e.data.category !== "перекусы" && e.data.category !== "десерты");
 ---
 
 <html lang="ru">
@@ -38,18 +42,55 @@ const sorted = items
           <p style="margin: 0; color: #4b5563; font-size: 16px; line-height: 1.55; max-width: 64ch;">Подборка рецептов с описанием и видео. Открывай карточку — внутри пошаговая инструкция.</p>
         </section>
 
-        <section style="margin-top: 16px; display: grid; gap: 12px;">
-          {sorted.map((entry) => (
-            <a
-              href={`/recipes/${entry.slug}`}
-              style="display: block; padding: 16px; border: 1px solid rgba(229,231,235,.9); border-radius: 16px; text-decoration: none; color: inherit; background: rgba(255,255,255,.8); box-shadow: 0 10px 30px rgba(15,23,42,.06);"
-            >
-              <div style="font-weight: 800; letter-spacing: -0.01em;">{entry.data.title}</div>
-              {entry.data.description && (
-                <div style="margin-top: 6px; color: #4b5563;">{entry.data.description}</div>
-              )}
-            </a>
-          ))}
+        <section style="margin-top: 16px;">
+          <h2 style="margin: 0 0 10px; font-size: 18px;">Перекусы</h2>
+          <div style="display: grid; gap: 12px;">
+            {snacks.map((entry) => (
+              <a
+                href={`/recipes/${entry.slug}`}
+                style="display: block; padding: 16px; border: 1px solid rgba(229,231,235,.9); border-radius: 16px; text-decoration: none; color: inherit; background: rgba(255,255,255,.8); box-shadow: 0 10px 30px rgba(15,23,42,.06);"
+              >
+                <div style="font-weight: 800; letter-spacing: -0.01em;">{entry.data.title}</div>
+                {entry.data.description && (
+                  <div style="margin-top: 6px; color: #4b5563;">{entry.data.description}</div>
+                )}
+              </a>
+            ))}
+          </div>
+
+          <h2 style="margin: 18px 0 10px; font-size: 18px;">Десерты</h2>
+          <div style="display: grid; gap: 12px;">
+            {desserts.map((entry) => (
+              <a
+                href={`/recipes/${entry.slug}`}
+                style="display: block; padding: 16px; border: 1px solid rgba(229,231,235,.9); border-radius: 16px; text-decoration: none; color: inherit; background: rgba(255,255,255,.8); box-shadow: 0 10px 30px rgba(15,23,42,.06);"
+              >
+                <div style="font-weight: 800; letter-spacing: -0.01em;">{entry.data.title}</div>
+                {entry.data.description && (
+                  <div style="margin-top: 6px; color: #4b5563;">{entry.data.description}</div>
+                )}
+              </a>
+            ))}
+          </div>
+
+          {other.length > 0 && (
+            <>
+              <h2 style="margin: 18px 0 10px; font-size: 18px;">Остальное</h2>
+              <div style="display: grid; gap: 12px;">
+                {other.map((entry) => (
+                  <a
+                    href={`/recipes/${entry.slug}`}
+                    style="display: block; padding: 16px; border: 1px solid rgba(229,231,235,.9); border-radius: 16px; text-decoration: none; color: inherit; background: rgba(255,255,255,.8); box-shadow: 0 10px 30px rgba(15,23,42,.06);"
+                  >
+                    <div style="font-weight: 800; letter-spacing: -0.01em;">{entry.data.title}</div>
+                    {entry.data.description && (
+                      <div style="margin-top: 6px; color: #4b5563;">{entry.data.description}</div>
+                    )}
+                  </a>
+                ))}
+              </div>
+            </>
+          )}
         </section>
       </div>
     </main>

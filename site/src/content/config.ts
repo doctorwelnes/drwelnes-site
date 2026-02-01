@@ -47,6 +47,7 @@ const recipes = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),
+    category: z.enum(["перекусы", "десерты"]).optional(),
     videoFile: z.preprocess(
       normalizeVideoFile,
       z

@@ -28,6 +28,7 @@ collections:
     fields:
       - { name: "title", label: "Заголовок", widget: "string" }
       - { name: "description", label: "Описание", widget: "string", required: false }
+      - { name: "category", label: "Категория", widget: "select", options: ["перекусы", "десерты"], required: false }
       - { name: "videoFile", label: "Путь к видео (/uploads/videos/..mp4)", widget: "string", required: false }
       - { name: "tags", label: "Теги", widget: "list", required: false }
       - { name: "publishedAt", label: "Дата публикации", widget: "datetime", required: false }

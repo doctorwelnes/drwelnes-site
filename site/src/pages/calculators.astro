@@ -28,7 +28,13 @@
           <p style="margin: 0; color: #4b5563; font-size: 16px; line-height: 1.55; max-width: 64ch;">ИМТ, TDEE и оценка 1RM — быстро и без регистрации.</p>
         </section>
 
-      <section style="margin-top: 16px; border: 1px solid rgba(229,231,235,.9); background: rgba(255,255,255,.8); border-radius: 18px; padding: 16px; box-shadow: 0 10px 30px rgba(15,23,42,.06);">
+        <section style="margin-top: 12px; display: flex; flex-wrap: wrap; gap: 10px;">
+          <a href="#bmi" data-calc="bmi" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 14px; border-radius: 12px; text-decoration: none; background: #111827; color: #ffffff; font-weight: 600;">ИМТ</a>
+          <a href="#tdee" data-calc="tdee" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 14px; border-radius: 12px; text-decoration: none; background: #ffffff; color: #111827; border: 1px solid #e5e7eb; font-weight: 600;">TDEE</a>
+          <a href="#1rm" data-calc="1rm" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 14px; border-radius: 12px; text-decoration: none; background: #ffffff; color: #111827; border: 1px solid #e5e7eb; font-weight: 600;">1RM</a>
+        </section>
+
+      <section id="bmi" data-calc-panel style="margin-top: 16px; border: 1px solid rgba(229,231,235,.9); background: rgba(255,255,255,.8); border-radius: 18px; padding: 16px; box-shadow: 0 10px 30px rgba(15,23,42,.06);">
         <h2 style="margin: 0 0 12px; font-size: 18px;">ИМТ (BMI)</h2>
         <div style="display: grid; gap: 8px; max-width: 420px;">
           <label>Рост (см)<br /><input id="bmi_h" type="number" inputmode="decimal" style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 10px;" /></label>
@@ -38,7 +44,7 @@
         </div>
       </section>
 
-      <section style="margin-top: 12px; border: 1px solid rgba(229,231,235,.9); background: rgba(255,255,255,.8); border-radius: 18px; padding: 16px; box-shadow: 0 10px 30px rgba(15,23,42,.06);">
+      <section id="tdee" data-calc-panel style="margin-top: 12px; border: 1px solid rgba(229,231,235,.9); background: rgba(255,255,255,.8); border-radius: 18px; padding: 16px; box-shadow: 0 10px 30px rgba(15,23,42,.06); display: none;">
         <h2 style="margin: 0 0 12px; font-size: 18px;">TDEE (поддержание калорий)</h2>
         <div style="display: grid; gap: 8px; max-width: 520px;">
           <label>Пол<br />
@@ -64,7 +70,7 @@
         </div>
       </section>
 
-      <section style="margin-top: 12px; border: 1px solid rgba(229,231,235,.9); background: rgba(255,255,255,.8); border-radius: 18px; padding: 16px; box-shadow: 0 10px 30px rgba(15,23,42,.06);">
+      <section id="1rm" data-calc-panel style="margin-top: 12px; border: 1px solid rgba(229,231,235,.9); background: rgba(255,255,255,.8); border-radius: 18px; padding: 16px; box-shadow: 0 10px 30px rgba(15,23,42,.06); display: none;">
         <h2 style="margin: 0 0 12px; font-size: 18px;">1RM (оценка максимума на 1 повтор)</h2>
         <div style="display: grid; gap: 8px; max-width: 420px;">
           <label>Вес (кг)<br /><input id="rm_w" type="number" inputmode="decimal" style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 10px;" /></label>
@@ -76,10 +82,42 @@
 
       <script>
         (function () {
+          function setActive(id) {
+            try {
+              var panels = document.querySelectorAll('[data-calc-panel]');
+              for (var i = 0; i < panels.length; i++) {
+                var p = panels[i];
+                p.style.display = (p.id === id) ? '' : 'none';
+              }
+
+              var links = document.querySelectorAll('a[data-calc]');
+              for (var j = 0; j < links.length; j++) {
+                var a = links[j];
+                var isActive = a.getAttribute('data-calc') === id;
+                a.style.background = isActive ? '#111827' : '#ffffff';
+                a.style.color = isActive ? '#ffffff' : '#111827';
+                a.style.border = isActive ? '1px solid #111827' : '1px solid #e5e7eb';
+              }
+            } catch (e) {}
+          }
+
+          function readHash() {
+            var h = (window.location.hash || '').replace('#', '').trim();
+            if (h === 'bmi' || h === 'tdee' || h === '1rm') return h;
+            return 'bmi';
+          }
+
           function n(v) {
             var x = Number(v);
             return Number.isFinite(x) ? x : NaN;
           }
+
+          try {
+            setActive(readHash());
+            window.addEventListener('hashchange', function () {
+              setActive(readHash());
+            });
+          } catch (e) {}
 
           var bmiBtn = document.getElementById('bmi_btn');
           bmiBtn && bmiBtn.addEventListener('click', function () {
