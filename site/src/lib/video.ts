@@ -16,6 +16,12 @@ export function toEmbedUrl(url: string): string {
 
       const m = u.pathname.match(/\/embed\/(.+)$/);
       if (m?.[1]) return `https://www.youtube.com/embed/${m[1]}`;
+
+      const shorts = u.pathname.match(/\/shorts\/(.+)$/);
+      if (shorts?.[1]) return `https://www.youtube.com/embed/${shorts[1]}`;
+
+      const live = u.pathname.match(/\/live\/(.+)$/);
+      if (live?.[1]) return `https://www.youtube.com/embed/${live[1]}`;
     }
 
     // VK Video
