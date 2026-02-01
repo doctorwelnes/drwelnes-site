@@ -1,9 +1,7 @@
 ---
 title: Овсянка на ночь о11111
 description: Быстрый рецепт на завтрак
-videoFile: "<!DOCTYPE html>\r<html lang=\"en\">\r<head>\r<meta
-  charset=\"utf-8\">\r<title>Error</title>\r</head>\r<body>\r<pre>Cannot POST
-  /</pre>\r</body>\r</html>"
+videoFile: /uploads/videos/desert1-2026-02-01T14-33-31-062Z.mp4
 videoUrl: ""
 tags:
   - завтрак
