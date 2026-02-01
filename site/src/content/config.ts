@@ -4,7 +4,7 @@ const recipes = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),
-    videoUrl: z.string().url().optional(),
+    videoUrl: z.string().trim().url().optional(),
     tags: z.array(z.string()).optional(),
     publishedAt: z.coerce.date().optional(),
   }),
@@ -14,7 +14,7 @@ const exercises = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),
-    videoUrl: z.string().url().optional(),
+    videoUrl: z.string().trim().url().optional(),
     tags: z.array(z.string()).optional(),
     publishedAt: z.coerce.date().optional(),
   }),
