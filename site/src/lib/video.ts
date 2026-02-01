@@ -36,6 +36,28 @@ export function toEmbedUrl(url: string): string {
       if (u.pathname.includes("video_ext.php")) return trimmed;
     }
 
+    // RuTube
+    if (u.hostname.endsWith("rutube.ru")) {
+      // https://rutube.ru/video/<id>/  -> https://rutube.ru/play/embed/<id>
+      const m = u.pathname.match(/^\/video\/([^/]+)\/?/);
+      if (m?.[1]) return `https://rutube.ru/play/embed/${m[1]}`;
+
+      // Already an embed
+      const e = u.pathname.match(/^\/play\/embed\/([^/]+)\/?/);
+      if (e?.[1]) return trimmed;
+    }
+
+    // OK Video
+    if (u.hostname === "ok.ru" || u.hostname.endsWith(".ok.ru")) {
+      // https://ok.ru/video/<id> -> https://ok.ru/videoembed/<id>
+      const m = u.pathname.match(/^\/video\/(\d+)\/?/);
+      if (m?.[1]) return `https://ok.ru/videoembed/${m[1]}`;
+
+      // Already an embed
+      const e = u.pathname.match(/^\/videoembed\/(\d+)\/?/);
+      if (e?.[1]) return trimmed;
+    }
+
     return trimmed;
   } catch {
     return trimmed;
