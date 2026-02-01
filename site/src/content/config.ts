@@ -43,10 +43,57 @@ function isValidVideoFilePath(value: string): boolean {
   return /^\/uploads\/videos\/.+\.mp4$/i.test(value);
 }
 
+function normalizeOptionalDate(input: unknown): unknown {
+  if (typeof input !== "string") return input;
+  const raw = input.trim();
+  if (!raw) return undefined;
+  return raw;
+}
+
+function normalizeRecipeSteps(input: unknown): unknown {
+  if (!Array.isArray(input)) return input;
+
+  // Decap CMS может сохранить list как массив строк, либо как массив объектов
+  // (зависит от конфигурации field/fields и истории контента).
+  const out: string[] = [];
+  for (const item of input) {
+    if (typeof item === "string") {
+      const t = item.trim();
+      if (t) out.push(t);
+      continue;
+    }
+    if (item && typeof item === "object" && "text" in item) {
+      const v = (item as any).text;
+      if (typeof v === "string") {
+        const t = v.trim();
+        if (t) out.push(t);
+      }
+    }
+  }
+  return out.length ? out : undefined;
+}
+
 const recipes = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),
+    kbru: z
+      .object({
+        calories: z.number().optional(),
+        protein: z.number().optional(),
+        fat: z.number().optional(),
+        carbs: z.number().optional(),
+      })
+      .optional(),
+    ingredients: z
+      .array(
+        z.object({
+          name: z.string(),
+          amount: z.string().optional(),
+        })
+      )
+      .optional(),
+    steps: z.preprocess(normalizeRecipeSteps, z.array(z.string()).optional()),
     category: z.enum(["перекусы", "десерты"]).optional(),
     videoFile: z.preprocess(
       normalizeVideoFile,
@@ -59,7 +106,7 @@ const recipes = defineCollection({
     ),
     videoUrl: z.preprocess(normalizeVideoUrl, z.string().url().optional()),
     tags: z.array(z.string()).optional(),
-    publishedAt: z.coerce.date().optional(),
+    publishedAt: z.preprocess(normalizeOptionalDate, z.coerce.date().optional()),
   }),
 });
 
@@ -78,7 +125,7 @@ const exercises = defineCollection({
     ),
     videoUrl: z.preprocess(normalizeVideoUrl, z.string().url().optional()),
     tags: z.array(z.string()).optional(),
-    publishedAt: z.coerce.date().optional(),
+    publishedAt: z.preprocess(normalizeOptionalDate, z.coerce.date().optional()),
   }),
 });
 
@@ -87,7 +134,7 @@ const theory = defineCollection({
     title: z.string(),
     description: z.string().optional(),
     tags: z.array(z.string()).optional(),
-    publishedAt: z.coerce.date().optional(),
+    publishedAt: z.preprocess(normalizeOptionalDate, z.coerce.date().optional()),
   }),
 });
 
