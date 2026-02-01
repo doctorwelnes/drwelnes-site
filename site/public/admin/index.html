@@ -11,6 +11,33 @@
         var ORIGIN = window.location.origin;
         var LOCAL_AUTH = ORIGIN + "/api/auth";
 
+        (function () {
+          try {
+            var a = document.createElement("a");
+            a.href = ORIGIN + "/upload/";
+            a.target = "_blank";
+            a.rel = "noopener noreferrer";
+            a.textContent = "Загрузить видео (mp4)";
+            a.style.position = "fixed";
+            a.style.right = "16px";
+            a.style.bottom = "16px";
+            a.style.zIndex = "99999";
+            a.style.padding = "10px 14px";
+            a.style.borderRadius = "12px";
+            a.style.background = "#111827";
+            a.style.color = "#ffffff";
+            a.style.fontFamily = "system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif";
+            a.style.fontSize = "14px";
+            a.style.textDecoration = "none";
+            a.style.boxShadow = "0 10px 25px rgba(0,0,0,.2)";
+            document.addEventListener("DOMContentLoaded", function () {
+              try {
+                document.body.appendChild(a);
+              } catch (e) {}
+            });
+          } catch (e) {}
+        })();
+
         function getCookie(name) {
           try {
             var m = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
