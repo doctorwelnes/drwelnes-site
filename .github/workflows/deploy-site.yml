@@ -87,7 +87,7 @@ jobs:
 
               if [ "$http_code" = "$expect_code" ]; then
                 if [ -n "$must_contain" ]; then
-                  if grep -Fq "$must_contain" /tmp/healthcheck_body; then
+                  if grep -Fiq "$must_contain" /tmp/healthcheck_body; then
                     echo "OK: ${name}"
                     return 0
                   fi
