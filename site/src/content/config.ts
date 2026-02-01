@@ -15,8 +15,15 @@ function normalizeVideoUrl(input: unknown): unknown {
 
 function normalizeVideoFile(input: unknown): unknown {
   if (typeof input !== "string") return input;
-  const raw = input.trim();
+  const raw = input
+    .replace(/[\u200B-\u200D\uFEFF]/g, "")
+    .replace(/\u00A0/g, " ")
+    .trim();
   if (!raw) return undefined;
+
+  // allow "uploads/..." without leading slash
+  if (raw.startsWith("uploads/")) return `/${raw}`;
+
   return raw;
 }
 
