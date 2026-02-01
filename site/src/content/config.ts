@@ -20,11 +20,23 @@ function normalizeVideoFile(input: unknown): unknown {
   return raw;
 }
 
+function isValidVideoFilePath(value: string): boolean {
+  return /^\/uploads\/videos\/.+\.mp4$/i.test(value);
+}
+
 const recipes = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),
-    videoFile: z.preprocess(normalizeVideoFile, z.string().optional()),
+    videoFile: z.preprocess(
+      normalizeVideoFile,
+      z
+        .string()
+        .optional()
+        .refine((v) => v === undefined || isValidVideoFilePath(v), {
+          message: "videoFile must be like /uploads/videos/<name>.mp4",
+        })
+    ),
     videoUrl: z.preprocess(normalizeVideoUrl, z.string().url().optional()),
     tags: z.array(z.string()).optional(),
     publishedAt: z.coerce.date().optional(),
@@ -35,7 +47,15 @@ const exercises = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),
-    videoFile: z.preprocess(normalizeVideoFile, z.string().optional()),
+    videoFile: z.preprocess(
+      normalizeVideoFile,
+      z
+        .string()
+        .optional()
+        .refine((v) => v === undefined || isValidVideoFilePath(v), {
+          message: "videoFile must be like /uploads/videos/<name>.mp4",
+        })
+    ),
     videoUrl: z.preprocess(normalizeVideoUrl, z.string().url().optional()),
     tags: z.array(z.string()).optional(),
     publishedAt: z.coerce.date().optional(),

@@ -29,10 +29,9 @@ collections:
       - { name: "title", label: "Заголовок", widget: "string" }
       - { name: "description", label: "Описание", widget: "string", required: false }
       - { name: "videoFile", label: "Путь к видео (/uploads/videos/..mp4)", widget: "string", required: false }
-      - { name: "videoUrl", label: "Ссылка на видео", widget: "string", required: false }
       - { name: "tags", label: "Теги", widget: "list", required: false }
       - { name: "publishedAt", label: "Дата публикации", widget: "datetime", required: false }
-      - { name: "body", label: "Текст", widget: "markdown" }
+      - { name: "body", label: "Текст", widget: "markdown", default: "## Ингредиенты\n\n## Шаги\n" }
 
   - name: "exercises"
     label: "Упражнения"
@@ -45,10 +44,9 @@ collections:
       - { name: "title", label: "Заголовок", widget: "string" }
       - { name: "description", label: "Описание", widget: "string", required: false }
       - { name: "videoFile", label: "Путь к видео (/uploads/videos/..mp4)", widget: "string", required: false }
-      - { name: "videoUrl", label: "Ссылка на видео", widget: "string", required: false }
       - { name: "tags", label: "Теги", widget: "list", required: false }
       - { name: "publishedAt", label: "Дата публикации", widget: "datetime", required: false }
-      - { name: "body", label: "Текст", widget: "markdown" }
+      - { name: "body", label: "Текст", widget: "markdown", default: "## Описание\n\n## Техника выполнения\n\n## Ошибки\n" }
 
   - name: "theory"
     label: "Теория"
