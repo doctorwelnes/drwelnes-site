@@ -13,6 +13,32 @@ function normalizeVideoUrl(input: unknown): unknown {
   return raw;
 }
 
+function normalizeUploadPath(input: unknown): unknown {
+  if (typeof input !== "string") return input;
+  const raw = input
+    .replace(/[\u200B-\u200D\uFEFF]/g, "")
+    .replace(/\u00A0/g, " ")
+    .trim();
+  if (!raw) return undefined;
+
+  // allow full URL, normalize to site-relative /uploads/... path
+  try {
+    if (raw.startsWith("http://") || raw.startsWith("https://")) {
+      const u = new URL(raw);
+      if (u.hostname === "drwelnes.ru" || u.hostname === "www.drwelnes.ru") {
+        if (u.pathname.startsWith("/uploads/")) return u.pathname;
+      }
+    }
+  } catch {
+    // ignore
+  }
+
+  // allow "uploads/..." without leading slash
+  if (raw.startsWith("uploads/")) return `/${raw}`;
+
+  return raw;
+}
+
 function normalizeVideoFile(input: unknown): unknown {
   if (typeof input !== "string") return input;
   const raw = input
@@ -104,6 +130,7 @@ const recipes = defineCollection({
           message: "videoFile must be like /uploads/videos/<name>.mp4",
         })
     ),
+    videoPoster: z.preprocess(normalizeUploadPath, z.string().optional()),
     videoUrl: z.preprocess(normalizeVideoUrl, z.string().url().optional()),
     tags: z.array(z.string()).optional(),
     publishedAt: z.preprocess(normalizeOptionalDate, z.coerce.date().optional()),
@@ -123,6 +150,7 @@ const exercises = defineCollection({
           message: "videoFile must be like /uploads/videos/<name>.mp4",
         })
     ),
+    videoPoster: z.preprocess(normalizeUploadPath, z.string().optional()),
     videoUrl: z.preprocess(normalizeVideoUrl, z.string().url().optional()),
     tags: z.array(z.string()).optional(),
     publishedAt: z.preprocess(normalizeOptionalDate, z.coerce.date().optional()),

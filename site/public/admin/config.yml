@@ -53,6 +53,7 @@ collections:
         field: { name: "text", label: "Шаг", widget: "text" }
       - { name: "category", label: "Категория", widget: "select", options: ["перекусы", "десерты"], required: false }
       - { name: "videoFile", label: "Путь к видео (/uploads/videos/..mp4)", widget: "string", required: false }
+      - { name: "videoPoster", label: "Постер (обложка) видео", widget: "image", required: false }
       - { name: "tags", label: "Теги", widget: "list", required: false }
       - { name: "publishedAt", label: "Дата публикации", widget: "datetime", required: false }
       - { name: "body", label: "Текст", widget: "markdown", default: "## Ингредиенты\n\n## Шаги\n" }
@@ -68,6 +69,7 @@ collections:
       - { name: "title", label: "Заголовок", widget: "string" }
       - { name: "description", label: "Описание", widget: "string", required: false }
       - { name: "videoFile", label: "Путь к видео (/uploads/videos/..mp4)", widget: "string", required: false }
+      - { name: "videoPoster", label: "Постер (обложка) видео", widget: "image", required: false }
       - { name: "tags", label: "Теги", widget: "list", required: false }
       - { name: "publishedAt", label: "Дата публикации", widget: "datetime", required: false }
       - { name: "body", label: "Текст", widget: "markdown", default: "## Описание\n\n## Техника выполнения\n\n## Ошибки\n" }
