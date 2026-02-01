@@ -26,7 +26,7 @@ collections:
     fields:
       - { name: "title", label: "Заголовок", widget: "string" }
       - { name: "description", label: "Описание", widget: "string", required: false }
-      - { name: "videoFile", label: "Видео файл (mp4)", widget: "file", required: false, media_folder: "site/public/uploads/videos", public_folder: "/uploads/videos", allow_multiple: false }
+      - { name: "videoFile", label: "Путь к видео (/uploads/videos/..mp4)", widget: "string", required: false }
       - { name: "videoUrl", label: "Ссылка на видео", widget: "string", required: false }
       - { name: "tags", label: "Теги", widget: "list", required: false }
       - { name: "publishedAt", label: "Дата публикации", widget: "datetime", required: false }
@@ -42,7 +42,7 @@ collections:
     fields:
       - { name: "title", label: "Заголовок", widget: "string" }
       - { name: "description", label: "Описание", widget: "string", required: false }
-      - { name: "videoFile", label: "Видео файл (mp4)", widget: "file", required: false, media_folder: "site/public/uploads/videos", public_folder: "/uploads/videos", allow_multiple: false }
+      - { name: "videoFile", label: "Путь к видео (/uploads/videos/..mp4)", widget: "string", required: false }
       - { name: "videoUrl", label: "Ссылка на видео", widget: "string", required: false }
       - { name: "tags", label: "Теги", widget: "list", required: false }
       - { name: "publishedAt", label: "Дата публикации", widget: "datetime", required: false }
