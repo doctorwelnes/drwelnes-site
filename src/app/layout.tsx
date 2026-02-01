@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Dr. Wellness",
+  title: "Dr.Welnes",
   description: "Fitness app",
 };
 
@@ -35,8 +35,8 @@ export default function RootLayout({
             <header className="border-b border-zinc-200 bg-white">
               <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">
                 <div className="flex items-center gap-2">
-                  <Image src="/logo.png" alt="Dr. Wellness" width={32} height={32} className="h-8 w-8 rounded-lg" />
-                  <div className="font-semibold">Dr. Wellness</div>
+                  <Image src="/logo.png" alt="Dr.Welnes" width={32} height={32} className="h-8 w-8 rounded-lg" />
+                  <div className="font-semibold">Dr.Welnes</div>
                 </div>
                 <TopNavClient />
               </div>
