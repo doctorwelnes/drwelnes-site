@@ -1,7 +1,7 @@
 ---
 title: Овсянка на ночь отредакт
 description: Быстрый рецепт на завтрак
-videoUrl: https://vk.com/video_ext.php?oid=767143197&id=456239106
+videoUrl: https://youtube.com/shorts/40MPwCunMSY?si=6ST_-nYcpwZd2njX
 tags:
   - завтрак
   - быстро
