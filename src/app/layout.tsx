@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Image from "next/image";
 import "./globals.css";
 import { Providers } from "./providers";
 import TopNavClient from "./ui/top-nav-client";
@@ -34,7 +35,7 @@ export default function RootLayout({
             <header className="border-b border-zinc-200 bg-white">
               <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">
                 <div className="flex items-center gap-2">
-                  <div className="h-8 w-8 rounded-lg bg-zinc-900" />
+                  <Image src="/logo.png" alt="Dr. Wellness" width={32} height={32} className="h-8 w-8 rounded-lg" />
                   <div className="font-semibold">Dr. Wellness</div>
                 </div>
                 <TopNavClient />
