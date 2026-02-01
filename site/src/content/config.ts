@@ -21,6 +21,18 @@ function normalizeVideoFile(input: unknown): unknown {
     .trim();
   if (!raw) return undefined;
 
+  // allow full URL, normalize to site-relative /uploads/... path
+  try {
+    if (raw.startsWith("http://") || raw.startsWith("https://")) {
+      const u = new URL(raw);
+      if (u.hostname === "drwelnes.ru" || u.hostname === "www.drwelnes.ru") {
+        if (u.pathname.startsWith("/uploads/")) return u.pathname;
+      }
+    }
+  } catch {
+    // ignore
+  }
+
   // allow "uploads/..." without leading slash
   if (raw.startsWith("uploads/")) return `/${raw}`;
 
