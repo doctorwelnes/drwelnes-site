@@ -1,8 +1,10 @@
 ---
-title: "Овсянка на ночь"
-description: "Быстрый рецепт на завтрак"
-videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-tags: ["завтрак", "быстро"]
+title: Овсянка на ночь
+description: Быстрый рецепт на завтрак
+videoUrl: https://vk.com/clip767143197_456239119?c=1
+tags:
+  - завтрак
+  - быстро
 publishedAt: 2026-01-26
 ---
 
