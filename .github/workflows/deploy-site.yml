@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64, vps]
 
     env:
       BASE_DIR: /var/www/drwelnes-site
