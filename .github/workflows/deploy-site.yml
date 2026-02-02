@@ -104,7 +104,8 @@ jobs:
 
             local attempt=1
             while [ "$attempt" -le "$MAX_ATTEMPTS" ]; do
-              http_code="$(curl -sS -L --max-time 15 -w "%{http_code}" "$url" || echo "000")"
+              # Get HTTP code separately from body
+              http_code=$(curl -sS -L --max-time 15 -o /dev/null -w "%{http_code}" "$url" || echo "000")
 
               if [ "$http_code" = "$expect_code" ]; then
                 echo "OK: ${name}"
