@@ -19,9 +19,9 @@ jobs:
     env:
       BASE_DIR: /var/www/drwelnes-site
       RELEASE_NAME: release-${{ github.run_number }}-${{ github.sha }}
-      RELEASE_DIR: ${{ env.BASE_DIR }}/releases/${{ env.RELEASE_NAME }}
-      CURRENT_LINK: ${{ env.BASE_DIR }}/current
-      PREV_LINK: ${{ env.BASE_DIR }}/previous
+    defaults:
+      run:
+        shell: bash
 
     steps:
       - name: Checkout repository
@@ -46,31 +46,38 @@ jobs:
 
       - name: Prepare release directory
         run: |
-          mkdir -p "${{ env.RELEASE_DIR }}"
+          RELEASE_DIR="${{ env.BASE_DIR }}/releases/${{ env.RELEASE_NAME }}"
+          mkdir -p "$RELEASE_DIR"
 
       - name: Sync built files to release
         run: |
-          rsync -avz --delete site/dist/ "${{ env.RELEASE_DIR }}/"
+          RELEASE_DIR="${{ env.BASE_DIR }}/releases/${{ env.RELEASE_NAME }}"
+          rsync -avz --delete site/dist/ "$RELEASE_DIR/"
 
       - name: Sync shared directories
         run: |
+          RELEASE_DIR="${{ env.BASE_DIR }}/releases/${{ env.RELEASE_NAME }}"
+          CURRENT_LINK="${{ env.BASE_DIR }}/current"
           # Sync public uploads and other shared directories
-          if [ -d "${{ env.CURRENT_LINK }}/public/uploads" ]; then
-            rsync -avz "${{ env.CURRENT_LINK }}/public/uploads/" "${{ env.RELEASE_DIR }}/public/uploads/"
+          if [ -d "$CURRENT_LINK/public/uploads" ]; then
+            rsync -avz "$CURRENT_LINK/public/uploads/" "$RELEASE_DIR/public/uploads/"
           fi
 
       - name: Switch release
         run: |
+          RELEASE_DIR="${{ env.BASE_DIR }}/releases/${{ env.RELEASE_NAME }}"
+          CURRENT_LINK="${{ env.BASE_DIR }}/current"
+          PREV_LINK="${{ env.BASE_DIR }}/previous"
           # Update previous link
-          if [ -L "${{ env.PREV_LINK }}" ]; then
-            rm "${{ env.PREV_LINK }}"
+          if [ -L "$PREV_LINK" ]; then
+            rm "$PREV_LINK"
           fi
-          if [ -L "${{ env.CURRENT_LINK }}" ]; then
-            mv "${{ env.CURRENT_LINK }}" "${{ env.PREV_LINK }}"
+          if [ -L "$CURRENT_LINK" ]; then
+            mv "$CURRENT_LINK" "$PREV_LINK"
           fi
 
           # Create new current link
-          ln -s "${{ env.RELEASE_DIR }}" "${{ env.CURRENT_LINK }}"
+          ln -s "$RELEASE_DIR" "$CURRENT_LINK"
 
       - name: Cleanup old releases
         run: |
