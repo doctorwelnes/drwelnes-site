@@ -18,69 +18,64 @@ jobs:
 
     env:
       BASE_DIR: /var/www/drwelnes-site
+      RELEASE_NAME: release-${{ github.run_number }}-${{ github.sha }}
+      RELEASE_DIR: ${{ env.BASE_DIR }}/releases/${{ env.RELEASE_NAME }}
+      CURRENT_LINK: ${{ env.BASE_DIR }}/current
+      PREV_LINK: ${{ env.BASE_DIR }}/previous
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          cache: "npm"
-          cache-dependency-path: site/package-lock.json
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: 'site/package-lock.json'
 
       - name: Install dependencies
-        working-directory: site
-        run: npm ci
-
-      - name: Build
-        working-directory: site
-        run: npm run build
-
-      - name: Add VPS to known_hosts
         run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -p "${{ secrets.VPS_PORT }}" -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
+          cd site
+          npm ci
 
-      - name: Configure SSH key
+      - name: Build Astro site
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
+          cd site
+          npm run build
 
-      - name: Prepare release variables
+      - name: Prepare release directory
         run: |
-          RELEASE_ID="$(date -u +%Y%m%d%H%M%S)-${GITHUB_SHA::7}"
-          echo "RELEASE_ID=${RELEASE_ID}" >> "$GITHUB_ENV"
-          echo "RELEASE_DIR=${BASE_DIR}/releases/${RELEASE_ID}" >> "$GITHUB_ENV"
+          mkdir -p "${{ env.RELEASE_DIR }}"
 
-      - name: Ensure remote directories exist
+      - name: Sync built files to release
         run: |
-          ssh -i ~/.ssh/id_rsa -p "${{ secrets.VPS_PORT }}" "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
-            "set -e; mkdir -p '${BASE_DIR}/releases' '${RELEASE_DIR}'"
+          rsync -avz --delete site/dist/ "${{ env.RELEASE_DIR }}/"
 
-      - name: Deploy dist/ to release dir via rsync
+      - name: Sync shared directories
         run: |
-          rsync -az --delete --delay-updates \
-            -e "ssh -i ~/.ssh/id_rsa -p ${{ secrets.VPS_PORT }}" \
-            site/dist/ \
-            "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${RELEASE_DIR}/"
+          # Sync public uploads and other shared directories
+          if [ -d "${{ env.CURRENT_LINK }}/public/uploads" ]; then
+            rsync -avz "${{ env.CURRENT_LINK }}/public/uploads/" "${{ env.RELEASE_DIR }}/public/uploads/"
+          fi
 
-      - name: Precheck release contents
+      - name: Switch release
         run: |
-          ssh -i ~/.ssh/id_rsa -p "${{ secrets.VPS_PORT }}" "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
-            "set -e; test -f '${RELEASE_DIR}/index.html'; test -f '${RELEASE_DIR}/admin/index.html'; test -f '${RELEASE_DIR}/admin/config.yml'"
+          # Update previous link
+          if [ -L "${{ env.PREV_LINK }}" ]; then
+            rm "${{ env.PREV_LINK }}"
+          fi
+          if [ -L "${{ env.CURRENT_LINK }}" ]; then
+            mv "${{ env.CURRENT_LINK }}" "${{ env.PREV_LINK }}"
+          fi
 
-      - name: Switch current symlink (atomic)
-        run: |
-          ssh -i ~/.ssh/id_rsa -p "${{ secrets.VPS_PORT }}" "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
-            "set -e; ln -sfn '${RELEASE_DIR}' '${BASE_DIR}/current'"
+          # Create new current link
+          ln -s "${{ env.RELEASE_DIR }}" "${{ env.CURRENT_LINK }}"
 
       - name: Cleanup old releases
         run: |
-          ssh -i ~/.ssh/id_rsa -p "${{ secrets.VPS_PORT }}" "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
-            "set -e; cd '${BASE_DIR}/releases'; ls -1dt */ 2>/dev/null | tail -n +6 | xargs -r rm -rf"
+          cd "${{ env.BASE_DIR }}/releases"
+          ls -t | tail -n +6 | xargs -r rm -rf
 
       - name: Healthcheck
         run: |
