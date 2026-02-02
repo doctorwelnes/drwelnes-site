@@ -38,6 +38,21 @@ const { Content } = await entry.render();
           {entry.data.description && (
             <p style="margin: 0; color: #4b5563;">{entry.data.description}</p>
           )}
+
+          {(entry.data.prepTimeMinutes !== undefined || entry.data.cookTimeMinutes !== undefined) && (
+            <div style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px;">
+              {entry.data.prepTimeMinutes !== undefined && (
+                <div style="padding: 6px 10px; border-radius: 999px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9); font-size: 12px; color: #374151;">
+                  Подготовка: {entry.data.prepTimeMinutes} мин
+                </div>
+              )}
+              {entry.data.cookTimeMinutes !== undefined && (
+                <div style="padding: 6px 10px; border-radius: 999px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9); font-size: 12px; color: #374151;">
+                  Приготовление: {entry.data.cookTimeMinutes} мин
+                </div>
+              )}
+            </div>
+          )}
         </section>
 
       {entry.data.videoFile ? (
@@ -97,7 +112,7 @@ const { Content } = await entry.render();
         )
       )}
 
-        {(entry.data.kbru || (entry.data.ingredients && entry.data.ingredients.length) || (entry.data.steps && entry.data.steps.length)) && (
+        {(entry.data.kbru || entry.data.kbruBasal || (entry.data.ingredients && entry.data.ingredients.length) || (entry.data.steps && entry.data.steps.length)) && (
           <section style="margin: 16px 0; display: grid; gap: 12px;">
             {entry.data.kbru && (
               <div style="background: rgba(255,255,255,.85); border: 1px solid rgba(229,231,235,.9); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06);">
@@ -118,6 +133,30 @@ const { Content } = await entry.render();
                   <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
                     <div style="font-size: 12px; color: #6b7280;">Углеводы</div>
                     <div style="font-weight: 700;">{entry.data.kbru.carbs ?? "—"}</div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {entry.data.kbruBasal && (
+              <div style="background: rgba(255,255,255,.85); border: 1px solid rgba(229,231,235,.9); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06);">
+                <h2 style="margin: 0 0 10px; font-size: 18px; letter-spacing: -0.01em;">КБЖУ (100 г блюда на основной обмен)</h2>
+                <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px;">
+                  <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
+                    <div style="font-size: 12px; color: #6b7280;">Ккал</div>
+                    <div style="font-weight: 700;">{entry.data.kbruBasal.calories ?? "—"}</div>
+                  </div>
+                  <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
+                    <div style="font-size: 12px; color: #6b7280;">Белки</div>
+                    <div style="font-weight: 700;">{entry.data.kbruBasal.protein ?? "—"}</div>
+                  </div>
+                  <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
+                    <div style="font-size: 12px; color: #6b7280;">Жиры</div>
+                    <div style="font-weight: 700;">{entry.data.kbruBasal.fat ?? "—"}</div>
+                  </div>
+                  <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
+                    <div style="font-size: 12px; color: #6b7280;">Углеводы</div>
+                    <div style="font-weight: 700;">{entry.data.kbruBasal.carbs ?? "—"}</div>
                   </div>
                 </div>
               </div>

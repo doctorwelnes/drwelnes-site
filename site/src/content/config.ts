@@ -103,7 +103,17 @@ const recipes = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),
+    prepTimeMinutes: z.number().int().nonnegative().optional(),
+    cookTimeMinutes: z.number().int().nonnegative().optional(),
     kbru: z
+      .object({
+        calories: z.number().optional(),
+        protein: z.number().optional(),
+        fat: z.number().optional(),
+        carbs: z.number().optional(),
+      })
+      .optional(),
+    kbruBasal: z
       .object({
         calories: z.number().optional(),
         protein: z.number().optional(),
