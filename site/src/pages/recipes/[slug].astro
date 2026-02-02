@@ -64,7 +64,7 @@ const { Content } = await entry.render();
               style="display:none; position:absolute; inset:0; background-position:center; background-size:cover; filter: blur(18px); transform: scale(1.08); opacity:.55;"
             ></div>
             <video
-              controls
+              controls={false}
               playsinline
               preload="metadata"
               controlslist="nodownload"
@@ -73,27 +73,53 @@ const { Content } = await entry.render();
               poster={entry.data.videoPoster}
               data-video-resume-key={`recipe:${entry.slug}`}
             />
-          </div>
-
-          <div style="display:flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px;">
-            <div style="font-size: 12px; color: #6b7280;">Скорость</div>
-            {([0.75, 1, 1.25, 1.5, 2] as const).map((r) => (
+            
+            <!-- Custom controls -->
+            <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.7)); padding: 12px; display: flex; align-items: center; gap: 10px;">
               <button
                 type="button"
-                data-video-rate={String(r)}
-                style="cursor:pointer; border: 1px solid rgba(229,231,235,.9); background: rgba(255,255,255,.85); border-radius: 999px; padding: 6px 10px; font-size: 12px;"
+                data-video-play-pause
+                style="background: none; border: none; color: white; cursor: pointer; font-size: 18px; padding: 4px;"
               >
-                {r}x
+                ▶
               </button>
-            ))}
-            <span style="flex: 1 1 auto;"></span>
-            <button
-              type="button"
-              data-video-resume
-              style="cursor:pointer; border: 1px solid rgba(229,231,235,.9); background: rgba(255,255,255,.85); border-radius: 999px; padding: 6px 10px; font-size: 12px;"
-            >
-              Продолжить
-            </button>
+              
+              <div style="flex: 1; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; position: relative; cursor: pointer;" data-video-progress>
+                <div data-video-progress-bar style="height: 100%; background: #ef4444; border-radius: 2px; width: 0%; transition: width 0.1s;"></div>
+              </div>
+              
+              <span data-video-time style="color: white; font-size: 12px; min-width: 80px;">0:00 / 0:00</span>
+              
+              <button
+                type="button"
+                data-video-mute
+                style="background: none; border: none; color: white; cursor: pointer; font-size: 16px; padding: 4px;"
+              >
+                🔊
+              </button>
+              
+              <select
+                data-video-speed
+                style="background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 2px 4px; border-radius: 4px; font-size: 12px; cursor: pointer;"
+              >
+                <option value="0.5">0.5x</option>
+                <option value="0.75">0.75x</option>
+                <option value="1" selected>1x</option>
+                <option value="1.25">1.25x</option>
+                <option value="1.5">1.5x</option>
+                <option value="2">2x</option>
+              </select>
+              
+              <button
+                type="button"
+                data-video-fullscreen
+                style="background: none; border: none; color: white; cursor: pointer; font-size: 16px; padding: 4px;"
+              >
+                ⛶
+              </button>
+            </div>
+          </div>
+
           </div>
         </div>
       ) : (
@@ -202,6 +228,15 @@ const { Content } = await entry.render();
 
         const shell = video.closest('[data-video-shell]');
         const backdrop = shell ? shell.querySelector('[data-video-backdrop]') : null;
+        
+        // Custom controls elements
+        const playPauseBtn = shell?.querySelector('[data-video-play-pause]');
+        const progressBar = shell?.querySelector('[data-video-progress]');
+        const progressBarFill = shell?.querySelector('[data-video-progress-bar]');
+        const timeDisplay = shell?.querySelector('[data-video-time]');
+        const muteBtn = shell?.querySelector('[data-video-mute]');
+        const speedSelect = shell?.querySelector('[data-video-speed]');
+        const fullscreenBtn = shell?.querySelector('[data-video-fullscreen]');
 
         const key = video.getAttribute('data-video-resume-key');
         if (!key) return;
@@ -210,6 +245,32 @@ const { Content } = await entry.render();
         const rKey = `drw:video:rate:${key}`;
 
         const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+        
+        const formatTime = (seconds) => {
+          const mins = Math.floor(seconds / 60);
+          const secs = Math.floor(seconds % 60);
+          return `${mins}:${secs.toString().padStart(2, '0')}`;
+        };
+        
+        const updatePlayPauseButton = () => {
+          if (playPauseBtn) {
+            playPauseBtn.textContent = video.paused ? '▶' : '❚❚';
+          }
+        };
+        
+        const updateProgress = () => {
+          if (progressBarFill && timeDisplay) {
+            const percent = (video.currentTime / video.duration) * 100;
+            progressBarFill.style.width = `${percent}%`;
+            timeDisplay.textContent = `${formatTime(video.currentTime)} / ${formatTime(video.duration)}`;
+          }
+        };
+        
+        const updateMuteButton = () => {
+          if (muteBtn) {
+            muteBtn.textContent = video.muted ? '🔇' : '🔊';
+          }
+        };
 
         const readNumber = (k) => {
           try {
@@ -231,8 +292,9 @@ const { Content } = await entry.render();
         };
 
         const savedRate = readNumber(rKey);
-        if (savedRate) {
+        if (savedRate && speedSelect) {
           video.playbackRate = clamp(savedRate, 0.25, 4);
+          speedSelect.value = String(savedRate);
         }
 
         const applySavedTime = () => {
@@ -307,7 +369,68 @@ const { Content } = await entry.render();
 
         video.addEventListener('loadeddata', () => {
           setBackdropFromVideoFrame();
+          updateProgress();
+          updatePlayPauseButton();
+          updateMuteButton();
         });
+        
+        // Custom controls event listeners
+        if (playPauseBtn) {
+          playPauseBtn.addEventListener('click', () => {
+            if (video.paused) {
+              video.play().catch(() => null);
+            } else {
+              video.pause();
+            }
+          });
+        }
+        
+        if (progressBar) {
+          progressBar.addEventListener('click', (e) => {
+            const rect = progressBar.getBoundingClientRect();
+            const percent = (e.clientX - rect.left) / rect.width;
+            if (video.duration) {
+              video.currentTime = percent * video.duration;
+              saveTime();
+            }
+          });
+        }
+        
+        if (muteBtn) {
+          muteBtn.addEventListener('click', () => {
+            video.muted = !video.muted;
+          });
+        }
+        
+        if (speedSelect) {
+          speedSelect.addEventListener('change', () => {
+            const rate = Number(speedSelect.value);
+            if (Number.isFinite(rate)) {
+              video.playbackRate = clamp(rate, 0.25, 4);
+              saveRate();
+            }
+          });
+        }
+        
+        if (fullscreenBtn) {
+          fullscreenBtn.addEventListener('click', () => {
+            if (document.fullscreenElement) {
+              document.exitFullscreen?.().catch?.(() => null);
+            } else {
+              shell?.requestFullscreen?.().catch?.(() => null);
+            }
+          });
+        }
+        
+        // Video event listeners for custom controls
+        video.addEventListener('play', updatePlayPauseButton);
+        video.addEventListener('pause', updatePlayPauseButton);
+        video.addEventListener('timeupdate', updateProgress);
+        video.addEventListener('loadedmetadata', () => {
+          updateProgress();
+          updateMuteButton();
+        });
+        video.addEventListener('volumechange', updateMuteButton);
 
         video.addEventListener('seeked', () => {
           setBackdropFromVideoFrame();
@@ -327,24 +450,6 @@ const { Content } = await entry.render();
         video.addEventListener('ended', () => writeNumber(tKey, 0));
         video.addEventListener('ratechange', saveRate);
         window.addEventListener('beforeunload', saveTime);
-
-        document.querySelectorAll('button[data-video-rate]').forEach((btn) => {
-          btn.addEventListener('click', () => {
-            const raw = btn.getAttribute('data-video-rate');
-            const rate = raw ? Number(raw) : 1;
-            if (!Number.isFinite(rate)) return;
-            video.playbackRate = clamp(rate, 0.25, 4);
-            saveRate();
-          });
-        });
-
-        const resumeBtn = document.querySelector('button[data-video-resume]');
-        if (resumeBtn) {
-          resumeBtn.addEventListener('click', () => {
-            applySavedTime();
-            video.play().catch(() => null);
-          });
-        }
 
         const cleanup = () => {
           window.clearInterval(interval);
