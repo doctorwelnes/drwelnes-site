@@ -225,13 +225,53 @@ const { Content } = await entry.render();
             backdrop.style.backgroundImage = `url("${poster}")`;
             backdrop.style.display = 'block';
           } else if (backdrop) {
-            backdrop.style.display = 'none';
+            backdrop.style.display = portrait ? 'block' : 'none';
+            if (!poster) backdrop.style.backgroundImage = '';
+          }
+        };
+
+        const setBackdropFromVideoFrame = () => {
+          if (!backdrop) return;
+          const poster = video.getAttribute('poster');
+          if (poster) return;
+
+          const vw = video.videoWidth;
+          const vh = video.videoHeight;
+          if (!vw || !vh) return;
+          if (!(vh > vw)) return;
+
+          try {
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.max(1, Math.min(vw, 640));
+            canvas.height = Math.max(1, Math.round((canvas.width * vh) / vw));
+
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
+            backdrop.style.backgroundImage = `url("${dataUrl}")`;
+            backdrop.style.display = 'block';
+          } catch {
+            // ignore
           }
         };
 
         video.addEventListener('loadedmetadata', () => {
           applySavedTime();
           applyOrientation();
+
+          if (video.readyState >= 2) {
+            setBackdropFromVideoFrame();
+          }
+        });
+
+        video.addEventListener('loadeddata', () => {
+          setBackdropFromVideoFrame();
+        });
+
+        video.addEventListener('seeked', () => {
+          setBackdropFromVideoFrame();
         });
 
         const saveTime = () => {
