@@ -1,6 +1,6 @@
 ---
 title: Оладьи с яйцом и луком
-description: вкусно
+description: вкусно очень
 kbru:
   calories: 150
   protein: 7
