@@ -29,11 +29,6 @@ body.drw-admin {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Hide sidebar for fullscreen experience */
-body.drw-admin .SplitPane .Pane:first-child {
-  display: none !important;
-}
-
 /* Fullscreen editor with preview */
 body.drw-admin .SplitPane {
   background: var(--drw-bg);
@@ -58,12 +53,13 @@ body.drw-admin .SplitPane .Pane2 {
   overflow-y: auto;
 }
 
-/* Main grid layout: 2-3 columns */
-body.drw-admin .SplitPane .Pane1 > div > div > div:first-child {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
-  margin-bottom: 24px;
+/* Hide preview when requested */
+body.drw-hide-preview .SplitPane .Pane2 {
+  display: none !important;
+}
+
+body.drw-hide-preview .SplitPane .Pane1 {
+  width: 100% !important;
 }
 
 /* Section cards */
@@ -105,10 +101,6 @@ body.drw-admin .SplitPane .Pane1 :where(label) {
 /* Inputs: Apple style */
 body.drw-admin .SplitPane .Pane1 :where(input[type="text"], input[type="number"], select, textarea) {
   width: 100%;
-  padding: 10px 12px;
-  border: 1px solid var(--drw-border);
-  border-radius: var(--drw-radius-small);
-  background: rgba(255, 255, 255, 0.8);
   font-size: 14px;
   font-family: var(--drw-font-family);
   color: var(--drw-fg);

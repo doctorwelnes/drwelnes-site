@@ -4,10 +4,64 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Dr.Welnes Admin</title>
-    <link rel="stylesheet" href="/admin/admin.css" />
+    <link rel="stylesheet" href="./admin.css" />
   </head>
   <body class="drw-admin">
     <script>
+      (function () {
+        function showError(kind, message) {
+          try {
+            var id = "drw-admin-error-overlay";
+            var el = document.getElementById(id);
+            if (!el) {
+              el = document.createElement("div");
+              el.id = id;
+              el.style.position = "fixed";
+              el.style.left = "16px";
+              el.style.right = "16px";
+              el.style.bottom = "16px";
+              el.style.zIndex = "2147483647";
+              el.style.maxHeight = "40vh";
+              el.style.overflow = "auto";
+              el.style.background = "rgba(17, 24, 39, 0.92)";
+              el.style.color = "#fff";
+              el.style.borderRadius = "12px";
+              el.style.padding = "12px 14px";
+              el.style.fontFamily = "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace";
+              el.style.fontSize = "12px";
+              el.style.lineHeight = "1.35";
+              el.style.boxShadow = "0 10px 25px rgba(0,0,0,.25)";
+              el.style.whiteSpace = "pre-wrap";
+              el.style.userSelect = "text";
+              el.textContent = "";
+              document.addEventListener("DOMContentLoaded", function () {
+                try {
+                  document.body.appendChild(el);
+                } catch (e) {}
+              });
+            }
+
+            var line = "[" + new Date().toISOString() + "] " + kind + ": " + String(message || "(no message)");
+            el.textContent = (el.textContent ? el.textContent + "\n\n" : "") + line;
+          } catch (e) {}
+        }
+
+        window.addEventListener("error", function (e) {
+          try {
+            var msg = e && e.error && e.error.stack ? e.error.stack : (e && e.message ? e.message : e);
+            showError("error", msg);
+          } catch (err) {}
+        });
+
+        window.addEventListener("unhandledrejection", function (e) {
+          try {
+            var r = e && e.reason;
+            var msg = r && r.stack ? r.stack : r;
+            showError("unhandledrejection", msg);
+          } catch (err) {}
+        });
+      })();
+
       (function () {
         (function () {
           try {
