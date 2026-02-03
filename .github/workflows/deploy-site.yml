@@ -6,6 +6,8 @@ on:
     paths:
       - "site/**"
       - ".github/workflows/**"
+  schedule:
+    - cron: "*/5 * * * *"
   workflow_dispatch:
 
 concurrency:
@@ -26,6 +28,19 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Skip if already deployed
+        run: |
+          set -euo pipefail
+
+          CURRENT_LINK="${{ env.BASE_DIR }}/current"
+          if [ -L "$CURRENT_LINK" ]; then
+            current_target=$(readlink -f "$CURRENT_LINK" || true)
+            if [[ "$current_target" == *"${{ github.sha }}"* ]]; then
+              echo "Already deployed commit ${{ github.sha }} ($current_target); skipping."
+              exit 0
+            fi
+          fi
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
