@@ -13,7 +13,7 @@
           try {
             var qs = new URLSearchParams(window.location.search);
             var p = qs.get("preview");
-            if (p !== "1") document.body.classList.add("drw-hide-preview");
+            if (p === "0") document.body.classList.add("drw-hide-preview");
           } catch (e) {}
         })();
 
