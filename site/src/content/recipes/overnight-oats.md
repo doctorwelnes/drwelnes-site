@@ -1,5 +1,5 @@
 ---
-title: Оладьи с яйцом и луком
+title: Оладьи с яйцом и луком 2
 description: вкусно очень/
 kbru:
   calories: 150
