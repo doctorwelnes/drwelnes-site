@@ -1,5 +1,5 @@
 ---
-title: Оладьи с яйцом и луком zzzzz
+title: Оладьи с яйцом и луком qqqqqqq
 description: вкусно очень/
 kbru:
   calories: 150
