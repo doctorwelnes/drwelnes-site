@@ -40,6 +40,41 @@ body.drw-admin .SplitPane .Pane1 {
   max-width: none;
 }
 
+/* Entry editor container: center and constrain for readability */
+body.drw-admin .SplitPane .Pane1 :where(.nc-entryEditor, [class*="EntryEditor"], [class*="entryEditor"], form) {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Compact fields grid (KBRU/time-like groups): best-effort for different Decap DOMs */
+body.drw-admin .SplitPane .Pane1 :where(.nc-entryEditor, [class*="EntryEditor"], [class*="entryEditor"], form)
+  :where([class*="Object"], [class*="object"]) {
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid var(--drw-border);
+  border-radius: var(--drw-radius);
+  padding: 12px;
+}
+
+body.drw-admin .SplitPane .Pane1 :where(.nc-entryEditor, [class*="EntryEditor"], [class*="entryEditor"], form)
+  :where([class*="Object"], [class*="object"]) :where(label) {
+  font-size: 12px;
+  color: var(--drw-fg-subtle);
+}
+
+/* Make small inputs look like minimal chips/fields */
+body.drw-admin .SplitPane .Pane1 :where(.nc-entryEditor, [class*="EntryEditor"], [class*="entryEditor"], form)
+  :where(input[type="text"], input[type="number"], select, textarea) {
+  padding: 10px 12px;
+  border: 1px solid var(--drw-border);
+  border-radius: var(--drw-radius-small);
+  background: rgba(255, 255, 255, 0.88);
+}
+
+/* Prefer 2-3 columns for compact rows where possible */
+body.drw-admin .SplitPane .Pane1 :where([class*="Object"], [class*="object"]) :where([class*="Field"], [class*="field"], [class*="Control"], [class*="control"], div) {
+  min-width: 0;
+}
+
 /* Preview: 30% width, Apple style */
 body.drw-admin .SplitPane .Pane2 {
   flex: 0 0 30% !important;
@@ -149,17 +184,43 @@ body.drw-admin .SplitPane .Pane1 :where(button):active {
   transform: translateY(0);
 }
 
-/* Object widgets (KBRU) in grid */
+/* Object widgets: default layout (fallback) */
 body.drw-admin .SplitPane .Pane1 :where([class*="Object"], [class*="object"]) {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  gap: 12px;
   margin: 8px 0;
 }
 
-body.drw-admin .SplitPane .Pane1 :where([class*="Object"] > div, [class*="object"] > div) {
-  display: flex;
-  flex-direction: column;
+body.drw-admin .SplitPane .Pane1 :where([class*="Object"], [class*="object"]) :where([class*="Field"], [class*="field"]) {
+  margin: 0;
+}
+
+/* KBRU object widgets: 4 columns on wide screens */
+body.drw-admin .SplitPane .Pane1 :where([class*="Object"], [class*="object"]):has(:where(input[name*="kbru"], input[id*="kbru"]))
+  :where([class*="Object"] > div, [class*="object"] > div) {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+@media (min-width: 980px) {
+  body.drw-admin .SplitPane .Pane1 :where([class*="Object"], [class*="object"]):has(:where(input[name*="kbru"], input[id*="kbru"]))
+    :where([class*="Object"] > div, [class*="object"] > div) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* Time object widgets: 3 columns on wide screens */
+body.drw-admin .SplitPane .Pane1 :where([class*="Object"], [class*="object"]):has(:where(input[name*="time"], input[id*="time"]))
+  :where([class*="Object"] > div, [class*="object"] > div) {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+
+@media (min-width: 980px) {
+  body.drw-admin .SplitPane .Pane1 :where([class*="Object"], [class*="object"]):has(:where(input[name*="time"], input[id*="time"]))
+    :where([class*="Object"] > div, [class*="object"] > div) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 /* List widgets (ingredients/steps) */
