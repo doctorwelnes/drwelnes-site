@@ -8,7 +8,6 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-const { Content } = await entry.render();
 ---
 
 <html lang="ru">
@@ -138,7 +137,7 @@ const { Content } = await entry.render();
         )
       )}
 
-        {(entry.data.kbru || entry.data.kbruBasal || (entry.data.ingredients && entry.data.ingredients.length) || (entry.data.steps && entry.data.steps.length)) && (
+        {(entry.data.kbru || entry.data.kbruBasal || entry.data.kbruTotal || (entry.data.ingredients && entry.data.ingredients.length) || (entry.data.steps && entry.data.steps.length)) && (
           <section style="margin: 16px 0; display: grid; gap: 12px;">
             {entry.data.kbru && (
               <div style="background: rgba(255,255,255,.85); border: 1px solid rgba(229,231,235,.9); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06);">
@@ -159,6 +158,30 @@ const { Content } = await entry.render();
                   <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
                     <div style="font-size: 12px; color: #6b7280;">Углеводы</div>
                     <div style="font-weight: 700;">{entry.data.kbru.carbs ?? "—"}</div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {entry.data.kbruTotal && (
+              <div style="background: rgba(255,255,255,.85); border: 1px solid rgba(229,231,235,.9); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06);">
+                <h2 style="margin: 0 0 10px; font-size: 18px; letter-spacing: -0.01em;">КБЖУ (на блюдо)</h2>
+                <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px;">
+                  <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
+                    <div style="font-size: 12px; color: #6b7280;">Ккал</div>
+                    <div style="font-weight: 700;">{entry.data.kbruTotal.calories ?? "—"}</div>
+                  </div>
+                  <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
+                    <div style="font-size: 12px; color: #6b7280;">Белки</div>
+                    <div style="font-weight: 700;">{entry.data.kbruTotal.protein ?? "—"}</div>
+                  </div>
+                  <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
+                    <div style="font-size: 12px; color: #6b7280;">Жиры</div>
+                    <div style="font-weight: 700;">{entry.data.kbruTotal.fat ?? "—"}</div>
+                  </div>
+                  <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
+                    <div style="font-size: 12px; color: #6b7280;">Углеводы</div>
+                    <div style="font-weight: 700;">{entry.data.kbruTotal.carbs ?? "—"}</div>
                   </div>
                 </div>
               </div>
@@ -214,10 +237,6 @@ const { Content } = await entry.render();
             )}
           </section>
         )}
-
-        <article style="line-height: 1.6; background: rgba(255,255,255,.85); border: 1px solid rgba(229,231,235,.9); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06);">
-          <Content />
-        </article>
       </div>
     </main>
 

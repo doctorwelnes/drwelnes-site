@@ -5,9 +5,7 @@ const items = await getCollection("recipes");
 const sorted = items
   .slice()
   .sort((a, b) => {
-    const ad = a.data.publishedAt ? new Date(a.data.publishedAt).getTime() : 0;
-    const bd = b.data.publishedAt ? new Date(b.data.publishedAt).getTime() : 0;
-    return bd - ad;
+    return a.data.title.localeCompare(b.data.title, "ru", { sensitivity: "base" });
   });
 
 const snacks = sorted.filter((e) => e.data.category === "перекусы");

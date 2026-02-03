@@ -48,6 +48,16 @@ collections:
           - { name: "protein", label: "Белки (г)", widget: "number", required: false, value_type: "float" }
           - { name: "fat", label: "Жиры (г)", widget: "number", required: false, value_type: "float" }
           - { name: "carbs", label: "Углеводы (г)", widget: "number", required: false, value_type: "float" }
+      - name: "kbruTotal"
+        label: "КБЖУ (на блюдо)"
+        widget: "object"
+        required: false
+        collapsed: true
+        fields:
+          - { name: "calories", label: "Калории", widget: "number", required: false, value_type: "int" }
+          - { name: "protein", label: "Белки (г)", widget: "number", required: false, value_type: "float" }
+          - { name: "fat", label: "Жиры (г)", widget: "number", required: false, value_type: "float" }
+          - { name: "carbs", label: "Углеводы (г)", widget: "number", required: false, value_type: "float" }
       - name: "ingredients"
         label: "Ингредиенты"
         widget: "list"
@@ -66,8 +76,7 @@ collections:
       - { name: "videoFile", label: "Путь к видео (/uploads/videos/..mp4)", widget: "string", required: false }
       - { name: "videoPoster", label: "Постер (обложка) видео", widget: "image", required: false }
       - { name: "tags", label: "Теги", widget: "list", required: false }
-      - { name: "publishedAt", label: "Дата публикации", widget: "datetime", required: false }
-      - { name: "body", label: "Текст", widget: "markdown", default: "## Ингредиенты\n\n## Шаги\n" }
+
 
   - name: "exercises"
     label: "Упражнения"

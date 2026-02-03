@@ -121,6 +121,14 @@ const recipes = defineCollection({
         carbs: z.number().optional(),
       })
       .optional(),
+    kbruTotal: z
+      .object({
+        calories: z.number().optional(),
+        protein: z.number().optional(),
+        fat: z.number().optional(),
+        carbs: z.number().optional(),
+      })
+      .optional(),
     ingredients: z
       .array(
         z.object({
