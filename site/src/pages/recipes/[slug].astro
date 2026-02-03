@@ -17,8 +17,8 @@ const { entry } = Astro.props;
     <title>{entry.data.title}</title>
   </head>
   <body>
-    <main style="min-height: 100vh; background: radial-gradient(1200px 600px at 20% -10%, #dbeafe 0%, rgba(219,234,254,0) 55%), radial-gradient(900px 520px at 90% 0%, #fce7f3 0%, rgba(252,231,243,0) 55%), #ffffff; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;">
-      <div style="max-width: 980px; margin: 0 auto; padding: 28px 20px 36px;">
+    <main style="min-height: 100vh; background: radial-gradient(1200px 600px at 20% -10%, #fef3c7 0%, rgba(254,243,199,0) 55%), radial-gradient(900px 520px at 90% 0%, #fecaca 0%, rgba(254,202,202,0) 55%), #ffffff; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;">
+      <div style="max-width: 1200px; margin: 0 auto; padding: 28px 20px 36px; display: grid; grid-template-columns: 1fr 320px; gap: 24px; align-items: start;">
         <header style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px;">
           <div style="display: flex; align-items: center; gap: 10px;">
             <img src="/logo.png" alt="Dr.Welnes" width="34" height="34" style="display:block; width:34px; height:34px; border-radius: 10px; object-fit: cover;" />
@@ -33,20 +33,27 @@ const { entry } = Astro.props;
         </header>
 
         <section style="border: 1px solid rgba(229,231,235,.9); background: rgba(255,255,255,.8); backdrop-filter: blur(10px); border-radius: 18px; padding: 22px; box-shadow: 0 10px 30px rgba(15,23,42,.08);">
-          <h1 style="margin: 0 0 8px; font-size: 28px; line-height: 1.15; letter-spacing: -0.03em;">{entry.data.title}</h1>
+          <h1 style="margin: 0 0 8px; font-size: 36px; line-height: 1.1; letter-spacing: -0.03em; font-weight: 700; color: #1f2937; text-shadow: 0 1px 2px rgba(0,0,0,0.04);">{entry.data.title}</h1>
           {entry.data.description && (
-            <p style="margin: 0; color: #4b5563;">{entry.data.description}</p>
+            <p style="margin: 0; color: #6b7280; font-size: 16px; line-height: 1.5;">{entry.data.description}</p>
           )}
 
           {(entry.data.prepTimeMinutes !== undefined || entry.data.cookTimeMinutes !== undefined) && (
             <div style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px;">
               {entry.data.prepTimeMinutes !== undefined && (
-                <div style="padding: 6px 10px; border-radius: 999px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9); font-size: 12px; color: #374151;">
+                <div style="padding: 6px 10px; border-radius: 999px; background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%); border: 1px solid rgba(251,191,36,.2); font-size: 12px; color: #92400e; display: flex; align-items: center; gap: 6px; transition: transform 0.2s, box-shadow 0.2s;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                  </svg>
                   Подготовка: {entry.data.prepTimeMinutes} мин
                 </div>
               )}
               {entry.data.cookTimeMinutes !== undefined && (
-                <div style="padding: 6px 10px; border-radius: 999px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9); font-size: 12px; color: #374151;">
+                <div style="padding: 6px 10px; border-radius: 999px; background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%); border: 1px solid rgba(239,68,68,.2); font-size: 12px; color: #991b1b; display: flex; align-items: center; gap: 6px; transition: transform 0.2s, box-shadow 0.2s;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 12h20M2 12h20M2 12l2-6v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6l2 6"/>
+                    <path d="M12 2v10l4-4"/>
+                  </svg>
                   Приготовление: {entry.data.cookTimeMinutes} мин
                 </div>
               )}
@@ -56,7 +63,7 @@ const { entry } = Astro.props;
 
       {entry.data.videoFile ? (
         <div style="margin: 16px 0;">
-          <div data-video-shell style="border-radius: 12px; overflow: hidden; background: #000; box-shadow: 0 10px 30px rgba(15,23,42,.10); position: relative;">
+          <div data-video-shell style="border-radius: 12px; overflow: hidden; background: #000; box-shadow: 0 10px 30px rgba(15,23,42,.10); position: relative; transition: transform 0.3s, box-shadow 0.3s;" onMouseOver="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 20px 40px rgba(15,23,42,.15)'" onMouseOut="this.style.transform=''; this.style.boxShadow=''">
             <div
               data-video-backdrop
               aria-hidden="true"
@@ -78,7 +85,9 @@ const { entry } = Astro.props;
               <button
                 type="button"
                 data-video-play-pause
-                style="background: none; border: none; color: white; cursor: pointer; font-size: 18px; padding: 4px;"
+                style="background: none; border: none; color: white; cursor: pointer; font-size: 18px; padding: 4px; transition: transform 0.2s;"
+                onMouseOver="this.style.transform='scale(1.1)'"
+                onMouseOut="this.style.transform=''"
               >
                 ▶
               </button>
@@ -137,9 +146,16 @@ const { entry } = Astro.props;
         )
       )}
 
-        {(entry.data.kbru || entry.data.kbruBasal || entry.data.kbruTotal || (entry.data.ingredients && entry.data.ingredients.length) || (entry.data.steps && entry.data.steps.length)) && (
-          <section style="margin: 16px 0; display: grid; gap: 12px;">
-            {entry.data.kbru && (
+        <!-- Правая колонка: КБЖУ и Ингредиенты -->
+        <aside style="display: flex; flex-direction: column; gap: 12px;">
+          {entry.data.kbru && (
+            <div style="background: linear-gradient(135deg, rgba(255,255,255,.9) 0%, rgba(254,240,138,.3) 100%); border: 1px solid rgba(245,158,11,.15); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06); transition: transform 0.2s, box-shadow 0.2s;" onMouseOver="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 20px 40px rgba(15,23,42,.1)'" onMouseOut="this.style.transform=''; this.style.boxShadow=''">
+              <h3 style="margin: 0 0 10px; font-size: 16px; letter-spacing: -0.01em; display: flex; align-items: center; gap: 8px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
+                  <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+                </svg>
+                КБЖУ
+              </h3>
               <div style="background: rgba(255,255,255,.85); border: 1px solid rgba(229,231,235,.9); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06);">
                 <h2 style="margin: 0 0 10px; font-size: 18px; letter-spacing: -0.01em;">КБЖУ (на 100 г)</h2>
                 <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px;">
@@ -163,7 +179,14 @@ const { entry } = Astro.props;
               </div>
             )}
 
-            {entry.data.kbruTotal && (
+            {entry.data.ingredients && entry.data.ingredients.length > 0 && (
+              <div style="background: linear-gradient(135deg, rgba(255,255,255,.9) 0%, rgba(254,243,199,.3) 100%); border: 1px solid rgba(251,191,36,.15); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06); transition: transform 0.2s, box-shadow 0.2s;" onMouseOver="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 20px 40px rgba(15,23,42,.1)'" onMouseOut="this.style.transform=''; this.style.boxShadow=''">
+                <h3 style="margin: 0 0 10px; font-size: 16px; letter-spacing: -0.01em; display: flex; align-items: center; gap: 8px;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
+                    <path d="M20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/>
+                  </svg>
+                  Ингредиенты
+                </h3>
               <div style="background: rgba(255,255,255,.85); border: 1px solid rgba(229,231,235,.9); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06);">
                 <h2 style="margin: 0 0 10px; font-size: 18px; letter-spacing: -0.01em;">КБЖУ (на блюдо)</h2>
                 <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px;">
@@ -212,8 +235,13 @@ const { entry } = Astro.props;
             )}
 
             {entry.data.ingredients && entry.data.ingredients.length > 0 && (
-              <div style="background: rgba(255,255,255,.85); border: 1px solid rgba(229,231,235,.9); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06);">
-                <h2 style="margin: 0 0 10px; font-size: 18px; letter-spacing: -0.01em;">Ингредиенты</h2>
+              <div style="background: linear-gradient(135deg, rgba(255,255,255,.9) 0%, rgba(254,243,199,.3) 100%); border: 1px solid rgba(251,191,36,.15); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06); transition: transform 0.2s, box-shadow 0.2s;" onMouseOver="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 20px 40px rgba(15,23,42,.1)'" onMouseOut="this.style.transform=''; this.style.boxShadow=''">
+                <h2 style="margin: 0 0 10px; font-size: 18px; letter-spacing: -0.01em; display: flex; align-items: center; gap: 8px;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
+                    <path d="M20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/>
+                  </svg>
+                  Ингредиенты
+                </h2>
                 <ul style="margin: 0; padding-left: 18px;">
                   {entry.data.ingredients.map((it) => (
                     <li>
@@ -226,11 +254,20 @@ const { entry } = Astro.props;
             )}
 
             {entry.data.steps && entry.data.steps.length > 0 && (
-              <div style="background: rgba(255,255,255,.85); border: 1px solid rgba(229,231,235,.9); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06);">
-                <h2 style="margin: 0 0 10px; font-size: 18px; letter-spacing: -0.01em;">Шаги</h2>
-                <ol style="margin: 0; padding-left: 18px;">
-                  {entry.data.steps.map((t) => (
-                    <li>{t}</li>
+              <div style="background: linear-gradient(135deg, rgba(255,255,255,.9) 0%, rgba(254,202,202,.3) 100%); border: 1px solid rgba(239,68,68,.15); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06); transition: transform 0.2s, box-shadow 0.2s;" onMouseOver="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 20px 40px rgba(15,23,42,.1)'" onMouseOut="this.style.transform=''; this.style.boxShadow=''">
+                <h2 style="margin: 0 0 10px; font-size: 18px; letter-spacing: -0.01em; display: flex; align-items: center; gap: 8px;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2">
+                    <path d="M9 11l3 3L22 4"/>
+                    <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                  </svg>
+                  Шаги
+                </h2>
+                <ol style="margin: 0; padding-left: 0; list-style: none;">
+                  {entry.data.steps.map((t, i) => (
+                    <li style="display: flex; gap: 12px; margin-bottom: 12px; padding: 12px; background: rgba(255,255,255,.6); border-radius: 12px; transition: background 0.2s;" onMouseOver="this.style.background='rgba(255,255,255,.9)'" onMouseOut="this.style.background='rgba(255,255,255,.6)'">
+                      <span style="flex-shrink: 0; width: 24px; height: 24px; background: linear-gradient(135deg, #fca5a5 0%, #f87171 100%); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600;">{i + 1}</span>
+                      <span style="flex: 1; padding-top: 2px;">{t}</span>
+                    </li>
                   ))}
                 </ol>
               </div>
