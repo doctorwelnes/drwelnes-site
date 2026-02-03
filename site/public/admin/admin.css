@@ -60,11 +60,16 @@ body.drw-hide-preview .SplitPane .Pane1 {
 /* Keep styling focused on the entry editor area (avoid affecting sidebar/menu) */
 body.drw-admin .SplitPane .Pane1 {
   background: var(--drw-bg);
+  padding: 16px 20px !important;
+  max-width: 100%;
 }
 
-/* Entry editor: compact vertical rhythm (best-effort, scoped to Pane1 only) */
+/* Entry editor: compact vertical rhythm and visual sections */
 body.drw-admin .SplitPane .Pane1 :where(h1, h2, h3) {
-  margin: 8px 0 !important;
+  margin: 12px 0 8px 0 !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  color: var(--drw-fg) !important;
 }
 
 body.drw-admin .SplitPane .Pane1 :where(p) {
@@ -73,28 +78,85 @@ body.drw-admin .SplitPane .Pane1 :where(p) {
 
 /* Common field wrappers in Decap often contain 'Field' in className */
 body.drw-admin .SplitPane .Pane1 :where([class*="Field"], [class*="field"]) {
-  margin: 8px 0 !important;
+  margin: 10px 0 !important;
+  padding: 0 !important;
 }
 
+/* Labels: smaller, muted, tight */
 body.drw-admin .SplitPane .Pane1 :where(label) {
-  margin: 0 0 4px !important;
+  margin: 0 0 4px 0 !important;
   font-size: 12px !important;
   color: var(--drw-fg-muted) !important;
+  font-weight: 500 !important;
 }
 
+/* Inputs: flat, compact, consistent */
 body.drw-admin .SplitPane .Pane1 :where(input[type="text"], input[type="number"], select, textarea) {
   padding: 8px 10px !important;
   border: 1px solid var(--drw-border) !important;
   background: #fff !important;
-}
-
-body.drw-admin .SplitPane .Pane1 :where(textarea) {
-  min-height: 72px;
-}
-
-body.drw-admin .SplitPane .Pane1 :where(button) {
-  padding: 6px 10px !important;
+  font-size: var(--drw-font-size) !important;
+  line-height: 1.25 !important;
   border-radius: var(--drw-radius) !important;
+  transition: border-color 0.15s ease !important;
+}
+
+body.drw-admin .SplitPane .Pane1 :where(input[type="text"]:focus, input[type="number"]:focus, select:focus, textarea:focus) {
+  border-color: rgba(59, 130, 246, 0.5) !important;
+  outline: none !important;
+}
+
+/* Textareas: slightly taller for readability */
+body.drw-admin .SplitPane .Pane1 :where(textarea) {
+  min-height: 88px;
+  resize: vertical;
+}
+
+/* Buttons: smaller, clean */
+body.drw-admin .SplitPane .Pane1 :where(button) {
+  padding: 6px 12px !important;
+  border-radius: var(--drw-radius) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+}
+
+/* Visual grouping for common sections (time, kbru, etc.) */
+body.drw-admin .SplitPane .Pane1 :where([class*="Field"], [class*="field"]) {
+  border-bottom: 1px solid var(--drw-bg-muted) !important;
+  padding-bottom: 12px !important;
+}
+
+body.drw-admin .SplitPane .Pane1 :where([class*="Field"], [class*="field"]):last-child {
+  border-bottom: none !important;
+  padding-bottom: 0 !important;
+}
+
+/* Tighten list widgets (ingredients/steps) */
+body.drw-admin .SplitPane .Pane1 :where([class*="List"], [class*="list"]) {
+  margin: 8px 0 !important;
+}
+
+body.drw-admin .SplitPane .Pane1 :where([class*="List"] > div, [class*="list"] > div) {
+  margin: 4px 0 !important;
+}
+
+/* Object widgets (kbru, kbruBasal, kbruTotal) more compact */
+body.drw-admin .SplitPane .Pane1 :where([class*="Object"], [class*="object"]) {
+  margin: 6px 0 !important;
+}
+
+body.drw-admin .SplitPane .Pane1 :where([class*="Object"] > div, [class*="object"] > div) {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)) !important;
+  gap: 8px !important;
+  margin: 4px 0 !important;
+}
+
+/* Reduce visual noise */
+body.drw-admin .SplitPane .Pane1 :where([class*="Card"], [class*="card"], [class*="Panel"], [class*="panel"]) {
+  box-shadow: none !important;
+  border: none !important;
+  background: transparent !important;
 }
 
 /* Ensure any remaining typography tweaks do not affect the sidebar/menu */
@@ -108,5 +170,5 @@ body.drw-admin .SplitPane .Pane1 :where(hr) {
   border: 0;
   height: 1px;
   background: var(--drw-border);
-  margin: 10px 0;
+  margin: 12px 0;
 }
