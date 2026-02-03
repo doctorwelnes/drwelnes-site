@@ -248,6 +248,16 @@ body.drw-admin .SplitPane .Pane1 :where([class*="List"], [class*="list"]) {
   margin: 8px 0;
 }
 
+body.drw-admin .SplitPane .Pane1 :where([class*="List"], [class*="list"]) :where(label) {
+  margin-bottom: 4px;
+}
+
+body.drw-admin .SplitPane .Pane1 :where([class*="List"], [class*="list"]) :where(textarea) {
+  min-height: 56px;
+  padding: 8px 10px;
+  line-height: 1.4;
+}
+
 /* List widget buttons: keep controls (plus/play/move/delete) neutral and compact */
 body.drw-admin .SplitPane .Pane1 :where([class*="List"], [class*="list"]) :where(button) {
   padding: 6px 10px;
@@ -286,8 +296,8 @@ body.drw-admin .SplitPane .Pane1 :where([class*="List"], [class*="list"]) :where
 body.drw-admin .SplitPane .Pane1 :where([class*="List"] > div, [class*="list"] > div) {
   background: rgba(255, 255, 255, 0.6);
   border-radius: var(--drw-radius-small);
-  padding: 8px 12px;
-  margin: 6px 0;
+  padding: 6px 10px;
+  margin: 4px 0;
   border: 1px solid var(--drw-border);
   transition: var(--drw-transition);
 }
