@@ -11,7 +11,7 @@
 }
 
 /* Base typography */
-html, body {
+body.drw-admin {
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   font-size: var(--drw-font-size);
   color: var(--drw-fg);
@@ -19,7 +19,7 @@ html, body {
 }
 
 /* Reduce overall spacing */
-* {
+body.drw-admin * {
   box-sizing: border-box;
 }
 
@@ -29,8 +29,8 @@ html, body {
   background: var(--drw-bg);
 }
 
-/* Make preview pane narrower (~25% of total width) */
-.SplitPane .Pane2 {
+/* Preview pane sizing (used when preview is enabled via ?preview=1) */
+body.drw-admin .SplitPane .Pane2 {
   flex: 0 0 25% !important;
   width: 25% !important;
   min-width: 320px;
@@ -57,58 +57,54 @@ body.drw-hide-preview .SplitPane .Pane1 {
   padding: 0 !important;
 }
 
-/* Flatten cards/panels where Decap uses borders/shadows */
-[class*="Card"],
-[class*="card"],
-[class*="Panel"],
-[class*="panel"] {
-  border-radius: var(--drw-radius) !important;
-  box-shadow: none !important;
+/* Keep styling focused on the entry editor area (avoid affecting sidebar/menu) */
+body.drw-admin .SplitPane .Pane1 {
+  background: var(--drw-bg);
 }
 
-/* Inputs + textareas: slightly more compact */
-input[type="text"],
-input[type="number"],
-input[type="email"],
-input[type="password"],
-select,
-textarea {
+/* Entry editor: compact vertical rhythm (best-effort, scoped to Pane1 only) */
+body.drw-admin .SplitPane .Pane1 :where(h1, h2, h3) {
+  margin: 8px 0 !important;
+}
+
+body.drw-admin .SplitPane .Pane1 :where(p) {
+  margin: 6px 0 !important;
+}
+
+/* Common field wrappers in Decap often contain 'Field' in className */
+body.drw-admin .SplitPane .Pane1 :where([class*="Field"], [class*="field"]) {
+  margin: 8px 0 !important;
+}
+
+body.drw-admin .SplitPane .Pane1 :where(label) {
+  margin: 0 0 4px !important;
+  font-size: 12px !important;
+  color: var(--drw-fg-muted) !important;
+}
+
+body.drw-admin .SplitPane .Pane1 :where(input[type="text"], input[type="number"], select, textarea) {
+  padding: 8px 10px !important;
+  border: 1px solid var(--drw-border) !important;
+  background: #fff !important;
+}
+
+body.drw-admin .SplitPane .Pane1 :where(textarea) {
+  min-height: 72px;
+}
+
+body.drw-admin .SplitPane .Pane1 :where(button) {
+  padding: 6px 10px !important;
+  border-radius: var(--drw-radius) !important;
+}
+
+/* Ensure any remaining typography tweaks do not affect the sidebar/menu */
+body.drw-admin .SplitPane .Pane1 :where(input[type="text"], input[type="number"], input[type="email"], input[type="password"], select, textarea) {
   font-size: var(--drw-font-size) !important;
   line-height: 1.25 !important;
   border-radius: var(--drw-radius) !important;
 }
 
-/* Tighten label spacing (best-effort; Decap uses inline styles + generated classes) */
-label {
-  margin-bottom: 4px !important;
-}
-
-/* Make list widgets less tall by default */
-textarea {
-  min-height: 90px;
-}
-
-/* Buttons slightly smaller */
-button {
-  font-size: 13px !important;
-}
-
-/* Reduce generic vertical rhythm */
-h1, h2, h3 {
-  margin: 10px 0 !important;
-}
-
-p {
-  margin: 8px 0 !important;
-}
-
-/* Tighten common container paddings */
-main, section, article {
-  padding: 0 !important;
-}
-
-/* Make separators softer */
-hr {
+body.drw-admin .SplitPane .Pane1 :where(hr) {
   border: 0;
   height: 1px;
   background: var(--drw-border);
