@@ -167,6 +167,41 @@ body.drw-admin .SplitPane .Pane1 :where([class*="List"], [class*="list"]) {
   margin: 8px 0;
 }
 
+/* List widget buttons: keep controls (plus/play/move/delete) neutral and compact */
+body.drw-admin .SplitPane .Pane1 :where([class*="List"], [class*="list"]) :where(button) {
+  padding: 6px 10px;
+  border-radius: var(--drw-radius-small);
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--drw-fg);
+  border: 1px solid var(--drw-border);
+  box-shadow: none;
+  transform: none;
+}
+
+body.drw-admin .SplitPane .Pane1 :where([class*="List"], [class*="list"]) :where(button:hover) {
+  background: rgba(255, 255, 255, 0.98);
+  border-color: var(--drw-border-strong);
+}
+
+body.drw-admin .SplitPane .Pane1 :where([class*="List"], [class*="list"]) :where(button:active) {
+  transform: none;
+}
+
+/* If list controls are icon-only, make them square and subtle */
+body.drw-admin .SplitPane .Pane1 :where([class*="List"], [class*="list"]) :where(button[aria-label], button[title]) {
+  padding: 6px;
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body.drw-admin .SplitPane .Pane1 :where([class*="List"], [class*="list"]) :where(svg) {
+  width: 16px;
+  height: 16px;
+}
+
 body.drw-admin .SplitPane .Pane1 :where([class*="List"] > div, [class*="list"] > div) {
   background: rgba(255, 255, 255, 0.6);
   border-radius: var(--drw-radius-small);
