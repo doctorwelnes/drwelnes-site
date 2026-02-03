@@ -37,7 +37,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd site
-          npm ci
+          npm ci --prefer-offline --no-audit --fund=false
 
       - name: Build Astro site
         run: |
