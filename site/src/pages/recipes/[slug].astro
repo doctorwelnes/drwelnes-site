@@ -77,7 +77,7 @@ const { entry } = Astro.props;
               style="display:block; width: 100%; height: auto; max-height: 75vh; background: #000; position: relative; z-index: 1;"
               src={entry.data.videoFile}
               poster={entry.data.videoPoster}
-              data-video-resume-key={`recipe:${entry.slug}`}
+              data-video-resume-key={"recipe:" + entry.slug}
             />
             
             <!-- Custom controls -->
