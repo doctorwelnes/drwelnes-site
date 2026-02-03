@@ -151,7 +151,6 @@ const recipes = defineCollection({
     videoPoster: z.preprocess(normalizeUploadPath, z.string().optional()),
     videoUrl: z.preprocess(normalizeVideoUrl, z.string().url().optional()),
     tags: z.array(z.string()).optional(),
-    publishedAt: z.preprocess(normalizeOptionalDate, z.coerce.date().optional()),
   }),
 });
 
