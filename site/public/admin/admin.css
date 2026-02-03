@@ -1,9 +1,21 @@
 /* Decap CMS minimal UI tweaks (admin-only) */
 
+:root {
+  --drw-font-size: 13px;
+  --drw-radius: 10px;
+  --drw-border: rgba(15, 23, 42, 0.10);
+  --drw-bg: #ffffff;
+  --drw-bg-muted: rgba(2, 6, 23, 0.03);
+  --drw-fg: #0f172a;
+  --drw-fg-muted: rgba(15, 23, 42, 0.70);
+}
+
 /* Base typography */
 html, body {
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-size: 14px;
+  font-size: var(--drw-font-size);
+  color: var(--drw-fg);
+  background: var(--drw-bg);
 }
 
 /* Reduce overall spacing */
@@ -14,7 +26,7 @@ html, body {
 /* The admin app is rendered inside a split view (editor + preview).
    React SplitPane uses these class names in Decap builds. */
 .SplitPane {
-  background: #ffffff;
+  background: var(--drw-bg);
 }
 
 /* Make preview pane narrower (~25% of total width) */
@@ -22,6 +34,15 @@ html, body {
   flex: 0 0 25% !important;
   width: 25% !important;
   min-width: 320px;
+}
+
+/* Optionally hide preview pane (set by body class) */
+body.drw-hide-preview .SplitPane .Pane2 {
+  display: none !important;
+}
+
+body.drw-hide-preview .SplitPane .Pane1 {
+  width: 100% !important;
 }
 
 /* Give editor more room */
@@ -36,6 +57,15 @@ html, body {
   padding: 0 !important;
 }
 
+/* Flatten cards/panels where Decap uses borders/shadows */
+[class*="Card"],
+[class*="card"],
+[class*="Panel"],
+[class*="panel"] {
+  border-radius: var(--drw-radius) !important;
+  box-shadow: none !important;
+}
+
 /* Inputs + textareas: slightly more compact */
 input[type="text"],
 input[type="number"],
@@ -43,8 +73,9 @@ input[type="email"],
 input[type="password"],
 select,
 textarea {
-  font-size: 13px !important;
+  font-size: var(--drw-font-size) !important;
   line-height: 1.25 !important;
+  border-radius: var(--drw-radius) !important;
 }
 
 /* Tighten label spacing (best-effort; Decap uses inline styles + generated classes) */
@@ -60,4 +91,26 @@ textarea {
 /* Buttons slightly smaller */
 button {
   font-size: 13px !important;
+}
+
+/* Reduce generic vertical rhythm */
+h1, h2, h3 {
+  margin: 10px 0 !important;
+}
+
+p {
+  margin: 8px 0 !important;
+}
+
+/* Tighten common container paddings */
+main, section, article {
+  padding: 0 !important;
+}
+
+/* Make separators softer */
+hr {
+  border: 0;
+  height: 1px;
+  background: var(--drw-border);
+  margin: 10px 0;
 }

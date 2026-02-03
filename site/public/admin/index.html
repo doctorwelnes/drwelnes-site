@@ -9,6 +9,15 @@
   <body>
     <script>
       (function () {
+        (function () {
+          try {
+            var qs = new URLSearchParams(window.location.search);
+            if (qs.get("preview") === "0") {
+              document.body.classList.add("drw-hide-preview");
+            }
+          } catch (e) {}
+        })();
+
         var ORIGIN = window.location.origin;
         var LOCAL_AUTH = ORIGIN + "/api/auth";
 
