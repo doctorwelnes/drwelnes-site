@@ -19,7 +19,7 @@ const { entry } = Astro.props;
   <body>
     <main style="min-height: 100vh; background: radial-gradient(1200px 600px at 20% -10%, #fef3c7 0%, rgba(254,243,199,0) 55%), radial-gradient(900px 520px at 90% 0%, #fecaca 0%, rgba(254,202,202,0) 55%), #ffffff; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;">
       <div style="max-width: 1200px; margin: 0 auto; padding: 28px 20px 36px; display: grid; grid-template-columns: 1fr 320px; gap: 24px; align-items: start;">
-        <header style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px;">
+        <header style="grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px;">
           <div style="display: flex; align-items: center; gap: 10px;">
             <img src="/logo.png" alt="Dr.Welnes" width="34" height="34" style="display:block; width:34px; height:34px; border-radius: 10px; object-fit: cover;" />
             <div style="font-weight: 700; letter-spacing: -0.01em;">Dr.Welnes</div>
@@ -32,246 +32,208 @@ const { entry } = Astro.props;
           </nav>
         </header>
 
-        <section style="border: 1px solid rgba(229,231,235,.9); background: rgba(255,255,255,.8); backdrop-filter: blur(10px); border-radius: 18px; padding: 22px; box-shadow: 0 10px 30px rgba(15,23,42,.08);">
-          <h1 style="margin: 0 0 8px; font-size: 36px; line-height: 1.1; letter-spacing: -0.03em; font-weight: 700; color: #1f2937; text-shadow: 0 1px 2px rgba(0,0,0,0.04);">{entry.data.title}</h1>
-          {entry.data.description && (
-            <p style="margin: 0; color: #6b7280; font-size: 16px; line-height: 1.5;">{entry.data.description}</p>
-          )}
-
-          {(entry.data.prepTimeMinutes !== undefined || entry.data.cookTimeMinutes !== undefined) && (
-            <div style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px;">
-              {entry.data.prepTimeMinutes !== undefined && (
-                <div style="padding: 6px 10px; border-radius: 999px; background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%); border: 1px solid rgba(251,191,36,.2); font-size: 12px; color: #92400e; display: flex; align-items: center; gap: 6px; transition: transform 0.2s, box-shadow 0.2s;">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-                  </svg>
-                  Подготовка: {entry.data.prepTimeMinutes} мин
-                </div>
-              )}
-              {entry.data.cookTimeMinutes !== undefined && (
-                <div style="padding: 6px 10px; border-radius: 999px; background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%); border: 1px solid rgba(239,68,68,.2); font-size: 12px; color: #991b1b; display: flex; align-items: center; gap: 6px; transition: transform 0.2s, box-shadow 0.2s;">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M2 12h20M2 12h20M2 12l2-6v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6l2 6"/>
-                    <path d="M12 2v10l4-4"/>
-                  </svg>
-                  Приготовление: {entry.data.cookTimeMinutes} мин
-                </div>
-              )}
-            </div>
-          )}
-        </section>
-
-      {entry.data.videoFile ? (
-        <div style="margin: 16px 0;">
-          <div data-video-shell style="border-radius: 12px; overflow: hidden; background: #000; box-shadow: 0 10px 30px rgba(15,23,42,.10); position: relative; transition: transform 0.3s, box-shadow 0.3s;">
-            <div
-              data-video-backdrop
-              aria-hidden="true"
-              style="display:none; position:absolute; inset:0; background-position:center; background-size:cover; filter: blur(18px); transform: scale(1.08); opacity:.55;"
-            ></div>
-            <video
-              controls={false}
-              playsinline
-              preload="metadata"
-              controlslist="nodownload"
-              style="display:block; width: 100%; height: auto; max-height: 75vh; background: #000; position: relative; z-index: 1;"
-              src={entry.data.videoFile}
-              poster={entry.data.videoPoster}
-              data-video-resume-key={"recipe:" + entry.slug}
-            />
-            
-            <!-- Custom controls -->
-            <div style="position: absolute; bottom: 0; left: 0; right: 0; z-index: 3; pointer-events: auto; background: linear-gradient(transparent, rgba(0,0,0,0.7)); padding: 12px; display: flex; align-items: center; gap: 10px;">
-              <button
-                type="button"
-                data-video-play-pause
-                style="background: none; border: none; color: white; cursor: pointer; font-size: 18px; padding: 4px; transition: transform 0.2s;"
-              >
-                ▶
-              </button>
-              
-              <div style="flex: 1; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; position: relative; cursor: pointer;" data-video-progress>
-                <div data-video-progress-bar style="height: 100%; background: #ef4444; border-radius: 2px; width: 0%; transition: width 0.1s;"></div>
-              </div>
-              
-              <span data-video-time style="color: white; font-size: 12px; min-width: 80px;">0:00 / 0:00</span>
-              
-              <button
-                type="button"
-                data-video-mute
-                style="background: none; border: none; color: white; cursor: pointer; font-size: 16px; padding: 4px;"
-              >
-                🔊
-              </button>
-              
-              <select
-                data-video-speed
-                style="background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 2px 4px; border-radius: 4px; font-size: 12px; cursor: pointer;"
-              >
-                <option value="0.5">0.5x</option>
-                <option value="0.75">0.75x</option>
-                <option value="1" selected>1x</option>
-                <option value="1.25">1.25x</option>
-                <option value="1.5">1.5x</option>
-                <option value="2">2x</option>
-              </select>
-              
-              <button
-                type="button"
-                data-video-fullscreen
-                style="background: none; border: none; color: white; cursor: pointer; font-size: 16px; padding: 4px;"
-              >
-                ⛶
-              </button>
-            </div>
-          </div>
-
-          </div>
-        </div>
-      ) : (
-        entry.data.videoUrl && (
-          <div style="margin: 16px 0;">
-            <iframe
-              width="100%"
-              height="420"
-              src={toEmbedUrl(entry.data.videoUrl)}
-              title={entry.data.title}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowfullscreen
-              style="border: 0; border-radius: 12px;"
-            />
-          </div>
-        )
-      )}
-
-        <!-- Правая колонка: КБЖУ и Ингредиенты -->
-        <aside style="display: flex; flex-direction: column; gap: 12px;">
-          {entry.data.kbru && (
-            <div style="background: linear-gradient(135deg, rgba(255,255,255,.9) 0%, rgba(254,240,138,.3) 100%); border: 1px solid rgba(245,158,11,.15); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06); transition: transform 0.2s, box-shadow 0.2s;">
-              <h3 style="margin: 0 0 10px; font-size: 16px; letter-spacing: -0.01em; display: flex; align-items: center; gap: 8px;">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
-                  <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
-                </svg>
-                КБЖУ
-              </h3>
-              <div style="background: rgba(255,255,255,.85); border: 1px solid rgba(229,231,235,.9); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06);">
-                <h2 style="margin: 0 0 10px; font-size: 18px; letter-spacing: -0.01em;">КБЖУ (на 100 г)</h2>
-                <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px;">
-                  <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
-                    <div style="font-size: 12px; color: #6b7280;">Ккал</div>
-                    <div style="font-weight: 700;">{entry.data.kbru.calories ?? "—"}</div>
-                  </div>
-                  <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
-                    <div style="font-size: 12px; color: #6b7280;">Белки</div>
-                    <div style="font-weight: 700;">{entry.data.kbru.protein ?? "—"}</div>
-                  </div>
-                  <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
-                    <div style="font-size: 12px; color: #6b7280;">Жиры</div>
-                    <div style="font-weight: 700;">{entry.data.kbru.fat ?? "—"}</div>
-                  </div>
-                  <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
-                    <div style="font-size: 12px; color: #6b7280;">Углеводы</div>
-                    <div style="font-weight: 700;">{entry.data.kbru.carbs ?? "—"}</div>
-                  </div>
-                </div>
-              </div>
+        <div style="display: flex; flex-direction: column; gap: 16px; min-width: 0;">
+          <section style="border: 1px solid rgba(229,231,235,.9); background: rgba(255,255,255,.8); backdrop-filter: blur(10px); border-radius: 18px; padding: 22px; box-shadow: 0 10px 30px rgba(15,23,42,.08);">
+            <h1 style="margin: 0 0 8px; font-size: 36px; line-height: 1.1; letter-spacing: -0.03em; font-weight: 700; color: #1f2937; text-shadow: 0 1px 2px rgba(0,0,0,0.04);">{entry.data.title}</h1>
+            {entry.data.description && (
+              <p style="margin: 0; color: #6b7280; font-size: 16px; line-height: 1.5;">{entry.data.description}</p>
             )}
 
-            {entry.data.ingredients && entry.data.ingredients.length > 0 && (
-              <div style="background: linear-gradient(135deg, rgba(255,255,255,.9) 0%, rgba(254,243,199,.3) 100%); border: 1px solid rgba(251,191,36,.15); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06); transition: transform 0.2s, box-shadow 0.2s;">
-                <h3 style="margin: 0 0 10px; font-size: 16px; letter-spacing: -0.01em; display: flex; align-items: center; gap: 8px;">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
-                    <path d="M20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/>
-                  </svg>
-                  Ингредиенты
-                </h3>
-              <div style="background: rgba(255,255,255,.85); border: 1px solid rgba(229,231,235,.9); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06);">
-                <h2 style="margin: 0 0 10px; font-size: 18px; letter-spacing: -0.01em;">КБЖУ (на блюдо)</h2>
-                <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px;">
-                  <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
-                    <div style="font-size: 12px; color: #6b7280;">Ккал</div>
-                    <div style="font-weight: 700;">{entry.data.kbruTotal.calories ?? "—"}</div>
+            {(entry.data.prepTimeMinutes !== undefined || entry.data.cookTimeMinutes !== undefined) && (
+              <div style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px;">
+                {entry.data.prepTimeMinutes !== undefined && (
+                  <div style="padding: 6px 10px; border-radius: 999px; background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%); border: 1px solid rgba(251,191,36,.2); font-size: 12px; color: #92400e; display: flex; align-items: center; gap: 6px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                    </svg>
+                    Подготовка: {entry.data.prepTimeMinutes} мин
                   </div>
-                  <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
-                    <div style="font-size: 12px; color: #6b7280;">Белки</div>
-                    <div style="font-weight: 700;">{entry.data.kbruTotal.protein ?? "—"}</div>
+                )}
+                {entry.data.cookTimeMinutes !== undefined && (
+                  <div style="padding: 6px 10px; border-radius: 999px; background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%); border: 1px solid rgba(239,68,68,.2); font-size: 12px; color: #991b1b; display: flex; align-items: center; gap: 6px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M2 12h20M2 12l2-6v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6l2 6" />
+                      <path d="M12 2v10l4-4" />
+                    </svg>
+                    Приготовление: {entry.data.cookTimeMinutes} мин
                   </div>
-                  <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
-                    <div style="font-size: 12px; color: #6b7280;">Жиры</div>
-                    <div style="font-weight: 700;">{entry.data.kbruTotal.fat ?? "—"}</div>
-                  </div>
-                  <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
-                    <div style="font-size: 12px; color: #6b7280;">Углеводы</div>
-                    <div style="font-weight: 700;">{entry.data.kbruTotal.carbs ?? "—"}</div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {entry.data.kbruBasal && (
-              <div style="background: rgba(255,255,255,.85); border: 1px solid rgba(229,231,235,.9); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06);">
-                <h2 style="margin: 0 0 10px; font-size: 18px; letter-spacing: -0.01em;">КБЖУ (100 г блюда на основной обмен)</h2>
-                <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px;">
-                  <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
-                    <div style="font-size: 12px; color: #6b7280;">Ккал</div>
-                    <div style="font-weight: 700;">{entry.data.kbruBasal.calories ?? "—"}</div>
-                  </div>
-                  <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
-                    <div style="font-size: 12px; color: #6b7280;">Белки</div>
-                    <div style="font-weight: 700;">{entry.data.kbruBasal.protein ?? "—"}</div>
-                  </div>
-                  <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
-                    <div style="font-size: 12px; color: #6b7280;">Жиры</div>
-                    <div style="font-weight: 700;">{entry.data.kbruBasal.fat ?? "—"}</div>
-                  </div>
-                  <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
-                    <div style="font-size: 12px; color: #6b7280;">Углеводы</div>
-                    <div style="font-weight: 700;">{entry.data.kbruBasal.carbs ?? "—"}</div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {entry.data.ingredients && entry.data.ingredients.length > 0 && (
-              <div style="background: linear-gradient(135deg, rgba(255,255,255,.9) 0%, rgba(254,243,199,.3) 100%); border: 1px solid rgba(251,191,36,.15); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06); transition: transform 0.2s, box-shadow 0.2s;">
-                <h2 style="margin: 0 0 10px; font-size: 18px; letter-spacing: -0.01em; display: flex; align-items: center; gap: 8px;">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
-                    <path d="M20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/>
-                  </svg>
-                  Ингредиенты
-                </h2>
-                <ul style="margin: 0; padding-left: 18px;">
-                  {entry.data.ingredients.map((it) => (
-                    <li>
-                      <span style="font-weight: 600;">{it.name}</span>
-                      {it.amount ? <span style="color:#6b7280;"> — {it.amount}</span> : null}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {entry.data.steps && entry.data.steps.length > 0 && (
-              <div style="background: linear-gradient(135deg, rgba(255,255,255,.9) 0%, rgba(254,202,202,.3) 100%); border: 1px solid rgba(239,68,68,.15); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06); transition: transform 0.2s, box-shadow 0.2s;">
-                <h2 style="margin: 0 0 10px; font-size: 18px; letter-spacing: -0.01em; display: flex; align-items: center; gap: 8px;">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2">
-                    <path d="M9 11l3 3L22 4"/>
-                    <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
-                  </svg>
-                  Шаги
-                </h2>
-                <ol style="margin: 0; padding-left: 0; list-style: none;">
-                  {entry.data.steps.map((t, i) => (
-                    <li style="display: flex; gap: 12px; margin-bottom: 12px; padding: 12px; background: rgba(255,255,255,.6); border-radius: 12px; transition: background 0.2s;">
-                      <span style="flex-shrink: 0; width: 24px; height: 24px; background: linear-gradient(135deg, #fca5a5 0%, #f87171 100%); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600;">{i + 1}</span>
-                      <span style="flex: 1; padding-top: 2px;">{t}</span>
-                    </li>
-                  ))}
-                </ol>
+                )}
               </div>
             )}
           </section>
-        )}
+
+          {entry.data.videoFile ? (
+            <div style="margin: 0;">
+              <div data-video-shell style="border-radius: 12px; overflow: hidden; background: #000; box-shadow: 0 10px 30px rgba(15,23,42,.10); position: relative;">
+                <div
+                  data-video-backdrop
+                  aria-hidden="true"
+                  style="display:none; position:absolute; inset:0; background-position:center; background-size:cover; filter: blur(18px); transform: scale(1.08); opacity:.55;"
+                ></div>
+                <video
+                  controls={false}
+                  playsinline
+                  preload="metadata"
+                  controlslist="nodownload"
+                  style="display:block; width: 100%; height: auto; max-height: 75vh; background: #000; position: relative; z-index: 1;"
+                  src={entry.data.videoFile}
+                  poster={entry.data.videoPoster}
+                  data-video-resume-key={"recipe:" + entry.slug}
+                />
+
+                <div style="position: absolute; bottom: 0; left: 0; right: 0; z-index: 3; pointer-events: auto; background: linear-gradient(transparent, rgba(0,0,0,0.7)); padding: 12px; display: flex; align-items: center; gap: 10px;">
+                  <button type="button" data-video-play-pause style="background: none; border: none; color: white; cursor: pointer; font-size: 18px; padding: 4px;">▶</button>
+                  <div style="flex: 1; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; position: relative; cursor: pointer;" data-video-progress>
+                    <div data-video-progress-bar style="height: 100%; background: #ef4444; border-radius: 2px; width: 0%; transition: width 0.1s;"></div>
+                  </div>
+                  <span data-video-time style="color: white; font-size: 12px; min-width: 80px;">0:00 / 0:00</span>
+                  <button type="button" data-video-mute style="background: none; border: none; color: white; cursor: pointer; font-size: 16px; padding: 4px;">🔊</button>
+                  <select data-video-speed style="background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 2px 4px; border-radius: 4px; font-size: 12px; cursor: pointer;">
+                    <option value="0.5">0.5x</option>
+                    <option value="0.75">0.75x</option>
+                    <option value="1" selected>1x</option>
+                    <option value="1.25">1.25x</option>
+                    <option value="1.5">1.5x</option>
+                    <option value="2">2x</option>
+                  </select>
+                  <button type="button" data-video-fullscreen style="background: none; border: none; color: white; cursor: pointer; font-size: 16px; padding: 4px;">⛶</button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            entry.data.videoUrl && (
+              <div style="margin: 0;">
+                <iframe
+                  width="100%"
+                  height="420"
+                  src={toEmbedUrl(entry.data.videoUrl)}
+                  title={entry.data.title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen
+                  style="border: 0; border-radius: 12px; box-shadow: 0 10px 30px rgba(15,23,42,.10);"
+                />
+              </div>
+            )
+          )}
+
+          {entry.data.steps && entry.data.steps.length > 0 && (
+            <section style="background: linear-gradient(135deg, rgba(255,255,255,.9) 0%, rgba(254,202,202,.3) 100%); border: 1px solid rgba(239,68,68,.15); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06);">
+              <h2 style="margin: 0 0 10px; font-size: 18px; letter-spacing: -0.01em; display: flex; align-items: center; gap: 8px;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2">
+                  <path d="M9 11l3 3L22 4" />
+                  <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
+                </svg>
+                Шаги
+              </h2>
+              <ol style="margin: 0; padding-left: 0; list-style: none;">
+                {entry.data.steps.map((t, i) => (
+                  <li style="display: flex; gap: 12px; margin-bottom: 12px; padding: 12px; background: rgba(255,255,255,.6); border-radius: 12px;">
+                    <span style="flex-shrink: 0; width: 24px; height: 24px; background: linear-gradient(135deg, #fca5a5 0%, #f87171 100%); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600;">{i + 1}</span>
+                    <span style="flex: 1; padding-top: 2px;">{t}</span>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          )}
+        </div>
+
+        <aside style="display: flex; flex-direction: column; gap: 12px; min-width: 0;">
+          {entry.data.kbru && (
+            <section style="background: linear-gradient(135deg, rgba(255,255,255,.9) 0%, rgba(254,240,138,.3) 100%); border: 1px solid rgba(245,158,11,.15); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06);">
+              <h2 style="margin: 0 0 10px; font-size: 16px; letter-spacing: -0.01em; display: flex; align-items: center; gap: 8px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
+                  <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" />
+                </svg>
+                КБЖУ (на 100 г)
+              </h2>
+              <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;">
+                <div style="padding: 10px 12px; border-radius: 14px; background: rgba(255,255,255,.75); border: 1px solid rgba(229,231,235,.8);">
+                  <div style="font-size: 12px; color: #6b7280;">Ккал</div>
+                  <div style="font-weight: 700;">{entry.data.kbru.calories ?? "—"}</div>
+                </div>
+                <div style="padding: 10px 12px; border-radius: 14px; background: rgba(255,255,255,.75); border: 1px solid rgba(229,231,235,.8);">
+                  <div style="font-size: 12px; color: #6b7280;">Белки</div>
+                  <div style="font-weight: 700;">{entry.data.kbru.protein ?? "—"}</div>
+                </div>
+                <div style="padding: 10px 12px; border-radius: 14px; background: rgba(255,255,255,.75); border: 1px solid rgba(229,231,235,.8);">
+                  <div style="font-size: 12px; color: #6b7280;">Жиры</div>
+                  <div style="font-weight: 700;">{entry.data.kbru.fat ?? "—"}</div>
+                </div>
+                <div style="padding: 10px 12px; border-radius: 14px; background: rgba(255,255,255,.75); border: 1px solid rgba(229,231,235,.8);">
+                  <div style="font-size: 12px; color: #6b7280;">Углеводы</div>
+                  <div style="font-weight: 700;">{entry.data.kbru.carbs ?? "—"}</div>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {entry.data.kbruTotal && (
+            <section style="background: rgba(255,255,255,.85); border: 1px solid rgba(229,231,235,.9); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06);">
+              <h2 style="margin: 0 0 10px; font-size: 16px; letter-spacing: -0.01em;">КБЖУ (на блюдо)</h2>
+              <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;">
+                <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
+                  <div style="font-size: 12px; color: #6b7280;">Ккал</div>
+                  <div style="font-weight: 700;">{entry.data.kbruTotal.calories ?? "—"}</div>
+                </div>
+                <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
+                  <div style="font-size: 12px; color: #6b7280;">Белки</div>
+                  <div style="font-weight: 700;">{entry.data.kbruTotal.protein ?? "—"}</div>
+                </div>
+                <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
+                  <div style="font-size: 12px; color: #6b7280;">Жиры</div>
+                  <div style="font-weight: 700;">{entry.data.kbruTotal.fat ?? "—"}</div>
+                </div>
+                <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
+                  <div style="font-size: 12px; color: #6b7280;">Углеводы</div>
+                  <div style="font-weight: 700;">{entry.data.kbruTotal.carbs ?? "—"}</div>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {entry.data.kbruBasal && (
+            <section style="background: rgba(255,255,255,.85); border: 1px solid rgba(229,231,235,.9); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06);">
+              <h2 style="margin: 0 0 10px; font-size: 16px; letter-spacing: -0.01em;">КБЖУ (100 г блюда на основной обмен)</h2>
+              <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;">
+                <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
+                  <div style="font-size: 12px; color: #6b7280;">Ккал</div>
+                  <div style="font-weight: 700;">{entry.data.kbruBasal.calories ?? "—"}</div>
+                </div>
+                <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
+                  <div style="font-size: 12px; color: #6b7280;">Белки</div>
+                  <div style="font-weight: 700;">{entry.data.kbruBasal.protein ?? "—"}</div>
+                </div>
+                <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
+                  <div style="font-size: 12px; color: #6b7280;">Жиры</div>
+                  <div style="font-weight: 700;">{entry.data.kbruBasal.fat ?? "—"}</div>
+                </div>
+                <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
+                  <div style="font-size: 12px; color: #6b7280;">Углеводы</div>
+                  <div style="font-weight: 700;">{entry.data.kbruBasal.carbs ?? "—"}</div>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {entry.data.ingredients && entry.data.ingredients.length > 0 && (
+            <section style="background: linear-gradient(135deg, rgba(255,255,255,.9) 0%, rgba(254,243,199,.3) 100%); border: 1px solid rgba(251,191,36,.15); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06);">
+              <h2 style="margin: 0 0 10px; font-size: 16px; letter-spacing: -0.01em; display: flex; align-items: center; gap: 8px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
+                  <path d="M20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z" />
+                </svg>
+                Ингредиенты
+              </h2>
+              <ul style="margin: 0; padding-left: 18px;">
+                {entry.data.ingredients.map((it) => (
+                  <li>
+                    <span style="font-weight: 600;">{it.name}</span>
+                    {it.amount ? <span style="color:#6b7280;"> — {it.amount}</span> : null}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+        </aside>
       </div>
     </main>
 
