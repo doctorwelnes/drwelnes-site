@@ -46,6 +46,26 @@ body.drw-admin .SplitPane .Pane1 :where(.nc-entryEditor, [class*="EntryEditor"],
   margin: 0 auto;
 }
 
+/* Multi-column compact layout for simple fields in the entry editor */
+body.drw-admin .SplitPane .Pane1 :where(.nc-entryEditor, [class*="EntryEditor"], [class*="entryEditor"], form)
+  :where([class*="Field"], [class*="field"]) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  column-gap: 16px;
+  row-gap: 12px;
+}
+
+/* Keep long/complex widgets full-width */
+body.drw-admin .SplitPane .Pane1 :where(.nc-entryEditor, [class*="EntryEditor"], [class*="entryEditor"], form)
+  :where([class*="Field"], [class*="field"]):has(:where(textarea, [class*="List"], [class*="list"], [class*="Object"], [class*="object"], [class*="Markdown"], [class*="markdown"])) {
+  grid-template-columns: 1fr;
+}
+
+/* Also keep explicit list/object wrappers from being squeezed */
+body.drw-admin .SplitPane .Pane1 :where([class*="List"], [class*="list"], [class*="Object"], [class*="object"]) {
+  width: 100%;
+}
+
 /* Compact fields grid (KBRU/time-like groups): best-effort for different Decap DOMs */
 body.drw-admin .SplitPane .Pane1 :where(.nc-entryEditor, [class*="EntryEditor"], [class*="entryEditor"], form)
   :where([class*="Object"], [class*="object"]) {
