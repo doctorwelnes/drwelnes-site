@@ -6,57 +6,284 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Калькуляторы</title>
+    <style>
+      :root {
+        --bg1: radial-gradient(1200px 600px at 20% -10%, #dbeafe 0%, rgba(219,234,254,0) 55%),
+          radial-gradient(900px 520px at 90% 0%, #fce7f3 0%, rgba(252,231,243,0) 55%),
+          #ffffff;
+        --ink: #111827;
+        --muted: #4b5563;
+        --stroke: rgba(229,231,235,.9);
+        --surface: rgba(255,255,255,.8);
+        --surface-strong: rgba(255,255,255,.85);
+        --shadow: 0 10px 30px rgba(15,23,42,.08);
+        --shadow-soft: 0 10px 30px rgba(15,23,42,.06);
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+      }
+
+      body {
+        color: var(--ink);
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      }
+
+      .page {
+        min-height: 100vh;
+        background: var(--bg1);
+      }
+
+      .container {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 28px 20px 36px;
+      }
+
+      .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .brand-logo {
+        display: block;
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        object-fit: cover;
+      }
+
+      .brand-name {
+        font-weight: 700;
+        letter-spacing: -0.01em;
+      }
+
+      .nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .nav-link {
+        text-decoration: none;
+        color: var(--ink);
+        padding: 8px 10px;
+        border-radius: 10px;
+      }
+
+      .card {
+        border: 1px solid var(--stroke);
+        background: var(--surface);
+        backdrop-filter: blur(10px);
+        border-radius: 18px;
+        box-shadow: var(--shadow-soft);
+        padding: 16px;
+      }
+
+      .card--hero {
+        padding: 22px;
+        box-shadow: var(--shadow);
+      }
+
+      .hero-title {
+        margin: 0 0 10px;
+        font-size: 28px;
+        line-height: 1.15;
+        letter-spacing: -0.03em;
+      }
+
+      .hero-subtitle {
+        margin: 0;
+        color: var(--muted);
+        font-size: 16px;
+        line-height: 1.55;
+        max-width: 64ch;
+      }
+
+      .tabs {
+        margin-top: 12px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .tab {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-radius: 12px;
+        text-decoration: none;
+        background: #ffffff;
+        color: var(--ink);
+        border: 1px solid #e5e7eb;
+        font-weight: 600;
+      }
+
+      .tab.is-active {
+        background: var(--ink);
+        color: #ffffff;
+        border-color: var(--ink);
+      }
+
+      .panel {
+        margin-top: 12px;
+      }
+
+      .panel.panel--first {
+        margin-top: 16px;
+      }
+
+      .panel-title {
+        margin: 0 0 12px;
+        font-size: 18px;
+      }
+
+      .panel-hint {
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      .form {
+        display: grid;
+        gap: 8px;
+      }
+
+      .form--420 {
+        max-width: 420px;
+      }
+
+      .form--520 {
+        max-width: 520px;
+      }
+
+      .form--560 {
+        max-width: 560px;
+      }
+
+      .form--720 {
+        max-width: 720px;
+      }
+
+      .grid {
+        display: grid;
+        gap: 8px;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      }
+
+      .input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        font: inherit;
+      }
+
+      .btn {
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid var(--ink);
+        background: var(--ink);
+        color: #ffffff;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .btn.btn--narrow {
+        max-width: 220px;
+      }
+
+      .output {
+        color: var(--ink);
+      }
+
+      .output-stack {
+        margin-top: 6px;
+        display: grid;
+        gap: 8px;
+      }
+
+      .output-list {
+        display: grid;
+        gap: 6px;
+      }
+
+      .is-hidden {
+        display: none;
+      }
+    </style>
   </head>
   <body>
-    <main style="min-height: 100vh; background: radial-gradient(1200px 600px at 20% -10%, #dbeafe 0%, rgba(219,234,254,0) 55%), radial-gradient(900px 520px at 90% 0%, #fce7f3 0%, rgba(252,231,243,0) 55%), #ffffff; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;">
-      <div style="max-width: 980px; margin: 0 auto; padding: 28px 20px 36px;">
-        <header style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px;">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <img src="/logo.png" alt="Dr.Welnes" width="34" height="34" style="display:block; width:34px; height:34px; border-radius: 10px; object-fit: cover;" />
-            <div style="font-weight: 700; letter-spacing: -0.01em;">Dr.Welnes</div>
+    <main class="page">
+      <div class="container">
+        <header class="header">
+          <div class="brand">
+            <img src="/logo.png" alt="Dr.Welnes" width="34" height="34" class="brand-logo" />
+            <div class="brand-name">Dr.Welnes</div>
           </div>
-          <nav style="display: flex; flex-wrap: wrap; gap: 10px;">
-            <a href="/recipes" style="text-decoration: none; color: #111827; padding: 8px 10px; border-radius: 10px;">Рецепты</a>
-            <a href="/exercises" style="text-decoration: none; color: #111827; padding: 8px 10px; border-radius: 10px;">Упражнения</a>
-            <a href="/calculators" style="text-decoration: none; color: #111827; padding: 8px 10px; border-radius: 10px;">Калькуляторы</a>
+          <nav class="nav">
+            <a href="/recipes" class="nav-link">Рецепты</a>
+            <a href="/exercises" class="nav-link">Упражнения</a>
+            <a href="/calculators" class="nav-link">Калькуляторы</a>
           </nav>
         </header>
 
-        <section style="border: 1px solid rgba(229,231,235,.9); background: rgba(255,255,255,.8); backdrop-filter: blur(10px); border-radius: 18px; padding: 22px; box-shadow: 0 10px 30px rgba(15,23,42,.08);">
-          <h1 style="margin: 0 0 10px; font-size: 28px; line-height: 1.15; letter-spacing: -0.03em;">Калькуляторы</h1>
-          <p style="margin: 0; color: #4b5563; font-size: 16px; line-height: 1.55; max-width: 64ch;">ИМТ, TDEE и оценка 1RM — быстро и без регистрации.</p>
+        <section class="card card--hero">
+          <h1 class="hero-title">Калькуляторы</h1>
+          <p class="hero-subtitle">ИМТ, TDEE и оценка 1RM — быстро и без регистрации.</p>
         </section>
 
-        <section style="margin-top: 12px; display: flex; flex-wrap: wrap; gap: 10px;">
-          <a href="#bmi" data-calc="bmi" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 14px; border-radius: 12px; text-decoration: none; background: #111827; color: #ffffff; font-weight: 600;">ИМТ</a>
-          <a href="#tdee" data-calc="tdee" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 14px; border-radius: 12px; text-decoration: none; background: #ffffff; color: #111827; border: 1px solid #e5e7eb; font-weight: 600;">TDEE</a>
-          <a href="#1rm" data-calc="1rm" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 14px; border-radius: 12px; text-decoration: none; background: #ffffff; color: #111827; border: 1px solid #e5e7eb; font-weight: 600;">1RM</a>
+        <section class="tabs">
+          <a href="#bmi" data-calc="bmi" class="tab is-active">ИМТ</a>
+          <a href="#tdee" data-calc="tdee" class="tab">TDEE</a>
+          <a href="#1rm" data-calc="1rm" class="tab">1RM</a>
+          <a href="#borg" data-calc="borg" class="tab">Шкала Борга</a>
+          <a href="#hr" data-calc="hr" class="tab">Пульсовые зоны</a>
+          <a href="#hagos" data-calc="hagos" class="tab">HAGOS</a>
+          <a href="#restq" data-calc="restq" class="tab">RESTQ-Sport</a>
+          <a href="#mrc" data-calc="mrc" class="tab">MRC</a>
+          <a href="#ashworth" data-calc="ashworth" class="tab">Эшворт</a>
+          <a href="#pwc" data-calc="pwc" class="tab">PWC-170</a>
+          <a href="#vo2" data-calc="vo2" class="tab">МПК</a>
         </section>
 
-      <section id="bmi" data-calc-panel style="margin-top: 16px; border: 1px solid rgba(229,231,235,.9); background: rgba(255,255,255,.8); border-radius: 18px; padding: 16px; box-shadow: 0 10px 30px rgba(15,23,42,.06);">
-        <h2 style="margin: 0 0 12px; font-size: 18px;">ИМТ (BMI)</h2>
-        <div style="display: grid; gap: 8px; max-width: 420px;">
-          <label>Рост (см)<br /><input id="bmi_h" type="number" inputmode="decimal" style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 10px;" /></label>
-          <label>Вес (кг)<br /><input id="bmi_w" type="number" inputmode="decimal" style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 10px;" /></label>
-          <button id="bmi_btn" type="button" style="padding: 10px 12px; border-radius: 10px; border: 1px solid #111827; background: #111827; color: white;">Посчитать</button>
-          <div id="bmi_out" style="color: #111827;"></div>
+      <section id="bmi" data-calc-panel class="card panel panel--first">
+        <h2 class="panel-title">ИМТ (BMI)</h2>
+        <div class="form form--420">
+          <label>Рост (см)<br /><input id="bmi_h" type="number" inputmode="decimal" class="input" /></label>
+          <label>Вес (кг)<br /><input id="bmi_w" type="number" inputmode="decimal" class="input" /></label>
+          <button id="bmi_btn" type="button" class="btn btn--narrow">Посчитать</button>
+          <div id="bmi_out" class="output"></div>
         </div>
       </section>
 
-      <section id="tdee" data-calc-panel style="margin-top: 12px; border: 1px solid rgba(229,231,235,.9); background: rgba(255,255,255,.8); border-radius: 18px; padding: 16px; box-shadow: 0 10px 30px rgba(15,23,42,.06); display: none;">
-        <h2 style="margin: 0 0 12px; font-size: 18px;">TDEE (поддержание калорий)</h2>
-        <div style="display: grid; gap: 8px; max-width: 520px;">
+      <section id="tdee" data-calc-panel class="card panel is-hidden">
+        <h2 class="panel-title">TDEE (поддержание калорий)</h2>
+        <div class="form form--520">
           <label>Пол<br />
-            <select id="tdee_sex" style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 10px;">
+            <select id="tdee_sex" class="input">
               <option value="male">Муж</option>
               <option value="female">Жен</option>
             </select>
           </label>
-          <label>Возраст (лет)<br /><input id="tdee_age" type="number" style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 10px;" /></label>
-          <label>Рост (см)<br /><input id="tdee_h" type="number" style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 10px;" /></label>
-          <label>Вес (кг)<br /><input id="tdee_w" type="number" style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 10px;" /></label>
+          <label>Возраст (лет)<br /><input id="tdee_age" type="number" class="input" /></label>
+          <label>Рост (см)<br /><input id="tdee_h" type="number" class="input" /></label>
+          <label>Вес (кг)<br /><input id="tdee_w" type="number" class="input" /></label>
           <label>Активность<br />
-            <select id="tdee_act" style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 10px;">
+            <select id="tdee_act" class="input">
               <option value="1.2">Минимальная (сидячий)</option>
               <option value="1.375">Лёгкая (1-3 трен/нед)</option>
               <option value="1.55">Средняя (3-5 трен/нед)</option>
@@ -64,18 +291,135 @@
               <option value="1.9">Очень высокая (физ. работа)</option>
             </select>
           </label>
-          <button id="tdee_btn" type="button" style="padding: 10px 12px; border-radius: 10px; border: 1px solid #111827; background: #111827; color: white;">Посчитать</button>
-          <div id="tdee_out" style="color: #111827;"></div>
+          <button id="tdee_btn" type="button" class="btn btn--narrow">Посчитать</button>
+          <div id="tdee_out" class="output"></div>
         </div>
       </section>
 
-      <section id="1rm" data-calc-panel style="margin-top: 12px; border: 1px solid rgba(229,231,235,.9); background: rgba(255,255,255,.8); border-radius: 18px; padding: 16px; box-shadow: 0 10px 30px rgba(15,23,42,.06); display: none;">
-        <h2 style="margin: 0 0 12px; font-size: 18px;">1RM (оценка максимума на 1 повтор)</h2>
-        <div style="display: grid; gap: 8px; max-width: 420px;">
-          <label>Вес (кг)<br /><input id="rm_w" type="number" inputmode="decimal" style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 10px;" /></label>
-          <label>Повторы (1-12)<br /><input id="rm_r" type="number" style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 10px;" /></label>
-          <button id="rm_btn" type="button" style="padding: 10px 12px; border-radius: 10px; border: 1px solid #111827; background: #111827; color: white;">Посчитать</button>
-          <div id="rm_out" style="color: #111827;"></div>
+      <section id="1rm" data-calc-panel class="card panel is-hidden">
+        <h2 class="panel-title">1RM (оценка максимума на 1 повтор)</h2>
+        <div class="form form--420">
+          <label>Вес (кг)<br /><input id="rm_w" type="number" inputmode="decimal" class="input" /></label>
+          <label>Повторы (1-12)<br /><input id="rm_r" type="number" class="input" /></label>
+          <button id="rm_btn" type="button" class="btn btn--narrow">Посчитать</button>
+          <div id="rm_out" class="output"></div>
+        </div>
+      </section>
+
+      <section id="borg" data-calc-panel class="card panel is-hidden">
+        <h2 class="panel-title">Шкала Борга (RPE 6–20)</h2>
+        <div class="form form--560">
+          <div class="panel-hint">Введи субъективную тяжесть нагрузки. 6 — очень легко, 20 — максимально тяжело.</div>
+          <label>RPE (6–20)<br /><input id="borg_rpe" type="number" min="6" max="20" step="1" class="input" /></label>
+          <button id="borg_btn" type="button" class="btn btn--narrow">Оценить</button>
+          <div id="borg_out" class="output"></div>
+        </div>
+      </section>
+
+      <section id="hr" data-calc-panel class="card panel is-hidden">
+        <h2 class="panel-title">Пульсовые зоны</h2>
+        <div class="form form--560">
+          <div class="panel-hint">Расчёт зон по % от ЧССмакс. Если не знаешь ЧССмакс — можно оценить по возрасту.</div>
+          <label>Возраст (лет)<br /><input id="hr_age" type="number" class="input" /></label>
+          <label>ЧССмакс (уд/мин) — опционально<br /><input id="hr_max" type="number" class="input" /></label>
+          <button id="hr_btn" type="button" class="btn btn--narrow">Посчитать зоны</button>
+          <div id="hr_out" class="output"></div>
+        </div>
+      </section>
+
+      <section id="hagos" data-calc-panel class="card panel is-hidden">
+        <h2 class="panel-title">HAGOS (Hip and Groin Outcome Score)</h2>
+        <div class="form form--720">
+          <div class="panel-hint">Здесь можно быстро посчитать итог по уже заполненным подшкалам. Обычно HAGOS считают как 0–100 (100 = лучше). Введи результат каждой подшкалы в процентах.</div>
+          <div class="grid">
+            <label>Симптомы (0–100)<br /><input id="hagos_sym" type="number" min="0" max="100" step="1" class="input" /></label>
+            <label>Боль (0–100)<br /><input id="hagos_pain" type="number" min="0" max="100" step="1" class="input" /></label>
+            <label>Функция (ADL) (0–100)<br /><input id="hagos_adl" type="number" min="0" max="100" step="1" class="input" /></label>
+            <label>Спорт/Отдых (0–100)<br /><input id="hagos_sport" type="number" min="0" max="100" step="1" class="input" /></label>
+            <label>Участие (0–100)<br /><input id="hagos_part" type="number" min="0" max="100" step="1" class="input" /></label>
+            <label>Качество жизни (0–100)<br /><input id="hagos_qol" type="number" min="0" max="100" step="1" class="input" /></label>
+          </div>
+          <button id="hagos_btn" type="button" class="btn btn--narrow">Посчитать среднее</button>
+          <div id="hagos_out" class="output"></div>
+        </div>
+      </section>
+
+      <section id="restq" data-calc-panel class="card panel is-hidden">
+        <h2 class="panel-title">RESTQ-Sport</h2>
+        <div class="form form--720">
+          <div class="panel-hint">Сюда можно ввести уже посчитанные средние значения опросника (например, по стрессу/восстановлению) и получить краткую интерпретацию.</div>
+          <div class="grid">
+            <label>Средний стресс (0–6)<br /><input id="restq_stress" type="number" min="0" max="6" step="0.1" class="input" /></label>
+            <label>Среднее восстановление (0–6)<br /><input id="restq_rec" type="number" min="0" max="6" step="0.1" class="input" /></label>
+          </div>
+          <button id="restq_btn" type="button" class="btn btn--narrow">Оценить баланс</button>
+          <div id="restq_out" class="output"></div>
+        </div>
+      </section>
+
+      <section id="mrc" data-calc-panel class="card panel is-hidden">
+        <h2 class="panel-title">Мышечная сила (MRC)</h2>
+        <div class="form form--720">
+          <div class="panel-hint">Оцени каждую группу по шкале 0–5. Можно заполнить частично — среднее будет рассчитано по заполненным.</div>
+          <div class="grid">
+            <label>Плечо (абдукция) (0–5)<br /><input id="mrc_shoulder" type="number" min="0" max="5" step="1" class="input" /></label>
+            <label>Локоть (сгибание) (0–5)<br /><input id="mrc_elbow" type="number" min="0" max="5" step="1" class="input" /></label>
+            <label>Запястье (разгибание) (0–5)<br /><input id="mrc_wrist" type="number" min="0" max="5" step="1" class="input" /></label>
+            <label>Бедро (сгибание) (0–5)<br /><input id="mrc_hip" type="number" min="0" max="5" step="1" class="input" /></label>
+            <label>Колено (разгибание) (0–5)<br /><input id="mrc_knee" type="number" min="0" max="5" step="1" class="input" /></label>
+            <label>Голеностоп (тыльное сгибание) (0–5)<br /><input id="mrc_ankle" type="number" min="0" max="5" step="1" class="input" /></label>
+          </div>
+          <button id="mrc_btn" type="button" class="btn btn--narrow">Посчитать среднее</button>
+          <div id="mrc_out" class="output"></div>
+        </div>
+      </section>
+
+      <section id="ashworth" data-calc-panel class="card panel is-hidden">
+        <h2 class="panel-title">Шкала Эшворта (Modified Ashworth Scale)</h2>
+        <div class="form form--720">
+          <div class="panel-hint">Оцени тонус/спастичность. 0 — нет повышения тонуса, 4 — ригидность.</div>
+          <label>Оценка
+            <select id="ash_value" class="input">
+              <option value="">—</option>
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="1+">1+</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+            </select>
+          </label>
+          <button id="ash_btn" type="button" class="btn btn--narrow">Интерпретировать</button>
+          <div id="ash_out" class="output"></div>
+        </div>
+      </section>
+
+      <section id="pwc" data-calc-panel class="card panel is-hidden">
+        <h2 class="panel-title">PWC-170</h2>
+        <div class="form form--720">
+          <div class="panel-hint">Тест обычно делают на велоэргометре. Введи две ступени нагрузки и ЧСС на каждой ступени (после выхода на стационар). Мощность — в ваттах.</div>
+          <div class="grid">
+            <label>Нагрузка 1 (Вт)<br /><input id="pwc_w1" type="number" inputmode="decimal" class="input" /></label>
+            <label>ЧСС 1 (уд/мин)<br /><input id="pwc_hr1" type="number" inputmode="decimal" class="input" /></label>
+            <label>Нагрузка 2 (Вт)<br /><input id="pwc_w2" type="number" inputmode="decimal" class="input" /></label>
+            <label>ЧСС 2 (уд/мин)<br /><input id="pwc_hr2" type="number" inputmode="decimal" class="input" /></label>
+            <label>Вес (кг) — опционально<br /><input id="pwc_mass" type="number" inputmode="decimal" class="input" /></label>
+          </div>
+          <button id="pwc_btn" type="button" class="btn btn--narrow">Посчитать</button>
+          <div id="pwc_out" class="output"></div>
+        </div>
+      </section>
+
+      <section id="vo2" data-calc-panel class="card panel is-hidden">
+        <h2 class="panel-title">МПК (VO₂max) — оценка по PWC-170</h2>
+        <div class="form form--720">
+          <div class="panel-hint">Оценка МПК по формуле: VO₂max (мл/мин) = 1.7 × PWC170(Вт) + 1240. Затем делим на вес, чтобы получить мл/кг/мин.</div>
+          <div class="grid">
+            <label>PWC-170 (Вт)<br /><input id="vo2_pwc" type="number" inputmode="decimal" class="input" /></label>
+            <label>Вес (кг)<br /><input id="vo2_mass" type="number" inputmode="decimal" class="input" /></label>
+          </div>
+          <button id="vo2_btn" type="button" class="btn btn--narrow">Посчитать МПК</button>
+          <div id="vo2_out" class="output"></div>
         </div>
       </section>
 
@@ -86,23 +430,29 @@
               var panels = document.querySelectorAll('[data-calc-panel]');
               for (var i = 0; i < panels.length; i++) {
                 var p = panels[i];
-                p.style.display = (p.id === id) ? '' : 'none';
+                if (p.id === id) {
+                  p.classList.remove('is-hidden');
+                } else {
+                  p.classList.add('is-hidden');
+                }
               }
 
               var links = document.querySelectorAll('a[data-calc]');
               for (var j = 0; j < links.length; j++) {
                 var a = links[j];
                 var isActive = a.getAttribute('data-calc') === id;
-                a.style.background = isActive ? '#111827' : '#ffffff';
-                a.style.color = isActive ? '#ffffff' : '#111827';
-                a.style.border = isActive ? '1px solid #111827' : '1px solid #e5e7eb';
+                if (isActive) {
+                  a.classList.add('is-active');
+                } else {
+                  a.classList.remove('is-active');
+                }
               }
             } catch (e) {}
           }
 
           function readHash() {
             var h = (window.location.hash || '').replace('#', '').trim();
-            if (h === 'bmi' || h === 'tdee' || h === '1rm') return h;
+            if (h === 'bmi' || h === 'tdee' || h === '1rm' || h === 'borg' || h === 'hr' || h === 'hagos' || h === 'restq' || h === 'mrc' || h === 'ashworth' || h === 'pwc' || h === 'vo2') return h;
             return 'bmi';
           }
 
@@ -158,6 +508,166 @@
             // Epley
             var oneRm = w * (1 + r / 30);
             out.textContent = '1RM (оценка): ' + oneRm.toFixed(1) + ' кг';
+          });
+
+          var borgBtn = document.getElementById('borg_btn');
+          borgBtn && borgBtn.addEventListener('click', function () {
+            var rpe = n(document.getElementById('borg_rpe').value);
+            var out = document.getElementById('borg_out');
+            if (!out) return;
+            if (!rpe) { out.textContent = 'Введи значение RPE.'; return; }
+            if (rpe < 6 || rpe > 20) { out.textContent = 'RPE должен быть в диапазоне 6–20.'; return; }
+
+            var label = '';
+            if (rpe <= 8) label = 'Очень легко';
+            else if (rpe <= 10) label = 'Легко';
+            else if (rpe <= 12) label = 'Умеренно';
+            else if (rpe <= 14) label = 'Довольно тяжело';
+            else if (rpe <= 16) label = 'Тяжело';
+            else if (rpe <= 18) label = 'Очень тяжело';
+            else label = 'Максимально тяжело';
+
+            out.textContent = 'RPE: ' + rpe + ' — ' + label + '.';
+          });
+
+          var hrBtn = document.getElementById('hr_btn');
+          hrBtn && hrBtn.addEventListener('click', function () {
+            var age = n(document.getElementById('hr_age').value);
+            var hrMaxInput = n(document.getElementById('hr_max').value);
+            var out = document.getElementById('hr_out');
+            if (!out) return;
+
+            var hrMax = hrMaxInput;
+            if (!hrMax) {
+              if (!age) { out.textContent = 'Введи возраст или ЧССмакс.'; return; }
+              hrMax = 220 - age;
+            }
+
+            if (hrMax < 100 || hrMax > 240) { out.textContent = 'Проверь ЧССмакс: значение выглядит необычно.'; return; }
+
+            function zone(p1, p2) {
+              var a = Math.round(hrMax * p1);
+              var b = Math.round(hrMax * p2);
+              return a + '–' + b;
+            }
+
+            out.innerHTML =
+              '<div class="output-stack">' +
+              '<div><b>ЧССмакс</b>: ' + Math.round(hrMax) + ' уд/мин</div>' +
+              '<div class="output-list">' +
+              '<div><b>Зона 1</b> (50–60%): ' + zone(0.5, 0.6) + '</div>' +
+              '<div><b>Зона 2</b> (60–70%): ' + zone(0.6, 0.7) + '</div>' +
+              '<div><b>Зона 3</b> (70–80%): ' + zone(0.7, 0.8) + '</div>' +
+              '<div><b>Зона 4</b> (80–90%): ' + zone(0.8, 0.9) + '</div>' +
+              '<div><b>Зона 5</b> (90–100%): ' + zone(0.9, 1.0) + '</div>' +
+              '</div>' +
+              '</div>';
+          });
+
+          var hagosBtn = document.getElementById('hagos_btn');
+          hagosBtn && hagosBtn.addEventListener('click', function () {
+            var ids = ['hagos_sym', 'hagos_pain', 'hagos_adl', 'hagos_sport', 'hagos_part', 'hagos_qol'];
+            var values = [];
+            for (var i = 0; i < ids.length; i++) {
+              var v = n(document.getElementById(ids[i]).value);
+              if (Number.isFinite(v)) values.push(v);
+            }
+            var out = document.getElementById('hagos_out');
+            if (!out) return;
+            if (values.length === 0) { out.textContent = 'Заполни хотя бы одну подшкалу.'; return; }
+            for (var j = 0; j < values.length; j++) {
+              if (values[j] < 0 || values[j] > 100) { out.textContent = 'Все значения должны быть в диапазоне 0–100.'; return; }
+            }
+            var sum = values.reduce(function (a, b) { return a + b; }, 0);
+            var avg = sum / values.length;
+            out.textContent = 'Среднее по заполненным подшкалам: ' + avg.toFixed(1) + ' / 100 (чем выше — тем лучше).';
+          });
+
+          var restqBtn = document.getElementById('restq_btn');
+          restqBtn && restqBtn.addEventListener('click', function () {
+            var stress = n(document.getElementById('restq_stress').value);
+            var rec = n(document.getElementById('restq_rec').value);
+            var out = document.getElementById('restq_out');
+            if (!out) return;
+            if (!Number.isFinite(stress) || !Number.isFinite(rec)) { out.textContent = 'Заполни оба значения.'; return; }
+            if (stress < 0 || stress > 6 || rec < 0 || rec > 6) { out.textContent = 'Значения должны быть в диапазоне 0–6.'; return; }
+            var delta = rec - stress;
+            var label = '';
+            if (delta >= 1) label = 'Баланс в пользу восстановления.';
+            else if (delta <= -1) label = 'Баланс в пользу стресса — стоит восстановиться.';
+            else label = 'Баланс примерно нейтральный.';
+            out.textContent = 'Восстановление - стресс = ' + delta.toFixed(1) + '. ' + label;
+          });
+
+          var mrcBtn = document.getElementById('mrc_btn');
+          mrcBtn && mrcBtn.addEventListener('click', function () {
+            var ids = ['mrc_shoulder', 'mrc_elbow', 'mrc_wrist', 'mrc_hip', 'mrc_knee', 'mrc_ankle'];
+            var values = [];
+            for (var i = 0; i < ids.length; i++) {
+              var v = n(document.getElementById(ids[i]).value);
+              if (Number.isFinite(v)) values.push(v);
+            }
+            var out = document.getElementById('mrc_out');
+            if (!out) return;
+            if (values.length === 0) { out.textContent = 'Заполни хотя бы одну группу.'; return; }
+            for (var j = 0; j < values.length; j++) {
+              if (values[j] < 0 || values[j] > 5 || Math.round(values[j]) !== values[j]) { out.textContent = 'Оценка MRC должна быть целым числом 0–5.'; return; }
+            }
+            var sum = values.reduce(function (a, b) { return a + b; }, 0);
+            var avg = sum / values.length;
+            out.textContent = 'Средняя сила по заполненным: ' + avg.toFixed(2) + ' / 5.';
+          });
+
+          var ashBtn = document.getElementById('ash_btn');
+          ashBtn && ashBtn.addEventListener('click', function () {
+            var raw = String(document.getElementById('ash_value').value || '').trim();
+            var out = document.getElementById('ash_out');
+            if (!out) return;
+            if (!raw) { out.textContent = 'Выбери значение.'; return; }
+            var label = '';
+            if (raw === '0') label = 'Нет повышения тонуса.';
+            else if (raw === '1') label = 'Лёгкое повышение тонуса (конец диапазона движения).';
+            else if (raw === '1+') label = 'Лёгкое повышение тонуса (минимальное сопротивление в < половине диапазона).';
+            else if (raw === '2') label = 'Более выраженное повышение тонуса в большинстве диапазона, но конечность легко двигается.';
+            else if (raw === '3') label = 'Значительное повышение тонуса, пассивные движения затруднены.';
+            else if (raw === '4') label = 'Ригидность (сгибание/разгибание очень затруднено).';
+            out.textContent = 'Эшворт: ' + raw + ' — ' + label;
+          });
+
+          var pwcBtn = document.getElementById('pwc_btn');
+          pwcBtn && pwcBtn.addEventListener('click', function () {
+            var w1 = n(document.getElementById('pwc_w1').value);
+            var hr1 = n(document.getElementById('pwc_hr1').value);
+            var w2 = n(document.getElementById('pwc_w2').value);
+            var hr2 = n(document.getElementById('pwc_hr2').value);
+            var mass = n(document.getElementById('pwc_mass').value);
+            var out = document.getElementById('pwc_out');
+            if (!out) return;
+            if (!w1 || !w2 || !hr1 || !hr2) { out.textContent = 'Заполни две нагрузки и две ЧСС.'; return; }
+            if (hr1 === hr2) { out.textContent = 'ЧСС1 и ЧСС2 не должны быть одинаковыми.'; return; }
+            if (w1 <= 0 || w2 <= 0) { out.textContent = 'Нагрузка должна быть > 0.'; return; }
+
+            var pwc170 = w1 + (170 - hr1) * (w2 - w1) / (hr2 - hr1);
+            if (!Number.isFinite(pwc170)) { out.textContent = 'Не удалось посчитать — проверь введённые данные.'; return; }
+
+            var text = 'PWC-170: ' + pwc170.toFixed(1) + ' Вт.';
+            if (Number.isFinite(mass) && mass > 0) {
+              text += ' Относительно веса: ' + (pwc170 / mass).toFixed(2) + ' Вт/кг.';
+            }
+            out.textContent = text;
+          });
+
+          var vo2Btn = document.getElementById('vo2_btn');
+          vo2Btn && vo2Btn.addEventListener('click', function () {
+            var pwc = n(document.getElementById('vo2_pwc').value);
+            var mass = n(document.getElementById('vo2_mass').value);
+            var out = document.getElementById('vo2_out');
+            if (!out) return;
+            if (!pwc || !mass) { out.textContent = 'Заполни PWC-170 и вес.'; return; }
+            if (pwc <= 0 || mass <= 0) { out.textContent = 'Значения должны быть > 0.'; return; }
+            var vo2mlmin = 1.7 * pwc + 1240;
+            var vo2mlkgmin = vo2mlmin / mass;
+            out.textContent = 'МПК (оценка): ' + Math.round(vo2mlmin) + ' мл/мин (' + vo2mlkgmin.toFixed(1) + ' мл/кг/мин).';
           });
         })();
       </script>
