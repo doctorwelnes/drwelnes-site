@@ -20,6 +20,7 @@ const { entry } = Astro.props;
       body {
         margin: 0;
         padding: 0;
+        overflow-x: hidden;
       }
 
       *,
@@ -30,6 +31,17 @@ const { entry } = Astro.props;
 
       main {
         overflow-x: hidden;
+      }
+
+      img,
+      video,
+      iframe {
+        max-width: 100%;
+      }
+
+      p,
+      li {
+        overflow-wrap: anywhere;
       }
 
       .recipe-shell {
@@ -141,11 +153,11 @@ const { entry } = Astro.props;
         }
 
         .kbru-toggle {
-          display: flex;
+          display: flex !important;
         }
 
         .kbru-widget {
-          display: flex;
+          display: flex !important;
           justify-content: center;
           position: fixed;
           left: 0;
