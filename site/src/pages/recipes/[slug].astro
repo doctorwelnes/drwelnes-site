@@ -87,7 +87,7 @@ const { entry } = Astro.props;
         .recipe-shell {
           grid-template-columns: 1fr !important;
           gap: 16px;
-          padding: 20px 14px 26px;
+          padding: 20px 14px calc(26px + 86px + env(safe-area-inset-bottom));
         }
 
         .recipe-main,
@@ -144,6 +144,22 @@ const { entry } = Astro.props;
           display: flex;
         }
 
+        .kbru-widget {
+          display: flex;
+          justify-content: center;
+          position: fixed;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+          z-index: 50;
+          pointer-events: none;
+        }
+
+        .kbru-widget-inner {
+          pointer-events: auto;
+        }
+
         [data-kbru-view="dish"] [data-kbru-panel="100g"] {
           display: none;
         }
@@ -163,6 +179,10 @@ const { entry } = Astro.props;
         margin: 0 0 10px;
       }
 
+      .kbru-widget {
+        display: none;
+      }
+
       .kbru-toggle button {
         appearance: none;
         border: 0;
@@ -180,11 +200,41 @@ const { entry } = Astro.props;
         color: #111827;
         box-shadow: 0 6px 14px rgba(15,23,42,.08);
       }
+
+      .kbru-widget-inner {
+        display: flex;
+        gap: 6px;
+        padding: 6px;
+        border-radius: 999px;
+        border: 1px solid rgba(229,231,235,.9);
+        background: rgba(255,255,255,.92);
+        box-shadow: 0 18px 50px rgba(15,23,42,.14);
+        backdrop-filter: blur(10px);
+      }
+
+      .kbru-widget button {
+        appearance: none;
+        border: 0;
+        background: transparent;
+        padding: 10px 12px;
+        border-radius: 999px;
+        font-size: 13px;
+        cursor: pointer;
+        color: #374151;
+        white-space: nowrap;
+      }
+
+      .kbru-widget button[aria-pressed="true"] {
+        background: rgba(249,250,251,.98);
+        border: 1px solid rgba(229,231,235,.9);
+        color: #111827;
+        box-shadow: 0 10px 24px rgba(15,23,42,.10);
+      }
     </style>
   </head>
   <body>
     <main data-kbru-view="100g" style="min-height: 100vh; background: radial-gradient(1200px 600px at 20% -10%, #fef3c7 0%, rgba(254,243,199,0) 55%), radial-gradient(900px 520px at 90% 0%, #fecaca 0%, rgba(254,202,202,0) 55%), #ffffff; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;">
-      <div class="recipe-shell" style="max-width: 1200px; margin: 0 auto; padding: 28px 20px 36px;">
+      <div class="recipe-shell">
         <header class="recipe-header" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px;">
           <div style="display: flex; align-items: center; gap: 10px;">
             <img src="/logo.png" alt="Dr.Welnes" width="34" height="34" style="display:block; width:34px; height:34px; border-radius: 10px; object-fit: cover;" />
@@ -409,24 +459,36 @@ const { entry } = Astro.props;
           </section>
         )}
       </div>
+
+      {entry.data.kbru && entry.data.kbruTotal && (
+        <div class="kbru-widget" aria-label="Переключатель КБЖУ">
+          <div class="kbru-widget-inner" role="group" aria-label="КБЖУ">
+            <button type="button" data-kbru-switch="100g" aria-pressed="true">КБЖУ 100 г</button>
+            <button type="button" data-kbru-switch="dish" aria-pressed="false">КБЖУ блюдо</button>
+          </div>
+        </div>
+      )}
     </main>
 
     <script>
       (() => {
         const page = document.querySelector('main[data-kbru-view]');
-        const toggle = document.querySelector('.kbru-toggle');
-        if (page && toggle) {
-          const btn100g = toggle.querySelector('[data-kbru-switch="100g"]');
-          const btnDish = toggle.querySelector('[data-kbru-switch="dish"]');
+        const toggles = document.querySelectorAll('[data-kbru-switch]');
 
+        if (page && toggles.length > 0) {
           const setView = (view) => {
             page.setAttribute('data-kbru-view', view);
-            if (btn100g) btn100g.setAttribute('aria-pressed', view === '100g' ? 'true' : 'false');
-            if (btnDish) btnDish.setAttribute('aria-pressed', view === 'dish' ? 'true' : 'false');
+            document.querySelectorAll('[data-kbru-switch="100g"]').forEach((el) => el.setAttribute('aria-pressed', view === '100g' ? 'true' : 'false'));
+            document.querySelectorAll('[data-kbru-switch="dish"]').forEach((el) => el.setAttribute('aria-pressed', view === 'dish' ? 'true' : 'false'));
           };
 
-          btn100g?.addEventListener('click', () => setView('100g'));
-          btnDish?.addEventListener('click', () => setView('dish'));
+          document.querySelectorAll('[data-kbru-switch]').forEach((el) => {
+            el.addEventListener('click', () => {
+              const view = el.getAttribute('data-kbru-switch');
+              if (view === '100g' || view === 'dish') setView(view);
+            });
+          });
+
           setView(page.getAttribute('data-kbru-view') || '100g');
         }
 
