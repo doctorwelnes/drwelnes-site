@@ -16,11 +16,31 @@ const { entry } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{entry.data.title}</title>
     <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      main {
+        overflow-x: hidden;
+      }
+
       .recipe-shell {
         display: grid;
         grid-template-columns: 1fr 320px;
         gap: 24px;
         align-items: start;
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 28px 20px 36px;
       }
 
       .recipe-header {
@@ -67,6 +87,7 @@ const { entry } = Astro.props;
         .recipe-shell {
           grid-template-columns: 1fr !important;
           gap: 16px;
+          padding: 20px 14px 26px;
         }
 
         .recipe-main,
