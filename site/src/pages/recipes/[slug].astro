@@ -15,11 +15,34 @@ const { entry } = Astro.props;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <title>{entry.data.title}</title>
+    <style>
+      .recipe-shell {
+        display: grid;
+        grid-template-columns: 1fr 320px;
+        gap: 24px;
+        align-items: start;
+      }
+
+      .recipe-header {
+        grid-column: 1 / -1;
+      }
+
+      @media (max-width: 900px) {
+        .recipe-shell {
+          grid-template-columns: 1fr;
+          gap: 16px;
+        }
+
+        .recipe-sidebar {
+          order: 3;
+        }
+      }
+    </style>
   </head>
   <body>
     <main style="min-height: 100vh; background: radial-gradient(1200px 600px at 20% -10%, #fef3c7 0%, rgba(254,243,199,0) 55%), radial-gradient(900px 520px at 90% 0%, #fecaca 0%, rgba(254,202,202,0) 55%), #ffffff; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;">
-      <div style="max-width: 1200px; margin: 0 auto; padding: 28px 20px 36px; display: grid; grid-template-columns: 1fr 320px; gap: 24px; align-items: start;">
-        <header style="grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px;">
+      <div class="recipe-shell" style="max-width: 1200px; margin: 0 auto; padding: 28px 20px 36px;">
+        <header class="recipe-header" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px;">
           <div style="display: flex; align-items: center; gap: 10px;">
             <img src="/logo.png" alt="Dr.Welnes" width="34" height="34" style="display:block; width:34px; height:34px; border-radius: 10px; object-fit: cover;" />
             <div style="font-weight: 700; letter-spacing: -0.01em;">Dr.Welnes</div>
@@ -137,7 +160,7 @@ const { entry } = Astro.props;
           )}
         </div>
 
-        <aside style="display: flex; flex-direction: column; gap: 12px; min-width: 0;">
+        <aside class="recipe-sidebar" style="display: flex; flex-direction: column; gap: 12px; min-width: 0;">
           {entry.data.kbru && (
             <section style="background: linear-gradient(135deg, rgba(255,255,255,.9) 0%, rgba(254,240,138,.3) 100%); border: 1px solid rgba(245,158,11,.15); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06);">
               <h2 style="margin: 0 0 10px; font-size: 16px; letter-spacing: -0.01em; display: flex; align-items: center; gap: 8px;">
