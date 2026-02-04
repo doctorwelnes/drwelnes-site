@@ -99,7 +99,7 @@ const { entry } = Astro.props;
         .recipe-shell {
           grid-template-columns: 1fr !important;
           gap: 16px;
-          padding: 20px 14px calc(26px + 86px + env(safe-area-inset-bottom));
+          padding: 20px 14px 26px;
         }
 
         .recipe-main,
@@ -154,22 +154,6 @@ const { entry } = Astro.props;
 
         .kbru-toggle {
           display: flex !important;
-        }
-
-        .kbru-widget {
-          display: flex !important;
-          justify-content: center;
-          position: fixed;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
-          z-index: 50;
-          pointer-events: none;
-        }
-
-        .kbru-widget-inner {
-          pointer-events: auto;
         }
 
         [data-kbru-view="dish"] [data-kbru-panel="100g"] {
@@ -255,7 +239,6 @@ const { entry } = Astro.props;
           <nav class="recipe-nav">
             <a href="/recipes">Рецепты</a>
             <a href="/exercises">Упражнения</a>
-            <a href="/theory">Теория</a>
             <a href="/calculators">Калькуляторы</a>
           </nav>
         </header>
@@ -344,9 +327,6 @@ const { entry } = Astro.props;
             )
           )}
 
-        </div>
-
-        <aside class="recipe-sidebar" style="display: flex; flex-direction: column; gap: 12px; min-width: 0;">
           {(entry.data.kbru || entry.data.kbruTotal) && (
             <div class="kbru-toggle" role="group" aria-label="Переключение КБЖУ">
               <button type="button" data-kbru-switch="100g" aria-pressed="true">100 г</button>
@@ -354,6 +334,9 @@ const { entry } = Astro.props;
             </div>
           )}
 
+        </div>
+
+        <aside class="recipe-sidebar" style="display: flex; flex-direction: column; gap: 12px; min-width: 0;">
           {entry.data.kbru && (
             <section data-kbru-panel="100g" style="background: linear-gradient(135deg, rgba(255,255,255,.9) 0%, rgba(254,240,138,.3) 100%); border: 1px solid rgba(245,158,11,.15); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06);">
               <h2 style="margin: 0 0 10px; font-size: 16px; letter-spacing: -0.01em; display: flex; align-items: center; gap: 8px;">
@@ -471,15 +454,6 @@ const { entry } = Astro.props;
           </section>
         )}
       </div>
-
-      {entry.data.kbru && entry.data.kbruTotal && (
-        <div class="kbru-widget" aria-label="Переключатель КБЖУ">
-          <div class="kbru-widget-inner" role="group" aria-label="КБЖУ">
-            <button type="button" data-kbru-switch="100g" aria-pressed="true">КБЖУ 100 г</button>
-            <button type="button" data-kbru-switch="dish" aria-pressed="false">КБЖУ блюдо</button>
-          </div>
-        </div>
-      )}
     </main>
 
     <script>
