@@ -27,37 +27,153 @@ const { entry } = Astro.props;
         grid-column: 1 / -1;
       }
 
+      .recipe-main {
+        grid-column: 1;
+      }
+
+      .recipe-sidebar {
+        grid-column: 2;
+      }
+
+      .recipe-steps {
+        grid-column: 1;
+      }
+
+      .recipe-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .recipe-nav a {
+        text-decoration: none;
+        color: #111827;
+        padding: 8px 10px;
+        border-radius: 10px;
+        flex: 0 0 auto;
+      }
+
+      .recipe-title {
+        margin: 0 0 8px;
+        font-size: 36px;
+        line-height: 1.1;
+        letter-spacing: -0.03em;
+        font-weight: 700;
+        color: #1f2937;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.04);
+      }
+
       @media (max-width: 900px) {
         .recipe-shell {
           grid-template-columns: 1fr;
           gap: 16px;
         }
 
+        .recipe-header {
+          flex-direction: column;
+          align-items: flex-start;
+          margin-bottom: 10px !important;
+        }
+
+        .recipe-nav {
+          width: 100%;
+          overflow-x: auto;
+          flex-wrap: nowrap;
+          gap: 8px;
+          padding: 8px;
+          border-radius: 14px;
+          border: 1px solid rgba(229,231,235,.9);
+          background: rgba(255,255,255,.75);
+          -webkit-overflow-scrolling: touch;
+        }
+
+        .recipe-nav a {
+          padding: 8px 12px;
+          border-radius: 999px;
+          background: rgba(249,250,251,.9);
+          border: 1px solid rgba(229,231,235,.9);
+          font-size: 14px;
+          white-space: nowrap;
+        }
+
+        .recipe-title {
+          font-size: 28px;
+          line-height: 1.12;
+        }
+
+        .recipe-main {
+          order: 1;
+        }
+
         .recipe-sidebar {
+          order: 2;
+        }
+
+        .recipe-steps {
           order: 3;
         }
+
+        .kbru-toggle {
+          display: flex;
+        }
+
+        [data-kbru-view="dish"] [data-kbru-panel="100g"] {
+          display: none;
+        }
+
+        [data-kbru-view="100g"] [data-kbru-panel="dish"] {
+          display: none;
+        }
+      }
+
+      .kbru-toggle {
+        display: none;
+        gap: 6px;
+        padding: 4px;
+        border-radius: 999px;
+        border: 1px solid rgba(229,231,235,.9);
+        background: rgba(255,255,255,.75);
+        margin: 0 0 10px;
+      }
+
+      .kbru-toggle button {
+        appearance: none;
+        border: 0;
+        background: transparent;
+        padding: 8px 10px;
+        border-radius: 999px;
+        font-size: 13px;
+        cursor: pointer;
+        color: #374151;
+      }
+
+      .kbru-toggle button[aria-pressed="true"] {
+        background: rgba(249,250,251,.95);
+        border: 1px solid rgba(229,231,235,.9);
+        color: #111827;
+        box-shadow: 0 6px 14px rgba(15,23,42,.08);
       }
     </style>
   </head>
   <body>
-    <main style="min-height: 100vh; background: radial-gradient(1200px 600px at 20% -10%, #fef3c7 0%, rgba(254,243,199,0) 55%), radial-gradient(900px 520px at 90% 0%, #fecaca 0%, rgba(254,202,202,0) 55%), #ffffff; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;">
+    <main data-kbru-view="100g" style="min-height: 100vh; background: radial-gradient(1200px 600px at 20% -10%, #fef3c7 0%, rgba(254,243,199,0) 55%), radial-gradient(900px 520px at 90% 0%, #fecaca 0%, rgba(254,202,202,0) 55%), #ffffff; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;">
       <div class="recipe-shell" style="max-width: 1200px; margin: 0 auto; padding: 28px 20px 36px;">
         <header class="recipe-header" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px;">
           <div style="display: flex; align-items: center; gap: 10px;">
             <img src="/logo.png" alt="Dr.Welnes" width="34" height="34" style="display:block; width:34px; height:34px; border-radius: 10px; object-fit: cover;" />
             <div style="font-weight: 700; letter-spacing: -0.01em;">Dr.Welnes</div>
           </div>
-          <nav style="display: flex; flex-wrap: wrap; gap: 10px;">
-            <a href="/recipes" style="text-decoration: none; color: #111827; padding: 8px 10px; border-radius: 10px;">Рецепты</a>
-            <a href="/exercises" style="text-decoration: none; color: #111827; padding: 8px 10px; border-radius: 10px;">Упражнения</a>
-            <a href="/theory" style="text-decoration: none; color: #111827; padding: 8px 10px; border-radius: 10px;">Теория</a>
-            <a href="/calculators" style="text-decoration: none; color: #111827; padding: 8px 10px; border-radius: 10px;">Калькуляторы</a>
+          <nav class="recipe-nav">
+            <a href="/recipes">Рецепты</a>
+            <a href="/exercises">Упражнения</a>
+            <a href="/theory">Теория</a>
+            <a href="/calculators">Калькуляторы</a>
           </nav>
         </header>
 
-        <div style="display: flex; flex-direction: column; gap: 16px; min-width: 0;">
+        <div class="recipe-main" style="display: flex; flex-direction: column; gap: 16px; min-width: 0;">
           <section style="border: 1px solid rgba(229,231,235,.9); background: rgba(255,255,255,.8); backdrop-filter: blur(10px); border-radius: 18px; padding: 22px; box-shadow: 0 10px 30px rgba(15,23,42,.08);">
-            <h1 style="margin: 0 0 8px; font-size: 36px; line-height: 1.1; letter-spacing: -0.03em; font-weight: 700; color: #1f2937; text-shadow: 0 1px 2px rgba(0,0,0,0.04);">{entry.data.title}</h1>
+            <h1 class="recipe-title">{entry.data.title}</h1>
             {entry.data.description && (
               <p style="margin: 0; color: #6b7280; font-size: 16px; line-height: 1.5;">{entry.data.description}</p>
             )}
@@ -139,30 +255,18 @@ const { entry } = Astro.props;
             )
           )}
 
-          {entry.data.steps && entry.data.steps.length > 0 && (
-            <section style="background: linear-gradient(135deg, rgba(255,255,255,.9) 0%, rgba(254,202,202,.3) 100%); border: 1px solid rgba(239,68,68,.15); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06);">
-              <h2 style="margin: 0 0 10px; font-size: 18px; letter-spacing: -0.01em; display: flex; align-items: center; gap: 8px;">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2">
-                  <path d="M9 11l3 3L22 4" />
-                  <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
-                </svg>
-                Шаги
-              </h2>
-              <ol style="margin: 0; padding-left: 0; list-style: none;">
-                {entry.data.steps.map((t, i) => (
-                  <li style="display: flex; gap: 12px; margin-bottom: 12px; padding: 12px; background: rgba(255,255,255,.6); border-radius: 12px;">
-                    <span style="flex-shrink: 0; width: 24px; height: 24px; background: linear-gradient(135deg, #fca5a5 0%, #f87171 100%); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600;">{i + 1}</span>
-                    <span style="flex: 1; padding-top: 2px;">{t}</span>
-                  </li>
-                ))}
-              </ol>
-            </section>
-          )}
         </div>
 
         <aside class="recipe-sidebar" style="display: flex; flex-direction: column; gap: 12px; min-width: 0;">
+          {(entry.data.kbru || entry.data.kbruTotal) && (
+            <div class="kbru-toggle" role="group" aria-label="Переключение КБЖУ">
+              <button type="button" data-kbru-switch="100g" aria-pressed="true">100 г</button>
+              <button type="button" data-kbru-switch="dish" aria-pressed="false">Блюдо</button>
+            </div>
+          )}
+
           {entry.data.kbru && (
-            <section style="background: linear-gradient(135deg, rgba(255,255,255,.9) 0%, rgba(254,240,138,.3) 100%); border: 1px solid rgba(245,158,11,.15); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06);">
+            <section data-kbru-panel="100g" style="background: linear-gradient(135deg, rgba(255,255,255,.9) 0%, rgba(254,240,138,.3) 100%); border: 1px solid rgba(245,158,11,.15); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06);">
               <h2 style="margin: 0 0 10px; font-size: 16px; letter-spacing: -0.01em; display: flex; align-items: center; gap: 8px;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
                   <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" />
@@ -191,7 +295,7 @@ const { entry } = Astro.props;
           )}
 
           {entry.data.kbruTotal && (
-            <section style="background: rgba(255,255,255,.85); border: 1px solid rgba(229,231,235,.9); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06);">
+            <section data-kbru-panel="dish" style="background: rgba(255,255,255,.85); border: 1px solid rgba(229,231,235,.9); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06);">
               <h2 style="margin: 0 0 10px; font-size: 16px; letter-spacing: -0.01em;">КБЖУ (на блюдо)</h2>
               <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;">
                 <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
@@ -257,11 +361,48 @@ const { entry } = Astro.props;
             </section>
           )}
         </aside>
+
+        {entry.data.steps && entry.data.steps.length > 0 && (
+          <section class="recipe-steps" style="background: linear-gradient(135deg, rgba(255,255,255,.9) 0%, rgba(254,202,202,.3) 100%); border: 1px solid rgba(239,68,68,.15); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06);">
+            <h2 style="margin: 0 0 10px; font-size: 18px; letter-spacing: -0.01em; display: flex; align-items: center; gap: 8px;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2">
+                <path d="M9 11l3 3L22 4" />
+                <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
+              </svg>
+              Шаги
+            </h2>
+            <ol style="margin: 0; padding-left: 0; list-style: none;">
+              {entry.data.steps.map((t, i) => (
+                <li style="display: flex; gap: 12px; margin-bottom: 12px; padding: 12px; background: rgba(255,255,255,.6); border-radius: 12px;">
+                  <span style="flex-shrink: 0; width: 24px; height: 24px; background: linear-gradient(135deg, #fca5a5 0%, #f87171 100%); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600;">{i + 1}</span>
+                  <span style="flex: 1; padding-top: 2px;">{t}</span>
+                </li>
+              ))}
+            </ol>
+          </section>
+        )}
       </div>
     </main>
 
     <script>
       (() => {
+        const page = document.querySelector('main[data-kbru-view]');
+        const toggle = document.querySelector('.kbru-toggle');
+        if (page && toggle) {
+          const btn100g = toggle.querySelector('[data-kbru-switch="100g"]');
+          const btnDish = toggle.querySelector('[data-kbru-switch="dish"]');
+
+          const setView = (view) => {
+            page.setAttribute('data-kbru-view', view);
+            if (btn100g) btn100g.setAttribute('aria-pressed', view === '100g' ? 'true' : 'false');
+            if (btnDish) btnDish.setAttribute('aria-pressed', view === 'dish' ? 'true' : 'false');
+          };
+
+          btn100g?.addEventListener('click', () => setView('100g'));
+          btnDish?.addEventListener('click', () => setView('dish'));
+          setView(page.getAttribute('data-kbru-view') || '100g');
+        }
+
         const video = document.querySelector('video[data-video-resume-key]');
         if (!video) return;
 
