@@ -28,6 +28,23 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          clean: true
+
+      - name: Debug checkout state
+        run: |
+          set -euo pipefail
+          echo "==> HEAD: $(git rev-parse HEAD)"
+          echo "==> Expected: ${{ github.sha }}"
+          echo "==> Showing any kbruBasal occurrences in recipe file"
+          test -f "site/src/content/recipes/шоколадный-пирог-с-вишней.md" && (grep -n "kbruBasal" -n "site/src/content/recipes/шоколадный-пирог-с-вишней.md" || true)
+
+      - name: Ensure clean workspace
+        run: |
+          set -euo pipefail
+          git reset --hard
+          git clean -fdx
 
       - name: Skip if already deployed
         run: |
@@ -121,7 +138,6 @@ jobs:
             while [ "$attempt" -le "$MAX_ATTEMPTS" ]; do
               # Get HTTP code separately from body
               http_code=$(curl -sS -L --max-time 15 -o /dev/null -w "%{http_code}" "$url" || echo "000")
-
               if [ "$http_code" = "$expect_code" ]; then
                 echo "OK: ${name}"
                 return 0
