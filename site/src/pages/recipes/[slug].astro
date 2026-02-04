@@ -8,12 +8,25 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
+const hasValues = (obj?: Record<string, unknown>) =>
+  Boolean(obj && Object.values(obj).some((v) => v !== undefined && v !== null && v !== ""));
+const hasKbru = hasValues(entry.data.kbru as Record<string, unknown> | undefined);
+const hasKbruTotal = hasValues(entry.data.kbruTotal as Record<string, unknown> | undefined);
+const hasKbruBasal = hasValues(entry.data.kbruBasal as Record<string, unknown> | undefined);
+const showKbruToggle = hasKbru && hasKbruTotal;
+const initialKbruView = hasKbru ? "100g" : hasKbruTotal ? "dish" : "100g";
 ---
 
 <html lang="ru">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
     <title>{entry.data.title}</title>
     <style>
       html,
@@ -21,6 +34,19 @@ const { entry } = Astro.props;
         margin: 0;
         padding: 0;
         overflow-x: hidden;
+        background: #fff7ed;
+        color: #111827;
+      }
+
+      :root {
+        --surface: rgba(255,255,255,.86);
+        --surface-strong: rgba(255,255,255,.94);
+        --stroke: rgba(229,231,235,.9);
+        --shadow: 0 16px 36px rgba(15,23,42,.08);
+        --shadow-soft: 0 10px 30px rgba(15,23,42,.06);
+        --accent-warm: #f97316;
+        --accent-rose: #ef4444;
+        --accent-gold: #f59e0b;
       }
 
       *,
@@ -31,6 +57,15 @@ const { entry } = Astro.props;
 
       main {
         overflow-x: hidden;
+      }
+
+      .recipe-page {
+        min-height: 100vh;
+        background: radial-gradient(1200px 600px at 20% -10%, #fef3c7 0%, rgba(254,243,199,0) 55%),
+          radial-gradient(900px 520px at 90% 0%, #fecaca 0%, rgba(254,202,202,0) 55%),
+          #ffffff;
+        font-family: "Manrope", "Segoe UI", system-ui, -apple-system, sans-serif;
+        color: #1f2937;
       }
 
       img,
@@ -46,35 +81,72 @@ const { entry } = Astro.props;
 
       .recipe-shell {
         display: grid;
-        grid-template-columns: 1fr 320px;
-        gap: 24px;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 320px);
+        gap: 28px;
         align-items: start;
         width: 100%;
-        max-width: 1200px;
+        max-width: 1180px;
         margin: 0 auto;
-        padding: 28px 20px 36px;
+        padding: 32px 20px 42px;
+        min-width: 0;
       }
 
       .recipe-header {
         grid-column: 1 / -1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+        min-width: 0;
+      }
+
+      .recipe-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .recipe-logo {
+        display: block;
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+        object-fit: cover;
+      }
+
+      .recipe-name {
+        font-weight: 700;
+        letter-spacing: -0.01em;
       }
 
       .recipe-main {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        min-width: 0;
         grid-column: 1;
       }
 
       .recipe-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        min-width: 0;
         grid-column: 2;
       }
 
       .recipe-steps {
         grid-column: 1;
+        min-width: 0;
       }
 
       .recipe-nav {
         display: flex;
         flex-wrap: wrap;
         gap: 10px;
+        max-width: 100%;
       }
 
       .recipe-nav a {
@@ -87,12 +159,201 @@ const { entry } = Astro.props;
 
       .recipe-title {
         margin: 0 0 8px;
-        font-size: 36px;
+        font-size: 32px;
         line-height: 1.1;
         letter-spacing: -0.03em;
         font-weight: 700;
         color: #1f2937;
         text-shadow: 0 1px 2px rgba(0,0,0,0.04);
+      }
+
+      .recipe-description {
+        margin: 0;
+        color: #6b7280;
+        font-size: 16px;
+        line-height: 1.55;
+        max-width: 64ch;
+      }
+
+      .recipe-video {
+        margin: 0;
+        display: grid;
+        gap: 12px;
+      }
+
+      .video-shell {
+        border-radius: 16px;
+        overflow: hidden;
+        background: #000;
+        box-shadow: 0 16px 34px rgba(15,23,42,.12);
+        position: relative;
+      }
+
+      .video-backdrop {
+        display: none;
+        position: absolute;
+        inset: 0;
+        background-position: center;
+        background-size: cover;
+        filter: blur(18px);
+        transform: scale(1.08);
+        opacity: .55;
+      }
+
+      .video-player {
+        display: block;
+        width: 100%;
+        height: auto;
+        max-height: 75vh;
+        background: #000;
+        position: relative;
+        z-index: 1;
+      }
+
+      .video-embed {
+        border: 0;
+        border-radius: 16px;
+        box-shadow: 0 16px 34px rgba(15,23,42,.12);
+      }
+
+      .card {
+        border-radius: 20px;
+        border: 1px solid var(--stroke);
+        background: var(--surface);
+        padding: 20px 22px;
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(10px);
+      }
+
+      .card--intro {
+        background: var(--surface-strong);
+      }
+
+      .card--kbru {
+        background: linear-gradient(135deg, rgba(255,255,255,.95) 0%, rgba(254,240,138,.28) 100%);
+        border-color: rgba(245,158,11,.2);
+      }
+
+      .card--soft {
+        background: rgba(255,255,255,.9);
+      }
+
+      .card--ingredients {
+        background: linear-gradient(135deg, rgba(255,255,255,.95) 0%, rgba(254,243,199,.4) 100%);
+        border-color: rgba(251,191,36,.18);
+      }
+
+      .card--steps {
+        background: linear-gradient(135deg, rgba(255,255,255,.95) 0%, rgba(254,202,202,.3) 100%);
+        border-color: rgba(239,68,68,.18);
+      }
+
+      .recipe-meta {
+        margin-top: 12px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .meta-pill {
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .meta-pill--prep {
+        background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
+        border: 1px solid rgba(251,191,36,.25);
+        color: #92400e;
+      }
+
+      .meta-pill--cook {
+        background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%);
+        border: 1px solid rgba(239,68,68,.2);
+        color: #991b1b;
+      }
+
+      .section-title {
+        margin: 0 0 10px;
+        font-size: 16px;
+        letter-spacing: -0.01em;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #111827;
+      }
+
+      .section-title--lg {
+        font-size: 18px;
+      }
+
+      .kbru-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .kbru-item {
+        padding: 10px 12px;
+        border-radius: 14px;
+        background: rgba(255,255,255,.82);
+        border: 1px solid rgba(229,231,235,.8);
+      }
+
+      .kbru-label {
+        font-size: 12px;
+        color: #6b7280;
+      }
+
+      .kbru-value {
+        font-weight: 700;
+      }
+
+      .ingredients-list {
+        margin: 0;
+        padding-left: 18px;
+        display: grid;
+        gap: 6px;
+      }
+
+      .steps-list {
+        margin: 0;
+        padding-left: 0;
+        list-style: none;
+        display: grid;
+        gap: 12px;
+      }
+
+      .steps-item {
+        display: flex;
+        gap: 12px;
+        padding: 12px;
+        background: rgba(255,255,255,.72);
+        border-radius: 14px;
+        border: 1px solid rgba(239,68,68,.08);
+      }
+
+      .step-index {
+        flex-shrink: 0;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 700;
+        color: #fff;
+        background: linear-gradient(135deg, #fca5a5 0%, #f87171 100%);
+      }
+
+      .step-text {
+        flex: 1;
+        padding-top: 2px;
       }
 
       @media (max-width: 1024px) {
@@ -136,7 +397,7 @@ const { entry } = Astro.props;
         }
 
         .recipe-title {
-          font-size: 28px;
+          font-size: 26px;
           line-height: 1.12;
         }
 
@@ -152,31 +413,27 @@ const { entry } = Astro.props;
           order: 3;
         }
 
+        .card {
+          padding: 16px 18px;
+          border-radius: 18px;
+        }
+
         .kbru-toggle {
-          display: flex !important;
-        }
-
-        [data-kbru-view="dish"] [data-kbru-panel="100g"] {
-          display: none;
-        }
-
-        [data-kbru-view="100g"] [data-kbru-panel="dish"] {
-          display: none;
+          width: 100%;
+          justify-content: center;
         }
       }
 
       .kbru-toggle {
-        display: none;
+        display: inline-flex;
+        align-self: flex-start;
         gap: 6px;
         padding: 4px;
         border-radius: 999px;
-        border: 1px solid rgba(229,231,235,.9);
+        border: 1px solid var(--stroke);
         background: rgba(255,255,255,.75);
-        margin: 0 0 10px;
-      }
-
-      .kbru-widget {
-        display: none;
+        margin: 0;
+        box-shadow: 0 8px 18px rgba(15,23,42,.08);
       }
 
       .kbru-toggle button {
@@ -197,44 +454,22 @@ const { entry } = Astro.props;
         box-shadow: 0 6px 14px rgba(15,23,42,.08);
       }
 
-      .kbru-widget-inner {
-        display: flex;
-        gap: 6px;
-        padding: 6px;
-        border-radius: 999px;
-        border: 1px solid rgba(229,231,235,.9);
-        background: rgba(255,255,255,.92);
-        box-shadow: 0 18px 50px rgba(15,23,42,.14);
-        backdrop-filter: blur(10px);
+      [data-kbru-view="dish"] [data-kbru-panel="100g"] {
+        display: none;
       }
 
-      .kbru-widget button {
-        appearance: none;
-        border: 0;
-        background: transparent;
-        padding: 10px 12px;
-        border-radius: 999px;
-        font-size: 13px;
-        cursor: pointer;
-        color: #374151;
-        white-space: nowrap;
-      }
-
-      .kbru-widget button[aria-pressed="true"] {
-        background: rgba(249,250,251,.98);
-        border: 1px solid rgba(229,231,235,.9);
-        color: #111827;
-        box-shadow: 0 10px 24px rgba(15,23,42,.10);
+      [data-kbru-view="100g"] [data-kbru-panel="dish"] {
+        display: none;
       }
     </style>
   </head>
   <body>
-    <main data-kbru-view="100g" style="min-height: 100vh; background: radial-gradient(1200px 600px at 20% -10%, #fef3c7 0%, rgba(254,243,199,0) 55%), radial-gradient(900px 520px at 90% 0%, #fecaca 0%, rgba(254,202,202,0) 55%), #ffffff; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;">
+    <main data-kbru-view={initialKbruView} class="recipe-page">
       <div class="recipe-shell">
-        <header class="recipe-header" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px;">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <img src="/logo.png" alt="Dr.Welnes" width="34" height="34" style="display:block; width:34px; height:34px; border-radius: 10px; object-fit: cover;" />
-            <div style="font-weight: 700; letter-spacing: -0.01em;">Dr.Welnes</div>
+        <header class="recipe-header">
+          <div class="recipe-brand">
+            <img src="/logo.png" alt="Dr.Welnes" width="36" height="36" class="recipe-logo" />
+            <div class="recipe-name">Dr.Welnes</div>
           </div>
           <nav class="recipe-nav">
             <a href="/recipes">Рецепты</a>
@@ -243,17 +478,17 @@ const { entry } = Astro.props;
           </nav>
         </header>
 
-        <div class="recipe-main" style="display: flex; flex-direction: column; gap: 16px; min-width: 0;">
-          <section style="border: 1px solid rgba(229,231,235,.9); background: rgba(255,255,255,.8); backdrop-filter: blur(10px); border-radius: 18px; padding: 22px; box-shadow: 0 10px 30px rgba(15,23,42,.08);">
+        <div class="recipe-main">
+          <section class="card card--intro">
             <h1 class="recipe-title">{entry.data.title}</h1>
             {entry.data.description && (
-              <p style="margin: 0; color: #6b7280; font-size: 16px; line-height: 1.5;">{entry.data.description}</p>
+              <p class="recipe-description">{entry.data.description}</p>
             )}
 
             {(entry.data.prepTimeMinutes !== undefined || entry.data.cookTimeMinutes !== undefined) && (
-              <div style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px;">
+              <div class="recipe-meta">
                 {entry.data.prepTimeMinutes !== undefined && (
-                  <div style="padding: 6px 10px; border-radius: 999px; background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%); border: 1px solid rgba(251,191,36,.2); font-size: 12px; color: #92400e; display: flex; align-items: center; gap: 6px;">
+                  <div class="meta-pill meta-pill--prep">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                     </svg>
@@ -261,7 +496,7 @@ const { entry } = Astro.props;
                   </div>
                 )}
                 {entry.data.cookTimeMinutes !== undefined && (
-                  <div style="padding: 6px 10px; border-radius: 999px; background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%); border: 1px solid rgba(239,68,68,.2); font-size: 12px; color: #991b1b; display: flex; align-items: center; gap: 6px;">
+                  <div class="meta-pill meta-pill--cook">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M2 12h20M2 12l2-6v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6l2 6" />
                       <path d="M12 2v10l4-4" />
@@ -274,19 +509,19 @@ const { entry } = Astro.props;
           </section>
 
           {entry.data.videoFile ? (
-            <div style="margin: 0;">
-              <div data-video-shell style="border-radius: 12px; overflow: hidden; background: #000; box-shadow: 0 10px 30px rgba(15,23,42,.10); position: relative;">
+            <div class="recipe-video">
+              <div data-video-shell class="video-shell">
                 <div
                   data-video-backdrop
                   aria-hidden="true"
-                  style="display:none; position:absolute; inset:0; background-position:center; background-size:cover; filter: blur(18px); transform: scale(1.08); opacity:.55;"
+                  class="video-backdrop"
                 ></div>
                 <video
                   controls={false}
                   playsinline
                   preload="metadata"
                   controlslist="nodownload"
-                  style="display:block; width: 100%; height: auto; max-height: 75vh; background: #000; position: relative; z-index: 1;"
+                  class="video-player"
                   src={entry.data.videoFile}
                   poster={entry.data.videoPoster}
                   data-video-resume-key={"recipe:" + entry.slug}
@@ -313,7 +548,7 @@ const { entry } = Astro.props;
             </div>
           ) : (
             entry.data.videoUrl && (
-              <div style="margin: 0;">
+              <div class="recipe-video">
                 <iframe
                   width="100%"
                   height="420"
@@ -321,13 +556,13 @@ const { entry } = Astro.props;
                   title={entry.data.title}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowfullscreen
-                  style="border: 0; border-radius: 12px; box-shadow: 0 10px 30px rgba(15,23,42,.10);"
+                  class="video-embed"
                 />
               </div>
             )
           )}
 
-          {(entry.data.kbru || entry.data.kbruTotal) && (
+          {showKbruToggle && (
             <div class="kbru-toggle" role="group" aria-label="Переключение КБЖУ">
               <button type="button" data-kbru-switch="100g" aria-pressed="true">100 г</button>
               <button type="button" data-kbru-switch="dish" aria-pressed="false">Блюдо</button>
@@ -336,97 +571,97 @@ const { entry } = Astro.props;
 
         </div>
 
-        <aside class="recipe-sidebar" style="display: flex; flex-direction: column; gap: 12px; min-width: 0;">
-          {entry.data.kbru && (
-            <section data-kbru-panel="100g" style="background: linear-gradient(135deg, rgba(255,255,255,.9) 0%, rgba(254,240,138,.3) 100%); border: 1px solid rgba(245,158,11,.15); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06);">
-              <h2 style="margin: 0 0 10px; font-size: 16px; letter-spacing: -0.01em; display: flex; align-items: center; gap: 8px;">
+        <aside class="recipe-sidebar">
+          {hasKbru && (
+            <section data-kbru-panel="100g" class="card card--kbru">
+              <h2 class="section-title">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
                   <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" />
                 </svg>
                 КБЖУ (на 100 г)
               </h2>
-              <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;">
-                <div style="padding: 10px 12px; border-radius: 14px; background: rgba(255,255,255,.75); border: 1px solid rgba(229,231,235,.8);">
-                  <div style="font-size: 12px; color: #6b7280;">Ккал</div>
-                  <div style="font-weight: 700;">{entry.data.kbru.calories ?? "—"}</div>
+              <div class="kbru-grid">
+                <div class="kbru-item">
+                  <div class="kbru-label">Ккал</div>
+                  <div class="kbru-value">{entry.data.kbru?.calories ?? "—"}</div>
                 </div>
-                <div style="padding: 10px 12px; border-radius: 14px; background: rgba(255,255,255,.75); border: 1px solid rgba(229,231,235,.8);">
-                  <div style="font-size: 12px; color: #6b7280;">Белки</div>
-                  <div style="font-weight: 700;">{entry.data.kbru.protein ?? "—"}</div>
+                <div class="kbru-item">
+                  <div class="kbru-label">Белки</div>
+                  <div class="kbru-value">{entry.data.kbru?.protein ?? "—"}</div>
                 </div>
-                <div style="padding: 10px 12px; border-radius: 14px; background: rgba(255,255,255,.75); border: 1px solid rgba(229,231,235,.8);">
-                  <div style="font-size: 12px; color: #6b7280;">Жиры</div>
-                  <div style="font-weight: 700;">{entry.data.kbru.fat ?? "—"}</div>
+                <div class="kbru-item">
+                  <div class="kbru-label">Жиры</div>
+                  <div class="kbru-value">{entry.data.kbru?.fat ?? "—"}</div>
                 </div>
-                <div style="padding: 10px 12px; border-radius: 14px; background: rgba(255,255,255,.75); border: 1px solid rgba(229,231,235,.8);">
-                  <div style="font-size: 12px; color: #6b7280;">Углеводы</div>
-                  <div style="font-weight: 700;">{entry.data.kbru.carbs ?? "—"}</div>
-                </div>
-              </div>
-            </section>
-          )}
-
-          {entry.data.kbruTotal && (
-            <section data-kbru-panel="dish" style="background: rgba(255,255,255,.85); border: 1px solid rgba(229,231,235,.9); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06);">
-              <h2 style="margin: 0 0 10px; font-size: 16px; letter-spacing: -0.01em;">КБЖУ (на блюдо)</h2>
-              <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;">
-                <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
-                  <div style="font-size: 12px; color: #6b7280;">Ккал</div>
-                  <div style="font-weight: 700;">{entry.data.kbruTotal.calories ?? "—"}</div>
-                </div>
-                <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
-                  <div style="font-size: 12px; color: #6b7280;">Белки</div>
-                  <div style="font-weight: 700;">{entry.data.kbruTotal.protein ?? "—"}</div>
-                </div>
-                <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
-                  <div style="font-size: 12px; color: #6b7280;">Жиры</div>
-                  <div style="font-weight: 700;">{entry.data.kbruTotal.fat ?? "—"}</div>
-                </div>
-                <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
-                  <div style="font-size: 12px; color: #6b7280;">Углеводы</div>
-                  <div style="font-weight: 700;">{entry.data.kbruTotal.carbs ?? "—"}</div>
+                <div class="kbru-item">
+                  <div class="kbru-label">Углеводы</div>
+                  <div class="kbru-value">{entry.data.kbru?.carbs ?? "—"}</div>
                 </div>
               </div>
             </section>
           )}
 
-          {entry.data.kbruBasal && (
-            <section style="background: rgba(255,255,255,.85); border: 1px solid rgba(229,231,235,.9); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06);">
-              <h2 style="margin: 0 0 10px; font-size: 16px; letter-spacing: -0.01em;">КБЖУ (100 г блюда на основной обмен)</h2>
-              <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;">
-                <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
-                  <div style="font-size: 12px; color: #6b7280;">Ккал</div>
-                  <div style="font-weight: 700;">{entry.data.kbruBasal.calories ?? "—"}</div>
+          {hasKbruTotal && (
+            <section data-kbru-panel="dish" class="card card--soft">
+              <h2 class="section-title">КБЖУ (на блюдо)</h2>
+              <div class="kbru-grid">
+                <div class="kbru-item">
+                  <div class="kbru-label">Ккал</div>
+                  <div class="kbru-value">{entry.data.kbruTotal?.calories ?? "—"}</div>
                 </div>
-                <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
-                  <div style="font-size: 12px; color: #6b7280;">Белки</div>
-                  <div style="font-weight: 700;">{entry.data.kbruBasal.protein ?? "—"}</div>
+                <div class="kbru-item">
+                  <div class="kbru-label">Белки</div>
+                  <div class="kbru-value">{entry.data.kbruTotal?.protein ?? "—"}</div>
                 </div>
-                <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
-                  <div style="font-size: 12px; color: #6b7280;">Жиры</div>
-                  <div style="font-weight: 700;">{entry.data.kbruBasal.fat ?? "—"}</div>
+                <div class="kbru-item">
+                  <div class="kbru-label">Жиры</div>
+                  <div class="kbru-value">{entry.data.kbruTotal?.fat ?? "—"}</div>
                 </div>
-                <div style="padding: 10px 12px; border-radius: 14px; background: rgba(249,250,251,.85); border: 1px solid rgba(229,231,235,.9);">
-                  <div style="font-size: 12px; color: #6b7280;">Углеводы</div>
-                  <div style="font-weight: 700;">{entry.data.kbruBasal.carbs ?? "—"}</div>
+                <div class="kbru-item">
+                  <div class="kbru-label">Углеводы</div>
+                  <div class="kbru-value">{entry.data.kbruTotal?.carbs ?? "—"}</div>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {hasKbruBasal && (
+            <section class="card card--soft">
+              <h2 class="section-title">КБЖУ (100 г блюда на основной обмен)</h2>
+              <div class="kbru-grid">
+                <div class="kbru-item">
+                  <div class="kbru-label">Ккал</div>
+                  <div class="kbru-value">{entry.data.kbruBasal?.calories ?? "—"}</div>
+                </div>
+                <div class="kbru-item">
+                  <div class="kbru-label">Белки</div>
+                  <div class="kbru-value">{entry.data.kbruBasal?.protein ?? "—"}</div>
+                </div>
+                <div class="kbru-item">
+                  <div class="kbru-label">Жиры</div>
+                  <div class="kbru-value">{entry.data.kbruBasal?.fat ?? "—"}</div>
+                </div>
+                <div class="kbru-item">
+                  <div class="kbru-label">Углеводы</div>
+                  <div class="kbru-value">{entry.data.kbruBasal?.carbs ?? "—"}</div>
                 </div>
               </div>
             </section>
           )}
 
           {entry.data.ingredients && entry.data.ingredients.length > 0 && (
-            <section style="background: linear-gradient(135deg, rgba(255,255,255,.9) 0%, rgba(254,243,199,.3) 100%); border: 1px solid rgba(251,191,36,.15); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06);">
-              <h2 style="margin: 0 0 10px; font-size: 16px; letter-spacing: -0.01em; display: flex; align-items: center; gap: 8px;">
+            <section class="card card--ingredients">
+              <h2 class="section-title">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
                   <path d="M20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z" />
                 </svg>
                 Ингредиенты
               </h2>
-              <ul style="margin: 0; padding-left: 18px;">
+              <ul class="ingredients-list">
                 {entry.data.ingredients.map((it) => (
                   <li>
-                    <span style="font-weight: 600;">{it.name}</span>
-                    {it.amount ? <span style="color:#6b7280;"> — {it.amount}</span> : null}
+                    <span class="ingredient-name" style="font-weight: 600;">{it.name}</span>
+                    {it.amount ? <span class="ingredient-amount" style="color:#6b7280;"> — {it.amount}</span> : null}
                   </li>
                 ))}
               </ul>
@@ -435,19 +670,19 @@ const { entry } = Astro.props;
         </aside>
 
         {entry.data.steps && entry.data.steps.length > 0 && (
-          <section class="recipe-steps" style="background: linear-gradient(135deg, rgba(255,255,255,.9) 0%, rgba(254,202,202,.3) 100%); border: 1px solid rgba(239,68,68,.15); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06);">
-            <h2 style="margin: 0 0 10px; font-size: 18px; letter-spacing: -0.01em; display: flex; align-items: center; gap: 8px;">
+          <section class="recipe-steps card card--steps">
+            <h2 class="section-title section-title--lg">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2">
                 <path d="M9 11l3 3L22 4" />
                 <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
               </svg>
               Шаги
             </h2>
-            <ol style="margin: 0; padding-left: 0; list-style: none;">
+            <ol class="steps-list">
               {entry.data.steps.map((t, i) => (
-                <li style="display: flex; gap: 12px; margin-bottom: 12px; padding: 12px; background: rgba(255,255,255,.6); border-radius: 12px;">
-                  <span style="flex-shrink: 0; width: 24px; height: 24px; background: linear-gradient(135deg, #fca5a5 0%, #f87171 100%); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600;">{i + 1}</span>
-                  <span style="flex: 1; padding-top: 2px;">{t}</span>
+                <li class="steps-item">
+                  <span class="step-index">{i + 1}</span>
+                  <span class="step-text">{t}</span>
                 </li>
               ))}
             </ol>
