@@ -13,7 +13,7 @@ const { entry } = Astro.props;
 <html lang="ru">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{entry.data.title}</title>
     <style>
       .recipe-shell {
@@ -63,10 +63,16 @@ const { entry } = Astro.props;
         text-shadow: 0 1px 2px rgba(0,0,0,0.04);
       }
 
-      @media (max-width: 900px) {
+      @media (max-width: 1024px) {
         .recipe-shell {
-          grid-template-columns: 1fr;
+          grid-template-columns: 1fr !important;
           gap: 16px;
+        }
+
+        .recipe-main,
+        .recipe-sidebar,
+        .recipe-steps {
+          grid-column: 1 !important;
         }
 
         .recipe-header {
