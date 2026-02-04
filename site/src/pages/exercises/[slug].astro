@@ -1,7 +1,6 @@
 ---
 import { getCollection } from "astro:content";
 import { toEmbedUrl } from "../../lib/video";
-import SiteLayout from "../../layouts/SiteLayout.astro";
 
 export async function getStaticPaths() {
   const items = await getCollection("exercises");
@@ -12,96 +11,124 @@ const { entry } = Astro.props;
 const { Content } = await entry.render();
 ---
 
-<SiteLayout title={entry.data.title} active="exercises">
-  <section class="card card--hero" data-animate style="--delay: 0.05s;">
-    <h1 class="hero-title">{entry.data.title}</h1>
-    {entry.data.description && (
-      <p class="hero-subtitle">{entry.data.description}</p>
-    )}
-  </section>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{entry.data.title}</title>
+  </head>
+  <body>
+    <main style="min-height: 100vh; background: radial-gradient(1200px 600px at 20% -10%, #dbeafe 0%, rgba(219,234,254,0) 55%), radial-gradient(900px 520px at 90% 0%, #fce7f3 0%, rgba(252,231,243,0) 55%), #ffffff; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;">
+      <div style="max-width: 980px; margin: 0 auto; padding: 28px 20px 36px;">
+        <header style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <img src="/logo.png" alt="Dr.Welnes" width="34" height="34" style="display:block; width:34px; height:34px; border-radius: 10px; object-fit: cover;" />
+            <div style="font-weight: 700; letter-spacing: -0.01em;">Dr.Welnes</div>
+          </div>
+          <nav style="display: flex; flex-wrap: wrap; gap: 10px;">
+            <a href="/recipes" style="text-decoration: none; color: #111827; padding: 8px 10px; border-radius: 10px;">Рецепты</a>
+            <a href="/exercises" style="text-decoration: none; color: #111827; padding: 8px 10px; border-radius: 10px;">Упражнения</a>
+            <a href="/calculators" style="text-decoration: none; color: #111827; padding: 8px 10px; border-radius: 10px;">Калькуляторы</a>
+          </nav>
+        </header>
 
-  {entry.data.videoFile ? (
-    <section class="card card--soft" data-animate style="--delay: 0.1s;">
-      <div data-video-shell class="video-shell">
-        <div data-video-backdrop aria-hidden="true" class="video-backdrop"></div>
-        <video
-          controls={false}
-          playsinline
-          preload="metadata"
-          controlslist="nodownload"
-          class="video-player"
-          src={entry.data.videoFile}
-          poster={entry.data.videoPoster}
-          data-video-resume-key={"exercise:" + entry.slug}
-        />
+        <section style="border: 1px solid rgba(229,231,235,.9); background: rgba(255,255,255,.8); backdrop-filter: blur(10px); border-radius: 18px; padding: 22px; box-shadow: 0 10px 30px rgba(15,23,42,.08);">
+          <h1 style="margin: 0 0 8px; font-size: 28px; line-height: 1.15; letter-spacing: -0.03em;">{entry.data.title}</h1>
+          {entry.data.description && (
+            <p style="margin: 0; color: #4b5563;">{entry.data.description}</p>
+          )}
+        </section>
 
-        <!-- Custom controls -->
-        <div style="position: absolute; bottom: 0; left: 0; right: 0; z-index: 3; pointer-events: auto; background: linear-gradient(transparent, rgba(0,0,0,0.7)); padding: 12px; display: flex; align-items: center; gap: 10px;">
-          <button
-            type="button"
-            data-video-play-pause
-            style="background: none; border: none; color: white; cursor: pointer; font-size: 18px; padding: 4px;"
-          >
-            ▶
-          </button>
-
-          <div style="flex: 1; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; position: relative; cursor: pointer;" data-video-progress>
-            <div data-video-progress-bar style="height: 100%; background: #ef4444; border-radius: 2px; width: 0%; transition: width 0.1s;"></div>
+      {entry.data.videoFile ? (
+        <div style="margin: 16px 0;">
+          <div data-video-shell style="border-radius: 12px; overflow: hidden; background: #000; box-shadow: 0 10px 30px rgba(15,23,42,.10); position: relative;">
+            <div
+              data-video-backdrop
+              aria-hidden="true"
+              style="display:none; position:absolute; inset:0; background-position:center; background-size:cover; filter: blur(18px); transform: scale(1.08); opacity:.55;"
+            ></div>
+            <video
+              controls={false}
+              playsinline
+              preload="metadata"
+              controlslist="nodownload"
+              style="display:block; width: 100%; height: auto; max-height: 75vh; background: #000; position: relative; z-index: 1;"
+              src={entry.data.videoFile}
+              poster={entry.data.videoPoster}
+              data-video-resume-key={"exercise:" + entry.slug}
+            />
+            
+            <!-- Custom controls -->
+            <div style="position: absolute; bottom: 0; left: 0; right: 0; z-index: 3; pointer-events: auto; background: linear-gradient(transparent, rgba(0,0,0,0.7)); padding: 12px; display: flex; align-items: center; gap: 10px;">
+              <button
+                type="button"
+                data-video-play-pause
+                style="background: none; border: none; color: white; cursor: pointer; font-size: 18px; padding: 4px;"
+              >
+                ▶
+              </button>
+              
+              <div style="flex: 1; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; position: relative; cursor: pointer;" data-video-progress>
+                <div data-video-progress-bar style="height: 100%; background: #ef4444; border-radius: 2px; width: 0%; transition: width 0.1s;"></div>
+              </div>
+              
+              <span data-video-time style="color: white; font-size: 12px; min-width: 80px;">0:00 / 0:00</span>
+              
+              <button
+                type="button"
+                data-video-mute
+                style="background: none; border: none; color: white; cursor: pointer; font-size: 16px; padding: 4px;"
+              >
+                🔊
+              </button>
+              
+              <select
+                data-video-speed
+                style="background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 2px 4px; border-radius: 4px; font-size: 12px; cursor: pointer;"
+              >
+                <option value="0.5">0.5x</option>
+                <option value="0.75">0.75x</option>
+                <option value="1" selected>1x</option>
+                <option value="1.25">1.25x</option>
+                <option value="1.5">1.5x</option>
+                <option value="2">2x</option>
+              </select>
+              
+              <button
+                type="button"
+                data-video-fullscreen
+                style="background: none; border: none; color: white; cursor: pointer; font-size: 16px; padding: 4px;"
+              >
+                ⛶
+              </button>
+            </div>
           </div>
 
-          <span data-video-time style="color: white; font-size: 12px; min-width: 80px;">0:00 / 0:00</span>
-
-          <button
-            type="button"
-            data-video-mute
-            style="background: none; border: none; color: white; cursor: pointer; font-size: 16px; padding: 4px;"
-          >
-            🔊
-          </button>
-
-          <select
-            data-video-speed
-            style="background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 2px 4px; border-radius: 4px; font-size: 12px; cursor: pointer;"
-          >
-            <option value="0.5">0.5x</option>
-            <option value="0.75">0.75x</option>
-            <option value="1" selected>1x</option>
-            <option value="1.25">1.25x</option>
-            <option value="1.5">1.5x</option>
-            <option value="2">2x</option>
-          </select>
-
-          <button
-            type="button"
-            data-video-fullscreen
-            style="background: none; border: none; color: white; cursor: pointer; font-size: 16px; padding: 4px;"
-          >
-            ⛶
-          </button>
+          </div>
         </div>
+      ) : (
+        entry.data.videoUrl && (
+          <div style="margin: 16px 0;">
+            <iframe
+              width="100%"
+              height="420"
+              src={toEmbedUrl(entry.data.videoUrl)}
+              title={entry.data.title}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+              style="border: 0; border-radius: 12px;"
+            />
+          </div>
+        )
+      )}
+
+        <article style="line-height: 1.6; background: rgba(255,255,255,.85); border: 1px solid rgba(229,231,235,.9); border-radius: 18px; padding: 18px; box-shadow: 0 10px 30px rgba(15,23,42,.06);">
+          <Content />
+        </article>
       </div>
-    </section>
-  ) : (
-    entry.data.videoUrl && (
-      <section class="card card--soft" data-animate style="--delay: 0.1s;">
-        <iframe
-          width="100%"
-          height="420"
-          src={toEmbedUrl(entry.data.videoUrl)}
-          title={entry.data.title}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen
-          class="video-embed"
-        />
-      </section>
-    )
-  )}
+    </main>
 
-  <article class="article-card" data-animate style="--delay: 0.15s;">
-    <Content />
-  </article>
-
-  <script slot="scripts">
+    <script>
       (() => {
         const video = document.querySelector('video[data-video-resume-key]');
         if (!video) return;
@@ -404,5 +431,6 @@ const { Content } = await entry.render();
           }
         });
       })();
-  </script>
-</SiteLayout>
+    </script>
+  </body>
+</html>

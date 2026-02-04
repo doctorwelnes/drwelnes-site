@@ -1,7 +1,6 @@
 ---
 import { getCollection } from "astro:content";
 import { toEmbedUrl } from "../../lib/video";
-import SiteLayout from "../../layouts/SiteLayout.astro";
 
 export async function getStaticPaths() {
   const items = await getCollection("recipes");
@@ -18,15 +17,108 @@ const showKbruToggle = hasKbru && hasKbruTotal;
 const initialKbruView = hasKbru ? "100g" : hasKbruTotal ? "dish" : "100g";
 ---
 
-<SiteLayout title={entry.data.title} active="recipes">
-  <style>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <title>{entry.data.title}</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+        background: #fff7ed;
+        color: #111827;
+      }
+
+      :root {
+        --surface: rgba(255,255,255,.86);
+        --surface-strong: rgba(255,255,255,.94);
+        --stroke: rgba(229,231,235,.9);
+        --shadow: 0 16px 36px rgba(15,23,42,.08);
+        --shadow-soft: 0 10px 30px rgba(15,23,42,.06);
+        --accent-warm: #f97316;
+        --accent-rose: #ef4444;
+        --accent-gold: #f59e0b;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      main {
+        overflow-x: hidden;
+      }
+
+      .recipe-page {
+        min-height: 100vh;
+        background: radial-gradient(1200px 600px at 20% -10%, #fef3c7 0%, rgba(254,243,199,0) 55%),
+          radial-gradient(900px 520px at 90% 0%, #fecaca 0%, rgba(254,202,202,0) 55%),
+          #ffffff;
+        font-family: "Manrope", "Segoe UI", system-ui, -apple-system, sans-serif;
+        color: #1f2937;
+      }
+
+      img,
+      video,
+      iframe {
+        max-width: 100%;
+      }
+
+      p,
+      li {
+        overflow-wrap: anywhere;
+      }
+
       .recipe-shell {
         display: grid;
         grid-template-columns: minmax(0, 1fr) minmax(0, 320px);
-        gap: 20px;
+        gap: 28px;
         align-items: start;
         width: 100%;
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 32px 20px 42px;
         min-width: 0;
+      }
+
+      .recipe-header {
+        grid-column: 1 / -1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+        min-width: 0;
+      }
+
+      .recipe-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .recipe-logo {
+        display: block;
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+        object-fit: cover;
+      }
+
+      .recipe-name {
+        font-weight: 700;
+        letter-spacing: -0.01em;
       }
 
       .recipe-main {
@@ -48,6 +140,39 @@ const initialKbruView = hasKbru ? "100g" : hasKbruTotal ? "dish" : "100g";
       .recipe-steps {
         grid-column: 1;
         min-width: 0;
+      }
+
+      .recipe-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        max-width: 100%;
+      }
+
+      .recipe-nav a {
+        text-decoration: none;
+        color: #111827;
+        padding: 8px 10px;
+        border-radius: 10px;
+        flex: 0 0 auto;
+      }
+
+      .recipe-title {
+        margin: 0 0 8px;
+        font-size: 32px;
+        line-height: 1.1;
+        letter-spacing: -0.03em;
+        font-weight: 700;
+        color: #1f2937;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.04);
+      }
+
+      .recipe-description {
+        margin: 0;
+        color: #6b7280;
+        font-size: 16px;
+        line-height: 1.55;
+        max-width: 64ch;
       }
 
       .recipe-video {
@@ -91,9 +216,26 @@ const initialKbruView = hasKbru ? "100g" : hasKbruTotal ? "dish" : "100g";
         box-shadow: 0 16px 34px rgba(15,23,42,.12);
       }
 
+      .card {
+        border-radius: 20px;
+        border: 1px solid var(--stroke);
+        background: var(--surface);
+        padding: 20px 22px;
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(10px);
+      }
+
+      .card--intro {
+        background: var(--surface-strong);
+      }
+
       .card--kbru {
         background: linear-gradient(135deg, rgba(255,255,255,.95) 0%, rgba(254,240,138,.28) 100%);
         border-color: rgba(245,158,11,.2);
+      }
+
+      .card--soft {
+        background: rgba(255,255,255,.9);
       }
 
       .card--ingredients {
@@ -218,6 +360,7 @@ const initialKbruView = hasKbru ? "100g" : hasKbruTotal ? "dish" : "100g";
         .recipe-shell {
           grid-template-columns: 1fr !important;
           gap: 16px;
+          padding: 20px 14px 26px;
         }
 
         .recipe-main,
@@ -226,7 +369,34 @@ const initialKbruView = hasKbru ? "100g" : hasKbruTotal ? "dish" : "100g";
           grid-column: 1 !important;
         }
 
-        .recipe-hero .hero-title {
+        .recipe-header {
+          flex-direction: column;
+          align-items: flex-start;
+          margin-bottom: 10px !important;
+        }
+
+        .recipe-nav {
+          width: 100%;
+          overflow-x: auto;
+          flex-wrap: nowrap;
+          gap: 8px;
+          padding: 8px;
+          border-radius: 14px;
+          border: 1px solid rgba(229,231,235,.9);
+          background: rgba(255,255,255,.75);
+          -webkit-overflow-scrolling: touch;
+        }
+
+        .recipe-nav a {
+          padding: 8px 12px;
+          border-radius: 999px;
+          background: rgba(249,250,251,.9);
+          border: 1px solid rgba(229,231,235,.9);
+          font-size: 14px;
+          white-space: nowrap;
+        }
+
+        .recipe-title {
           font-size: 26px;
           line-height: 1.12;
         }
@@ -243,7 +413,7 @@ const initialKbruView = hasKbru ? "100g" : hasKbruTotal ? "dish" : "100g";
           order: 3;
         }
 
-        .recipe-shell .card {
+        .card {
           padding: 16px 18px;
           border-radius: 18px;
         }
@@ -292,220 +462,238 @@ const initialKbruView = hasKbru ? "100g" : hasKbruTotal ? "dish" : "100g";
         display: none;
       }
     </style>
-
-  <section class="card card--hero recipe-hero" data-animate style="--delay: 0.05s;">
-    <h1 class="hero-title">{entry.data.title}</h1>
-    {entry.data.description && (
-      <p class="hero-subtitle">{entry.data.description}</p>
-    )}
-
-    {(entry.data.prepTimeMinutes !== undefined || entry.data.cookTimeMinutes !== undefined) && (
-      <div class="recipe-meta">
-        {entry.data.prepTimeMinutes !== undefined && (
-          <div class="meta-pill meta-pill--prep">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-            </svg>
-            Подготовка: {entry.data.prepTimeMinutes} мин
+  </head>
+  <body>
+    <main data-kbru-view={initialKbruView} class="recipe-page">
+      <div class="recipe-shell">
+        <header class="recipe-header">
+          <div class="recipe-brand">
+            <img src="/logo.png" alt="Dr.Welnes" width="36" height="36" class="recipe-logo" />
+            <div class="recipe-name">Dr.Welnes</div>
           </div>
-        )}
-        {entry.data.cookTimeMinutes !== undefined && (
-          <div class="meta-pill meta-pill--cook">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M2 12h20M2 12l2-6v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6l2 6" />
-              <path d="M12 2v10l4-4" />
-            </svg>
-            Приготовление: {entry.data.cookTimeMinutes} мин
-          </div>
-        )}
-      </div>
-    )}
-  </section>
+          <nav class="recipe-nav">
+            <a href="/recipes">Рецепты</a>
+            <a href="/exercises">Упражнения</a>
+            <a href="/calculators">Калькуляторы</a>
+          </nav>
+        </header>
 
-  <div class="recipe-page" data-recipe-page data-kbru-view={initialKbruView}>
-    <div class="recipe-shell">
-      <div class="recipe-main">
-        {entry.data.videoFile ? (
-          <section class="card card--soft recipe-video" data-animate style="--delay: 0.1s;">
-            <div data-video-shell class="video-shell">
-              <div data-video-backdrop aria-hidden="true" class="video-backdrop"></div>
-              <video
-                controls={false}
-                playsinline
-                preload="metadata"
-                controlslist="nodownload"
-                class="video-player"
-                src={entry.data.videoFile}
-                poster={entry.data.videoPoster}
-                data-video-resume-key={"recipe:" + entry.slug}
-              />
+        <div class="recipe-main">
+          <section class="card card--intro">
+            <h1 class="recipe-title">{entry.data.title}</h1>
+            {entry.data.description && (
+              <p class="recipe-description">{entry.data.description}</p>
+            )}
 
-              <div style="position: absolute; bottom: 0; left: 0; right: 0; z-index: 3; pointer-events: auto; background: linear-gradient(transparent, rgba(0,0,0,0.7)); padding: 12px; display: flex; align-items: center; gap: 10px;">
-                <button type="button" data-video-play-pause style="background: none; border: none; color: white; cursor: pointer; font-size: 18px; padding: 4px;">▶</button>
-                <div style="flex: 1; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; position: relative; cursor: pointer;" data-video-progress>
-                  <div data-video-progress-bar style="height: 100%; background: #ef4444; border-radius: 2px; width: 0%; transition: width 0.1s;"></div>
+            {(entry.data.prepTimeMinutes !== undefined || entry.data.cookTimeMinutes !== undefined) && (
+              <div class="recipe-meta">
+                {entry.data.prepTimeMinutes !== undefined && (
+                  <div class="meta-pill meta-pill--prep">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                    </svg>
+                    Подготовка: {entry.data.prepTimeMinutes} мин
+                  </div>
+                )}
+                {entry.data.cookTimeMinutes !== undefined && (
+                  <div class="meta-pill meta-pill--cook">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M2 12h20M2 12l2-6v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6l2 6" />
+                      <path d="M12 2v10l4-4" />
+                    </svg>
+                    Приготовление: {entry.data.cookTimeMinutes} мин
+                  </div>
+                )}
+              </div>
+            )}
+          </section>
+
+          {entry.data.videoFile ? (
+            <div class="recipe-video">
+              <div data-video-shell class="video-shell">
+                <div
+                  data-video-backdrop
+                  aria-hidden="true"
+                  class="video-backdrop"
+                ></div>
+                <video
+                  controls={false}
+                  playsinline
+                  preload="metadata"
+                  controlslist="nodownload"
+                  class="video-player"
+                  src={entry.data.videoFile}
+                  poster={entry.data.videoPoster}
+                  data-video-resume-key={"recipe:" + entry.slug}
+                />
+
+                <div style="position: absolute; bottom: 0; left: 0; right: 0; z-index: 3; pointer-events: auto; background: linear-gradient(transparent, rgba(0,0,0,0.7)); padding: 12px; display: flex; align-items: center; gap: 10px;">
+                  <button type="button" data-video-play-pause style="background: none; border: none; color: white; cursor: pointer; font-size: 18px; padding: 4px;">▶</button>
+                  <div style="flex: 1; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; position: relative; cursor: pointer;" data-video-progress>
+                    <div data-video-progress-bar style="height: 100%; background: #ef4444; border-radius: 2px; width: 0%; transition: width 0.1s;"></div>
+                  </div>
+                  <span data-video-time style="color: white; font-size: 12px; min-width: 80px;">0:00 / 0:00</span>
+                  <button type="button" data-video-mute style="background: none; border: none; color: white; cursor: pointer; font-size: 16px; padding: 4px;">🔊</button>
+                  <select data-video-speed style="background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 2px 4px; border-radius: 4px; font-size: 12px; cursor: pointer;">
+                    <option value="0.5">0.5x</option>
+                    <option value="0.75">0.75x</option>
+                    <option value="1" selected>1x</option>
+                    <option value="1.25">1.25x</option>
+                    <option value="1.5">1.5x</option>
+                    <option value="2">2x</option>
+                  </select>
+                  <button type="button" data-video-fullscreen style="background: none; border: none; color: white; cursor: pointer; font-size: 16px; padding: 4px;">⛶</button>
                 </div>
-                <span data-video-time style="color: white; font-size: 12px; min-width: 80px;">0:00 / 0:00</span>
-                <button type="button" data-video-mute style="background: none; border: none; color: white; cursor: pointer; font-size: 16px; padding: 4px;">🔊</button>
-                <select data-video-speed style="background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 2px 4px; border-radius: 4px; font-size: 12px; cursor: pointer;">
-                  <option value="0.5">0.5x</option>
-                  <option value="0.75">0.75x</option>
-                  <option value="1" selected>1x</option>
-                  <option value="1.25">1.25x</option>
-                  <option value="1.5">1.5x</option>
-                  <option value="2">2x</option>
-                </select>
-                <button type="button" data-video-fullscreen style="background: none; border: none; color: white; cursor: pointer; font-size: 16px; padding: 4px;">⛶</button>
               </div>
             </div>
-          </section>
-        ) : (
-          entry.data.videoUrl && (
-            <section class="card card--soft recipe-video" data-animate style="--delay: 0.1s;">
-              <iframe
-                width="100%"
-                height="420"
-                src={toEmbedUrl(entry.data.videoUrl)}
-                title={entry.data.title}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen
-                class="video-embed"
-              />
+          ) : (
+            entry.data.videoUrl && (
+              <div class="recipe-video">
+                <iframe
+                  width="100%"
+                  height="420"
+                  src={toEmbedUrl(entry.data.videoUrl)}
+                  title={entry.data.title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen
+                  class="video-embed"
+                />
+              </div>
+            )
+          )}
+
+          {showKbruToggle && (
+            <div class="kbru-toggle" role="group" aria-label="Переключение КБЖУ">
+              <button type="button" data-kbru-switch="100g" aria-pressed="true">100 г</button>
+              <button type="button" data-kbru-switch="dish" aria-pressed="false">Блюдо</button>
+            </div>
+          )}
+
+        </div>
+
+        <aside class="recipe-sidebar">
+          {hasKbru && (
+            <section data-kbru-panel="100g" class="card card--kbru">
+              <h2 class="section-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
+                  <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" />
+                </svg>
+                КБЖУ (на 100 г)
+              </h2>
+              <div class="kbru-grid">
+                <div class="kbru-item">
+                  <div class="kbru-label">Ккал</div>
+                  <div class="kbru-value">{entry.data.kbru?.calories ?? "—"}</div>
+                </div>
+                <div class="kbru-item">
+                  <div class="kbru-label">Белки</div>
+                  <div class="kbru-value">{entry.data.kbru?.protein ?? "—"}</div>
+                </div>
+                <div class="kbru-item">
+                  <div class="kbru-label">Жиры</div>
+                  <div class="kbru-value">{entry.data.kbru?.fat ?? "—"}</div>
+                </div>
+                <div class="kbru-item">
+                  <div class="kbru-label">Углеводы</div>
+                  <div class="kbru-value">{entry.data.kbru?.carbs ?? "—"}</div>
+                </div>
+              </div>
             </section>
-          )
-        )}
+          )}
 
-        {showKbruToggle && (
-          <div class="kbru-toggle" role="group" aria-label="Переключение КБЖУ" data-animate style="--delay: 0.15s;">
-            <button type="button" data-kbru-switch="100g" aria-pressed="true">100 г</button>
-            <button type="button" data-kbru-switch="dish" aria-pressed="false">Блюдо</button>
-          </div>
-        )}
-      </div>
+          {hasKbruTotal && (
+            <section data-kbru-panel="dish" class="card card--soft">
+              <h2 class="section-title">КБЖУ (на блюдо)</h2>
+              <div class="kbru-grid">
+                <div class="kbru-item">
+                  <div class="kbru-label">Ккал</div>
+                  <div class="kbru-value">{entry.data.kbruTotal?.calories ?? "—"}</div>
+                </div>
+                <div class="kbru-item">
+                  <div class="kbru-label">Белки</div>
+                  <div class="kbru-value">{entry.data.kbruTotal?.protein ?? "—"}</div>
+                </div>
+                <div class="kbru-item">
+                  <div class="kbru-label">Жиры</div>
+                  <div class="kbru-value">{entry.data.kbruTotal?.fat ?? "—"}</div>
+                </div>
+                <div class="kbru-item">
+                  <div class="kbru-label">Углеводы</div>
+                  <div class="kbru-value">{entry.data.kbruTotal?.carbs ?? "—"}</div>
+                </div>
+              </div>
+            </section>
+          )}
 
-      <aside class="recipe-sidebar">
-        {hasKbru && (
-          <section data-kbru-panel="100g" class="card card--kbru" data-animate style="--delay: 0.2s;">
-            <h2 class="section-title">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
-                <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" />
+          {hasKbruBasal && (
+            <section class="card card--soft">
+              <h2 class="section-title">КБЖУ (100 г блюда на основной обмен)</h2>
+              <div class="kbru-grid">
+                <div class="kbru-item">
+                  <div class="kbru-label">Ккал</div>
+                  <div class="kbru-value">{entry.data.kbruBasal?.calories ?? "—"}</div>
+                </div>
+                <div class="kbru-item">
+                  <div class="kbru-label">Белки</div>
+                  <div class="kbru-value">{entry.data.kbruBasal?.protein ?? "—"}</div>
+                </div>
+                <div class="kbru-item">
+                  <div class="kbru-label">Жиры</div>
+                  <div class="kbru-value">{entry.data.kbruBasal?.fat ?? "—"}</div>
+                </div>
+                <div class="kbru-item">
+                  <div class="kbru-label">Углеводы</div>
+                  <div class="kbru-value">{entry.data.kbruBasal?.carbs ?? "—"}</div>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {entry.data.ingredients && entry.data.ingredients.length > 0 && (
+            <section class="card card--ingredients">
+              <h2 class="section-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
+                  <path d="M20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z" />
+                </svg>
+                Ингредиенты
+              </h2>
+              <ul class="ingredients-list">
+                {entry.data.ingredients.map((it) => (
+                  <li>
+                    <span class="ingredient-name" style="font-weight: 600;">{it.name}</span>
+                    {it.amount ? <span class="ingredient-amount" style="color:#6b7280;"> — {it.amount}</span> : null}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+        </aside>
+
+        {entry.data.steps && entry.data.steps.length > 0 && (
+          <section class="recipe-steps card card--steps">
+            <h2 class="section-title section-title--lg">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2">
+                <path d="M9 11l3 3L22 4" />
+                <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
               </svg>
-              КБЖУ (на 100 г)
+              Шаги
             </h2>
-            <div class="kbru-grid">
-              <div class="kbru-item">
-                <div class="kbru-label">Ккал</div>
-                <div class="kbru-value">{entry.data.kbru?.calories ?? "—"}</div>
-              </div>
-              <div class="kbru-item">
-                <div class="kbru-label">Белки</div>
-                <div class="kbru-value">{entry.data.kbru?.protein ?? "—"}</div>
-              </div>
-              <div class="kbru-item">
-                <div class="kbru-label">Жиры</div>
-                <div class="kbru-value">{entry.data.kbru?.fat ?? "—"}</div>
-              </div>
-              <div class="kbru-item">
-                <div class="kbru-label">Углеводы</div>
-                <div class="kbru-value">{entry.data.kbru?.carbs ?? "—"}</div>
-              </div>
-            </div>
-          </section>
-        )}
-
-        {hasKbruTotal && (
-          <section data-kbru-panel="dish" class="card card--soft" data-animate style="--delay: 0.25s;">
-            <h2 class="section-title">КБЖУ (на блюдо)</h2>
-            <div class="kbru-grid">
-              <div class="kbru-item">
-                <div class="kbru-label">Ккал</div>
-                <div class="kbru-value">{entry.data.kbruTotal?.calories ?? "—"}</div>
-              </div>
-              <div class="kbru-item">
-                <div class="kbru-label">Белки</div>
-                <div class="kbru-value">{entry.data.kbruTotal?.protein ?? "—"}</div>
-              </div>
-              <div class="kbru-item">
-                <div class="kbru-label">Жиры</div>
-                <div class="kbru-value">{entry.data.kbruTotal?.fat ?? "—"}</div>
-              </div>
-              <div class="kbru-item">
-                <div class="kbru-label">Углеводы</div>
-                <div class="kbru-value">{entry.data.kbruTotal?.carbs ?? "—"}</div>
-              </div>
-            </div>
-          </section>
-        )}
-
-        {hasKbruBasal && (
-          <section class="card card--soft" data-animate style="--delay: 0.3s;">
-            <h2 class="section-title">КБЖУ (100 г блюда на основной обмен)</h2>
-            <div class="kbru-grid">
-              <div class="kbru-item">
-                <div class="kbru-label">Ккал</div>
-                <div class="kbru-value">{entry.data.kbruBasal?.calories ?? "—"}</div>
-              </div>
-              <div class="kbru-item">
-                <div class="kbru-label">Белки</div>
-                <div class="kbru-value">{entry.data.kbruBasal?.protein ?? "—"}</div>
-              </div>
-              <div class="kbru-item">
-                <div class="kbru-label">Жиры</div>
-                <div class="kbru-value">{entry.data.kbruBasal?.fat ?? "—"}</div>
-              </div>
-              <div class="kbru-item">
-                <div class="kbru-label">Углеводы</div>
-                <div class="kbru-value">{entry.data.kbruBasal?.carbs ?? "—"}</div>
-              </div>
-            </div>
-          </section>
-        )}
-
-        {entry.data.ingredients && entry.data.ingredients.length > 0 && (
-          <section class="card card--ingredients" data-animate style="--delay: 0.35s;">
-            <h2 class="section-title">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
-                <path d="M20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z" />
-              </svg>
-              Ингредиенты
-            </h2>
-            <ul class="ingredients-list">
-              {entry.data.ingredients.map((it) => (
-                <li>
-                  <span class="ingredient-name" style="font-weight: 600;">{it.name}</span>
-                  {it.amount ? <span class="ingredient-amount" style="color:#6b7280;"> — {it.amount}</span> : null}
+            <ol class="steps-list">
+              {entry.data.steps.map((t, i) => (
+                <li class="steps-item">
+                  <span class="step-index">{i + 1}</span>
+                  <span class="step-text">{t}</span>
                 </li>
               ))}
-            </ul>
+            </ol>
           </section>
         )}
-      </aside>
+      </div>
+    </main>
 
-      {entry.data.steps && entry.data.steps.length > 0 && (
-        <section class="recipe-steps card card--steps" data-animate style="--delay: 0.4s;">
-          <h2 class="section-title section-title--lg">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2">
-              <path d="M9 11l3 3L22 4" />
-              <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
-            </svg>
-            Шаги
-          </h2>
-          <ol class="steps-list">
-            {entry.data.steps.map((t, i) => (
-              <li class="steps-item">
-                <span class="step-index">{i + 1}</span>
-                <span class="step-text">{t}</span>
-              </li>
-            ))}
-          </ol>
-        </section>
-      )}
-    </div>
-  </div>
-
-  <script slot="scripts">
+    <script>
       (() => {
-        const page = document.querySelector('[data-recipe-page][data-kbru-view]');
+        const page = document.querySelector('main[data-kbru-view]');
         const toggles = document.querySelectorAll('[data-kbru-switch]');
 
         if (page && toggles.length > 0) {
@@ -525,7 +713,7 @@ const initialKbruView = hasKbru ? "100g" : hasKbruTotal ? "dish" : "100g";
           setView(page.getAttribute('data-kbru-view') || '100g');
         }
 
-        const video = page?.querySelector('video[data-video-resume-key]');
+        const video = document.querySelector('video[data-video-resume-key]');
         if (!video) return;
 
         const shell = video.closest('[data-video-shell]');
@@ -826,5 +1014,6 @@ const initialKbruView = hasKbru ? "100g" : hasKbruTotal ? "dish" : "100g";
           }
         });
       })();
-  </script>
-</SiteLayout>
+    </script>
+  </body>
+</html>
