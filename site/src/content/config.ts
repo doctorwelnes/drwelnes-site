@@ -76,6 +76,24 @@ function normalizeOptionalDate(input: unknown): unknown {
   return raw;
 }
 
+function normalizeOptionalNumber(input: unknown): unknown {
+  if (input === null || input === undefined) return undefined;
+
+  if (typeof input === "number") {
+    return Number.isFinite(input) ? input : undefined;
+  }
+
+  if (typeof input === "string") {
+    const raw = input.trim();
+    if (!raw) return undefined;
+
+    const n = Number(raw.replace(",", "."));
+    return Number.isFinite(n) ? n : undefined;
+  }
+
+  return input;
+}
+
 function normalizeRecipeSteps(input: unknown): unknown {
   if (!Array.isArray(input)) return input;
 
@@ -107,26 +125,26 @@ const recipes = defineCollection({
     cookTimeMinutes: z.number().int().nonnegative().optional(),
     kbru: z
       .object({
-        calories: z.number().optional(),
-        protein: z.number().optional(),
-        fat: z.number().optional(),
-        carbs: z.number().optional(),
+        calories: z.preprocess(normalizeOptionalNumber, z.number().optional()),
+        protein: z.preprocess(normalizeOptionalNumber, z.number().optional()),
+        fat: z.preprocess(normalizeOptionalNumber, z.number().optional()),
+        carbs: z.preprocess(normalizeOptionalNumber, z.number().optional()),
       })
       .optional(),
     kbruBasal: z
       .object({
-        calories: z.number().optional(),
-        protein: z.number().optional(),
-        fat: z.number().optional(),
-        carbs: z.number().optional(),
+        calories: z.preprocess(normalizeOptionalNumber, z.number().optional()),
+        protein: z.preprocess(normalizeOptionalNumber, z.number().optional()),
+        fat: z.preprocess(normalizeOptionalNumber, z.number().optional()),
+        carbs: z.preprocess(normalizeOptionalNumber, z.number().optional()),
       })
       .optional(),
     kbruTotal: z
       .object({
-        calories: z.number().optional(),
-        protein: z.number().optional(),
-        fat: z.number().optional(),
-        carbs: z.number().optional(),
+        calories: z.preprocess(normalizeOptionalNumber, z.number().optional()),
+        protein: z.preprocess(normalizeOptionalNumber, z.number().optional()),
+        fat: z.preprocess(normalizeOptionalNumber, z.number().optional()),
+        carbs: z.preprocess(normalizeOptionalNumber, z.number().optional()),
       })
       .optional(),
     ingredients: z
