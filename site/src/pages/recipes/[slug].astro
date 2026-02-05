@@ -146,15 +146,73 @@ const initialKbruView = hasKbru ? "100g" : hasKbruTotal ? "dish" : "100g";
         display: flex;
         flex-wrap: wrap;
         gap: 10px;
-        max-width: 100%;
       }
 
       .recipe-nav a {
         text-decoration: none;
         color: #111827;
-        padding: 8px 10px;
-        border-radius: 10px;
-        flex: 0 0 auto;
+      }
+
+      .menu-btn {
+        display: none;
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        border: 1px solid rgba(17, 24, 39, 0.12);
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(8px);
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.10);
+        cursor: pointer;
+        font: inherit;
+      }
+
+      .mobile-menu {
+        display: none;
+        margin-top: 10px;
+        border: 1px solid rgba(229,231,235,.9);
+        background: rgba(255,255,255,.85);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(15,23,42,.08);
+        overflow: hidden;
+        max-height: 0;
+        opacity: 0;
+        transform: translateY(-6px);
+        transition: max-height 240ms ease, opacity 200ms ease, transform 240ms ease;
+      }
+
+      .mobile-menu.is-open {
+        max-height: 320px;
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .mobile-menu a {
+        display: block;
+        padding: 12px 14px;
+        text-decoration: none;
+        color: #111827;
+        border-top: 1px solid rgba(229,231,235,.8);
+      }
+
+      .mobile-menu a:first-child {
+        border-top: 0;
+      }
+
+      @media (max-width: 640px) {
+        .recipe-nav {
+          display: none;
+        }
+
+        .menu-btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .mobile-menu {
+          display: block;
+        }
       }
 
       .recipe-title {
@@ -472,11 +530,22 @@ const initialKbruView = hasKbru ? "100g" : hasKbruTotal ? "dish" : "100g";
             <div class="recipe-name">Dr.Welnes</div>
           </div>
           <nav class="recipe-nav">
+            <a href="/">Главная</a>
             <a href="/recipes">Рецепты</a>
             <a href="/exercises">Упражнения</a>
+            <a href="/theory">Теория</a>
             <a href="/calculators">Калькуляторы</a>
           </nav>
+          <button id="menu_btn" type="button" class="menu-btn" aria-label="Меню" aria-expanded="false">☰</button>
         </header>
+
+        <div id="mobile_menu" class="mobile-menu" aria-label="Меню">
+          <a href="/">Главная</a>
+          <a href="/recipes">Рецепты</a>
+          <a href="/exercises">Упражнения</a>
+          <a href="/theory">Теория</a>
+          <a href="/calculators">Калькуляторы</a>
+        </div>
 
         <div class="recipe-main">
           <section class="card card--intro">
@@ -693,12 +762,42 @@ const initialKbruView = hasKbru ? "100g" : hasKbruTotal ? "dish" : "100g";
 
     <script>
       (() => {
-        const page = document.querySelector('main[data-kbru-view]');
+        try {
+          var btn = document.getElementById('menu_btn');
+          var menu = document.getElementById('mobile_menu');
+          if (btn && menu) {
+            function closeMenu() {
+              menu.classList.remove('is-open');
+              btn.setAttribute('aria-expanded', 'false');
+            }
+
+            btn.addEventListener('click', function (e) {
+              try { e && e.stopPropagation && e.stopPropagation(); } catch (e) {}
+              if (menu.classList.contains('is-open')) closeMenu();
+              else {
+                menu.classList.add('is-open');
+                btn.setAttribute('aria-expanded', 'true');
+              }
+            });
+
+            document.addEventListener('click', function (e) {
+              try {
+                var t = e && e.target;
+                if (t === btn || (btn.contains && btn.contains(t))) return;
+                if (t === menu || (menu.contains && menu.contains(t))) return;
+                closeMenu();
+              } catch (e) {}
+            });
+          }
+        } catch (e) {}
+
+        const root = document.querySelector('[data-kbru-view]');
+        if (!root) return;
         const toggles = document.querySelectorAll('[data-kbru-switch]');
 
-        if (page && toggles.length > 0) {
+        if (root && toggles.length > 0) {
           const setView = (view) => {
-            page.setAttribute('data-kbru-view', view);
+            root.setAttribute('data-kbru-view', view);
             document.querySelectorAll('[data-kbru-switch="100g"]').forEach((el) => el.setAttribute('aria-pressed', view === '100g' ? 'true' : 'false'));
             document.querySelectorAll('[data-kbru-switch="dish"]').forEach((el) => el.setAttribute('aria-pressed', view === 'dish' ? 'true' : 'false'));
           };
@@ -710,7 +809,7 @@ const initialKbruView = hasKbru ? "100g" : hasKbruTotal ? "dish" : "100g";
             });
           });
 
-          setView(page.getAttribute('data-kbru-view') || '100g');
+          setView(root.getAttribute('data-kbru-view') || '100g');
         }
 
         const video = document.querySelector('video[data-video-resume-key]');
