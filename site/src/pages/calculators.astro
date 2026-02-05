@@ -221,6 +221,35 @@
         gap: 6px;
       }
 
+      .card-grid {
+        margin-top: 16px;
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      }
+
+      .calc-card {
+        text-align: left;
+        width: 100%;
+        cursor: pointer;
+      }
+
+      .calc-card:hover {
+        transform: translateY(-1px);
+        transition: transform 160ms ease;
+      }
+
+      .calc-card-title {
+        font-weight: 800;
+        letter-spacing: -0.01em;
+      }
+
+      .calc-card-text {
+        margin-top: 6px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
       .is-hidden {
         display: none;
       }
@@ -246,21 +275,26 @@
           <p class="hero-subtitle">ИМТ, TDEE и оценка 1RM — быстро и без регистрации.</p>
         </section>
 
-        <section class="tabs">
-          <a href="#bmi" data-calc="bmi" class="tab is-active">ИМТ</a>
-          <a href="#tdee" data-calc="tdee" class="tab">TDEE</a>
-          <a href="#1rm" data-calc="1rm" class="tab">1RM</a>
-          <a href="#borg" data-calc="borg" class="tab">Шкала Борга</a>
-          <a href="#hr" data-calc="hr" class="tab">Пульсовые зоны</a>
-          <a href="#hagos" data-calc="hagos" class="tab">HAGOS</a>
-          <a href="#restq" data-calc="restq" class="tab">RESTQ-Sport</a>
-          <a href="#mrc" data-calc="mrc" class="tab">MRC</a>
-          <a href="#ashworth" data-calc="ashworth" class="tab">Эшворт</a>
-          <a href="#pwc" data-calc="pwc" class="tab">PWC-170</a>
-          <a href="#vo2" data-calc="vo2" class="tab">МПК</a>
+        <section class="card-grid" aria-label="Калькуляторы">
+          <button type="button" data-calc="bmi" class="card calc-card">
+            <div class="calc-card-title">ИМТ</div>
+            <div class="calc-card-text">Узнайте за 30 секунд вашу идеальную зону веса и риски для здоровья!</div>
+          </button>
+          <button type="button" data-calc="tdee" class="card calc-card">
+            <div class="calc-card-title">TDEE</div>
+            <div class="calc-card-text">Рассчитайте свой точный калораж за минуту — перестаньте гадать с едой!</div>
+          </button>
+          <button type="button" data-calc="1rm" class="card calc-card">
+            <div class="calc-card-title">1RM</div>
+            <div class="calc-card-text">Раскройте свой силовой потолок мгновенно — какой вес Вам покорится?</div>
+          </button>
+          <button type="button" data-calc="hr" class="card calc-card">
+            <div class="calc-card-title">Пульсовые зоны</div>
+            <div class="calc-card-text">Найдите свои идеальные пульсовые зоны — тренируйтесь умнее, безопаснее и результативнее!</div>
+          </button>
         </section>
 
-      <section id="bmi" data-calc-panel class="card panel panel--first">
+      <section id="bmi" data-calc-panel class="card panel panel--first is-hidden">
         <h2 class="panel-title">ИМТ (BMI)</h2>
         <div class="form form--420">
           <label>Рост (см)<br /><input id="bmi_h" type="number" inputmode="decimal" class="input" /></label>
@@ -299,20 +333,11 @@
       <section id="1rm" data-calc-panel class="card panel is-hidden">
         <h2 class="panel-title">1RM (оценка максимума на 1 повтор)</h2>
         <div class="form form--420">
+          <label>Вес тела (кг)<br /><input id="rm_bw" type="number" inputmode="decimal" class="input" /></label>
           <label>Вес (кг)<br /><input id="rm_w" type="number" inputmode="decimal" class="input" /></label>
           <label>Повторы (1-12)<br /><input id="rm_r" type="number" class="input" /></label>
           <button id="rm_btn" type="button" class="btn btn--narrow">Посчитать</button>
           <div id="rm_out" class="output"></div>
-        </div>
-      </section>
-
-      <section id="borg" data-calc-panel class="card panel is-hidden">
-        <h2 class="panel-title">Шкала Борга (RPE 6–20)</h2>
-        <div class="form form--560">
-          <div class="panel-hint">Введи субъективную тяжесть нагрузки. 6 — очень легко, 20 — максимально тяжело.</div>
-          <label>RPE (6–20)<br /><input id="borg_rpe" type="number" min="6" max="20" step="1" class="input" /></label>
-          <button id="borg_btn" type="button" class="btn btn--narrow">Оценить</button>
-          <div id="borg_out" class="output"></div>
         </div>
       </section>
 
@@ -324,102 +349,6 @@
           <label>ЧССмакс (уд/мин) — опционально<br /><input id="hr_max" type="number" class="input" /></label>
           <button id="hr_btn" type="button" class="btn btn--narrow">Посчитать зоны</button>
           <div id="hr_out" class="output"></div>
-        </div>
-      </section>
-
-      <section id="hagos" data-calc-panel class="card panel is-hidden">
-        <h2 class="panel-title">HAGOS (Hip and Groin Outcome Score)</h2>
-        <div class="form form--720">
-          <div class="panel-hint">Здесь можно быстро посчитать итог по уже заполненным подшкалам. Обычно HAGOS считают как 0–100 (100 = лучше). Введи результат каждой подшкалы в процентах.</div>
-          <div class="grid">
-            <label>Симптомы (0–100)<br /><input id="hagos_sym" type="number" min="0" max="100" step="1" class="input" /></label>
-            <label>Боль (0–100)<br /><input id="hagos_pain" type="number" min="0" max="100" step="1" class="input" /></label>
-            <label>Функция (ADL) (0–100)<br /><input id="hagos_adl" type="number" min="0" max="100" step="1" class="input" /></label>
-            <label>Спорт/Отдых (0–100)<br /><input id="hagos_sport" type="number" min="0" max="100" step="1" class="input" /></label>
-            <label>Участие (0–100)<br /><input id="hagos_part" type="number" min="0" max="100" step="1" class="input" /></label>
-            <label>Качество жизни (0–100)<br /><input id="hagos_qol" type="number" min="0" max="100" step="1" class="input" /></label>
-          </div>
-          <button id="hagos_btn" type="button" class="btn btn--narrow">Посчитать среднее</button>
-          <div id="hagos_out" class="output"></div>
-        </div>
-      </section>
-
-      <section id="restq" data-calc-panel class="card panel is-hidden">
-        <h2 class="panel-title">RESTQ-Sport</h2>
-        <div class="form form--720">
-          <div class="panel-hint">Сюда можно ввести уже посчитанные средние значения опросника (например, по стрессу/восстановлению) и получить краткую интерпретацию.</div>
-          <div class="grid">
-            <label>Средний стресс (0–6)<br /><input id="restq_stress" type="number" min="0" max="6" step="0.1" class="input" /></label>
-            <label>Среднее восстановление (0–6)<br /><input id="restq_rec" type="number" min="0" max="6" step="0.1" class="input" /></label>
-          </div>
-          <button id="restq_btn" type="button" class="btn btn--narrow">Оценить баланс</button>
-          <div id="restq_out" class="output"></div>
-        </div>
-      </section>
-
-      <section id="mrc" data-calc-panel class="card panel is-hidden">
-        <h2 class="panel-title">Мышечная сила (MRC)</h2>
-        <div class="form form--720">
-          <div class="panel-hint">Оцени каждую группу по шкале 0–5. Можно заполнить частично — среднее будет рассчитано по заполненным.</div>
-          <div class="grid">
-            <label>Плечо (абдукция) (0–5)<br /><input id="mrc_shoulder" type="number" min="0" max="5" step="1" class="input" /></label>
-            <label>Локоть (сгибание) (0–5)<br /><input id="mrc_elbow" type="number" min="0" max="5" step="1" class="input" /></label>
-            <label>Запястье (разгибание) (0–5)<br /><input id="mrc_wrist" type="number" min="0" max="5" step="1" class="input" /></label>
-            <label>Бедро (сгибание) (0–5)<br /><input id="mrc_hip" type="number" min="0" max="5" step="1" class="input" /></label>
-            <label>Колено (разгибание) (0–5)<br /><input id="mrc_knee" type="number" min="0" max="5" step="1" class="input" /></label>
-            <label>Голеностоп (тыльное сгибание) (0–5)<br /><input id="mrc_ankle" type="number" min="0" max="5" step="1" class="input" /></label>
-          </div>
-          <button id="mrc_btn" type="button" class="btn btn--narrow">Посчитать среднее</button>
-          <div id="mrc_out" class="output"></div>
-        </div>
-      </section>
-
-      <section id="ashworth" data-calc-panel class="card panel is-hidden">
-        <h2 class="panel-title">Шкала Эшворта (Modified Ashworth Scale)</h2>
-        <div class="form form--720">
-          <div class="panel-hint">Оцени тонус/спастичность. 0 — нет повышения тонуса, 4 — ригидность.</div>
-          <label>Оценка
-            <select id="ash_value" class="input">
-              <option value="">—</option>
-              <option value="0">0</option>
-              <option value="1">1</option>
-              <option value="1+">1+</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-            </select>
-          </label>
-          <button id="ash_btn" type="button" class="btn btn--narrow">Интерпретировать</button>
-          <div id="ash_out" class="output"></div>
-        </div>
-      </section>
-
-      <section id="pwc" data-calc-panel class="card panel is-hidden">
-        <h2 class="panel-title">PWC-170</h2>
-        <div class="form form--720">
-          <div class="panel-hint">Тест обычно делают на велоэргометре. Введи две ступени нагрузки и ЧСС на каждой ступени (после выхода на стационар). Мощность — в ваттах.</div>
-          <div class="grid">
-            <label>Нагрузка 1 (Вт)<br /><input id="pwc_w1" type="number" inputmode="decimal" class="input" /></label>
-            <label>ЧСС 1 (уд/мин)<br /><input id="pwc_hr1" type="number" inputmode="decimal" class="input" /></label>
-            <label>Нагрузка 2 (Вт)<br /><input id="pwc_w2" type="number" inputmode="decimal" class="input" /></label>
-            <label>ЧСС 2 (уд/мин)<br /><input id="pwc_hr2" type="number" inputmode="decimal" class="input" /></label>
-            <label>Вес (кг) — опционально<br /><input id="pwc_mass" type="number" inputmode="decimal" class="input" /></label>
-          </div>
-          <button id="pwc_btn" type="button" class="btn btn--narrow">Посчитать</button>
-          <div id="pwc_out" class="output"></div>
-        </div>
-      </section>
-
-      <section id="vo2" data-calc-panel class="card panel is-hidden">
-        <h2 class="panel-title">МПК (VO₂max) — оценка по PWC-170</h2>
-        <div class="form form--720">
-          <div class="panel-hint">Оценка МПК по формуле: VO₂max (мл/мин) = 1.7 × PWC170(Вт) + 1240. Затем делим на вес, чтобы получить мл/кг/мин.</div>
-          <div class="grid">
-            <label>PWC-170 (Вт)<br /><input id="vo2_pwc" type="number" inputmode="decimal" class="input" /></label>
-            <label>Вес (кг)<br /><input id="vo2_mass" type="number" inputmode="decimal" class="input" /></label>
-          </div>
-          <button id="vo2_btn" type="button" class="btn btn--narrow">Посчитать МПК</button>
-          <div id="vo2_out" class="output"></div>
         </div>
       </section>
 
@@ -437,7 +366,7 @@
                 }
               }
 
-              var links = document.querySelectorAll('a[data-calc]');
+              var links = document.querySelectorAll('[data-calc]');
               for (var j = 0; j < links.length; j++) {
                 var a = links[j];
                 var isActive = a.getAttribute('data-calc') === id;
@@ -447,13 +376,18 @@
                   a.classList.remove('is-active');
                 }
               }
+
+              var activePanel = document.getElementById(id);
+              if (activePanel && activePanel.scrollIntoView) {
+                activePanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
             } catch (e) {}
           }
 
           function readHash() {
             var h = (window.location.hash || '').replace('#', '').trim();
-            if (h === 'bmi' || h === 'tdee' || h === '1rm' || h === 'borg' || h === 'hr' || h === 'hagos' || h === 'restq' || h === 'mrc' || h === 'ashworth' || h === 'pwc' || h === 'vo2') return h;
-            return 'bmi';
+            if (h === 'bmi' || h === 'tdee' || h === '1rm' || h === 'hr') return h;
+            return '';
           }
 
           function n(v) {
@@ -462,10 +396,27 @@
           }
 
           try {
-            setActive(readHash());
+            var initial = readHash();
+            if (initial) setActive(initial);
             window.addEventListener('hashchange', function () {
-              setActive(readHash());
+              var next = readHash();
+              if (next) setActive(next);
             });
+          } catch (e) {}
+
+          try {
+            var cards = document.querySelectorAll('[data-calc]');
+            for (var ci = 0; ci < cards.length; ci++) {
+              cards[ci].addEventListener('click', function (ev) {
+                var id = ev && ev.currentTarget && ev.currentTarget.getAttribute('data-calc');
+                if (!id) return;
+                try {
+                  window.location.hash = '#' + id;
+                } catch (e) {
+                  setActive(id);
+                }
+              });
+            }
           } catch (e) {}
 
           var bmiBtn = document.getElementById('bmi_btn');
@@ -476,7 +427,12 @@
             if (!out) return;
             if (!h || !w) { out.textContent = 'Заполни рост и вес.'; return; }
             var bmi = w / (h * h);
-            out.textContent = 'ИМТ: ' + bmi.toFixed(1);
+            var msg = '';
+            if (bmi < 18.5) msg = 'Слишком легко! Добавьте энергии для сил и защиты организма';
+            else if (bmi < 25) msg = 'Зеленая зона! Ваш вес в гармонии с ростом — риски минимальны';
+            else if (bmi < 30) msg = 'Желтая зона. Вес выше нормы — пора корректировать привычки';
+            else msg = 'Красная зона. Высокие риски для здоровья — нужен план действий';
+            out.textContent = 'ИМТ: ' + bmi.toFixed(1) + '. ' + msg;
           });
 
           var tdeeBtn = document.getElementById('tdee_btn');
@@ -494,40 +450,35 @@
               ? (10 * w + 6.25 * h - 5 * age + 5)
               : (10 * w + 6.25 * h - 5 * age - 161);
             var tdee = bmr * act;
-            out.textContent = 'Поддержание: ' + Math.round(tdee) + ' ккал/день';
+
+            var label = '';
+            if (act <= 1.2) label = 'Эконом-режим — 2000 ккал. Активность раскроет потенциал!';
+            else if (act <= 1.375) label = 'Баланс — 2400 ккал. Ваш комфортный уровень расхода';
+            else if (act <= 1.55) label = 'Активный ритм — 2800 ккал. Тело работает как часы!';
+            else label = 'Спортсмен — 3200+ ккал. Машина в полной мощности!';
+
+            out.textContent = 'Поддержание: ' + Math.round(tdee) + ' ккал/день. ' + label;
           });
 
           var rmBtn = document.getElementById('rm_btn');
           rmBtn && rmBtn.addEventListener('click', function () {
+            var bw = n(document.getElementById('rm_bw').value);
             var w = n(document.getElementById('rm_w').value);
             var r = n(document.getElementById('rm_r').value);
             var out = document.getElementById('rm_out');
             if (!out) return;
-            if (!w || !r) { out.textContent = 'Заполни вес и повторы.'; return; }
+            if (!bw || !w || !r) { out.textContent = 'Заполни вес тела, вес и повторы.'; return; }
             if (r < 1 || r > 12) { out.textContent = 'Повторы должны быть 1-12.'; return; }
             // Epley
             var oneRm = w * (1 + r / 30);
-            out.textContent = '1RM (оценка): ' + oneRm.toFixed(1) + ' кг';
-          });
+            var ratio = oneRm / bw;
+            var msg = '';
+            if (ratio < 0.8) msg = 'Стартовая сила. База заложена — впереди прорыв!';
+            else if (ratio < 1.2) msg = 'Хорошая мощь. Вы на правильном пути к результату';
+            else if (ratio < 1.6) msg = 'Элитный уровень! Гордитесь — элита ждет';
+            else msg = 'Легенда силы. Ваш максимум — эталон для других';
 
-          var borgBtn = document.getElementById('borg_btn');
-          borgBtn && borgBtn.addEventListener('click', function () {
-            var rpe = n(document.getElementById('borg_rpe').value);
-            var out = document.getElementById('borg_out');
-            if (!out) return;
-            if (!rpe) { out.textContent = 'Введи значение RPE.'; return; }
-            if (rpe < 6 || rpe > 20) { out.textContent = 'RPE должен быть в диапазоне 6–20.'; return; }
-
-            var label = '';
-            if (rpe <= 8) label = 'Очень легко';
-            else if (rpe <= 10) label = 'Легко';
-            else if (rpe <= 12) label = 'Умеренно';
-            else if (rpe <= 14) label = 'Довольно тяжело';
-            else if (rpe <= 16) label = 'Тяжело';
-            else if (rpe <= 18) label = 'Очень тяжело';
-            else label = 'Максимально тяжело';
-
-            out.textContent = 'RPE: ' + rpe + ' — ' + label + '.';
+            out.textContent = '1RM (оценка): ' + oneRm.toFixed(1) + ' кг (' + ratio.toFixed(2) + '×вес тела). ' + msg;
           });
 
           var hrBtn = document.getElementById('hr_btn');
@@ -555,119 +506,13 @@
               '<div class="output-stack">' +
               '<div><b>ЧССмакс</b>: ' + Math.round(hrMax) + ' уд/мин</div>' +
               '<div class="output-list">' +
-              '<div><b>Зона 1</b> (50–60%): ' + zone(0.5, 0.6) + '</div>' +
-              '<div><b>Зона 2</b> (60–70%): ' + zone(0.6, 0.7) + '</div>' +
-              '<div><b>Зона 3</b> (70–80%): ' + zone(0.7, 0.8) + '</div>' +
-              '<div><b>Зона 4</b> (80–90%): ' + zone(0.8, 0.9) + '</div>' +
-              '<div><b>Зона 5</b> (90–100%): ' + zone(0.9, 1.0) + '</div>' +
+              '<div><b>Зона 1</b> (50–60%): ' + zone(0.5, 0.6) + ' — Зеленая — сжигай жир легко и комфортно</div>' +
+              '<div><b>Зона 2</b> (60–70%): ' + zone(0.6, 0.7) + ' — Синяя — выносливость растет, сердце укрепляется</div>' +
+              '<div><b>Зона 3</b> (70–80%): ' + zone(0.7, 0.8) + ' — Желтая — порог мощности, прогресс ускоряется</div>' +
+              '<div><b>Зона 4</b> (80–90%): ' + zone(0.8, 0.9) + ' — Красная — пик силы, прорывы и рекорды!</div>' +
+              '<div><b>Зона 5</b> (90–100%): ' + zone(0.9, 1.0) + ' — Красная — пик силы, прорывы и рекорды!</div>' +
               '</div>' +
               '</div>';
-          });
-
-          var hagosBtn = document.getElementById('hagos_btn');
-          hagosBtn && hagosBtn.addEventListener('click', function () {
-            var ids = ['hagos_sym', 'hagos_pain', 'hagos_adl', 'hagos_sport', 'hagos_part', 'hagos_qol'];
-            var values = [];
-            for (var i = 0; i < ids.length; i++) {
-              var v = n(document.getElementById(ids[i]).value);
-              if (Number.isFinite(v)) values.push(v);
-            }
-            var out = document.getElementById('hagos_out');
-            if (!out) return;
-            if (values.length === 0) { out.textContent = 'Заполни хотя бы одну подшкалу.'; return; }
-            for (var j = 0; j < values.length; j++) {
-              if (values[j] < 0 || values[j] > 100) { out.textContent = 'Все значения должны быть в диапазоне 0–100.'; return; }
-            }
-            var sum = values.reduce(function (a, b) { return a + b; }, 0);
-            var avg = sum / values.length;
-            out.textContent = 'Среднее по заполненным подшкалам: ' + avg.toFixed(1) + ' / 100 (чем выше — тем лучше).';
-          });
-
-          var restqBtn = document.getElementById('restq_btn');
-          restqBtn && restqBtn.addEventListener('click', function () {
-            var stress = n(document.getElementById('restq_stress').value);
-            var rec = n(document.getElementById('restq_rec').value);
-            var out = document.getElementById('restq_out');
-            if (!out) return;
-            if (!Number.isFinite(stress) || !Number.isFinite(rec)) { out.textContent = 'Заполни оба значения.'; return; }
-            if (stress < 0 || stress > 6 || rec < 0 || rec > 6) { out.textContent = 'Значения должны быть в диапазоне 0–6.'; return; }
-            var delta = rec - stress;
-            var label = '';
-            if (delta >= 1) label = 'Баланс в пользу восстановления.';
-            else if (delta <= -1) label = 'Баланс в пользу стресса — стоит восстановиться.';
-            else label = 'Баланс примерно нейтральный.';
-            out.textContent = 'Восстановление - стресс = ' + delta.toFixed(1) + '. ' + label;
-          });
-
-          var mrcBtn = document.getElementById('mrc_btn');
-          mrcBtn && mrcBtn.addEventListener('click', function () {
-            var ids = ['mrc_shoulder', 'mrc_elbow', 'mrc_wrist', 'mrc_hip', 'mrc_knee', 'mrc_ankle'];
-            var values = [];
-            for (var i = 0; i < ids.length; i++) {
-              var v = n(document.getElementById(ids[i]).value);
-              if (Number.isFinite(v)) values.push(v);
-            }
-            var out = document.getElementById('mrc_out');
-            if (!out) return;
-            if (values.length === 0) { out.textContent = 'Заполни хотя бы одну группу.'; return; }
-            for (var j = 0; j < values.length; j++) {
-              if (values[j] < 0 || values[j] > 5 || Math.round(values[j]) !== values[j]) { out.textContent = 'Оценка MRC должна быть целым числом 0–5.'; return; }
-            }
-            var sum = values.reduce(function (a, b) { return a + b; }, 0);
-            var avg = sum / values.length;
-            out.textContent = 'Средняя сила по заполненным: ' + avg.toFixed(2) + ' / 5.';
-          });
-
-          var ashBtn = document.getElementById('ash_btn');
-          ashBtn && ashBtn.addEventListener('click', function () {
-            var raw = String(document.getElementById('ash_value').value || '').trim();
-            var out = document.getElementById('ash_out');
-            if (!out) return;
-            if (!raw) { out.textContent = 'Выбери значение.'; return; }
-            var label = '';
-            if (raw === '0') label = 'Нет повышения тонуса.';
-            else if (raw === '1') label = 'Лёгкое повышение тонуса (конец диапазона движения).';
-            else if (raw === '1+') label = 'Лёгкое повышение тонуса (минимальное сопротивление в < половине диапазона).';
-            else if (raw === '2') label = 'Более выраженное повышение тонуса в большинстве диапазона, но конечность легко двигается.';
-            else if (raw === '3') label = 'Значительное повышение тонуса, пассивные движения затруднены.';
-            else if (raw === '4') label = 'Ригидность (сгибание/разгибание очень затруднено).';
-            out.textContent = 'Эшворт: ' + raw + ' — ' + label;
-          });
-
-          var pwcBtn = document.getElementById('pwc_btn');
-          pwcBtn && pwcBtn.addEventListener('click', function () {
-            var w1 = n(document.getElementById('pwc_w1').value);
-            var hr1 = n(document.getElementById('pwc_hr1').value);
-            var w2 = n(document.getElementById('pwc_w2').value);
-            var hr2 = n(document.getElementById('pwc_hr2').value);
-            var mass = n(document.getElementById('pwc_mass').value);
-            var out = document.getElementById('pwc_out');
-            if (!out) return;
-            if (!w1 || !w2 || !hr1 || !hr2) { out.textContent = 'Заполни две нагрузки и две ЧСС.'; return; }
-            if (hr1 === hr2) { out.textContent = 'ЧСС1 и ЧСС2 не должны быть одинаковыми.'; return; }
-            if (w1 <= 0 || w2 <= 0) { out.textContent = 'Нагрузка должна быть > 0.'; return; }
-
-            var pwc170 = w1 + (170 - hr1) * (w2 - w1) / (hr2 - hr1);
-            if (!Number.isFinite(pwc170)) { out.textContent = 'Не удалось посчитать — проверь введённые данные.'; return; }
-
-            var text = 'PWC-170: ' + pwc170.toFixed(1) + ' Вт.';
-            if (Number.isFinite(mass) && mass > 0) {
-              text += ' Относительно веса: ' + (pwc170 / mass).toFixed(2) + ' Вт/кг.';
-            }
-            out.textContent = text;
-          });
-
-          var vo2Btn = document.getElementById('vo2_btn');
-          vo2Btn && vo2Btn.addEventListener('click', function () {
-            var pwc = n(document.getElementById('vo2_pwc').value);
-            var mass = n(document.getElementById('vo2_mass').value);
-            var out = document.getElementById('vo2_out');
-            if (!out) return;
-            if (!pwc || !mass) { out.textContent = 'Заполни PWC-170 и вес.'; return; }
-            if (pwc <= 0 || mass <= 0) { out.textContent = 'Значения должны быть > 0.'; return; }
-            var vo2mlmin = 1.7 * pwc + 1240;
-            var vo2mlkgmin = vo2mlmin / mass;
-            out.textContent = 'МПК (оценка): ' + Math.round(vo2mlmin) + ' мл/мин (' + vo2mlkgmin.toFixed(1) + ' мл/кг/мин).';
           });
         })();
       </script>
