@@ -16,10 +16,35 @@ const sorted = items
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Упражнения</title>
+    <style>
+      .scroll-top {
+        position: fixed;
+        right: 16px;
+        bottom: 16px;
+        z-index: 50;
+        display: none;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(17, 24, 39, 0.12);
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(8px);
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+        color: #111827;
+        font: inherit;
+        cursor: pointer;
+      }
+
+      .scroll-top.is-visible {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+    </style>
   </head>
   <body>
     <main style="min-height: 100vh; background: radial-gradient(1200px 600px at 20% -10%, #dbeafe 0%, rgba(219,234,254,0) 55%), radial-gradient(900px 520px at 90% 0%, #fce7f3 0%, rgba(252,231,243,0) 55%), #ffffff; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;">
       <div style="max-width: 980px; margin: 0 auto; padding: 28px 20px 36px;">
+        <div id="top"></div>
         <header style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px;">
           <div style="display: flex; align-items: center; gap: 10px;">
             <img src="/logo.png" alt="Dr.Welnes" width="34" height="34" style="display:block; width:34px; height:34px; border-radius: 10px; object-fit: cover;" />
@@ -51,6 +76,44 @@ const sorted = items
           ))}
         </section>
       </div>
+
+      <button id="scroll_top" type="button" class="scroll-top" aria-label="Наверх">Наверх / к списку</button>
+      <script>
+        (function () {
+          var btn = document.getElementById('scroll_top');
+          if (!btn) return;
+
+          function toggle() {
+            try {
+              if (window.scrollY > 500) btn.classList.add('is-visible');
+              else btn.classList.remove('is-visible');
+            } catch (e) {}
+          }
+
+          try {
+            window.addEventListener('scroll', toggle, { passive: true });
+          } catch (e) {
+            window.addEventListener('scroll', toggle);
+          }
+          toggle();
+
+          btn.addEventListener('click', function () {
+            try {
+              var top = document.getElementById('top');
+              if (top && top.scrollIntoView) {
+                top.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                return;
+              }
+            } catch (e) {}
+
+            try {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (e) {
+              window.scrollTo(0, 0);
+            }
+          });
+        })();
+      </script>
     </main>
   </body>
 </html>
