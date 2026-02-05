@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Калькуляторы</title>
+    <title>ИМТ</title>
     <style>
       :root {
         --bg1: radial-gradient(1200px 600px at 20% -10%, #dbeafe 0%, rgba(219,234,254,0) 55%),
@@ -76,6 +76,13 @@
         gap: 10px;
       }
 
+      .nav-link {
+        text-decoration: none;
+        color: var(--ink);
+        padding: 8px 10px;
+        border-radius: 10px;
+      }
+
       .menu-btn {
         display: none;
         width: 42px;
@@ -119,13 +126,6 @@
 
       .mobile-menu a:first-child {
         border-top: 0;
-      }
-
-      .nav-link {
-        text-decoration: none;
-        color: var(--ink);
-        padding: 8px 10px;
-        border-radius: 10px;
       }
 
       @media (max-width: 640px) {
@@ -173,49 +173,13 @@
         max-width: 64ch;
       }
 
-      .tabs {
-        margin-top: 12px;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-      }
-
-      .tab {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        padding: 10px 14px;
-        border-radius: 12px;
-        text-decoration: none;
-        background: #ffffff;
-        color: var(--ink);
-        border: 1px solid #e5e7eb;
-        font-weight: 600;
-      }
-
-      .tab.is-active {
-        background: var(--ink);
-        color: #ffffff;
-        border-color: var(--ink);
-      }
-
       .panel {
         margin-top: 12px;
-      }
-
-      .panel.panel--first {
-        margin-top: 16px;
       }
 
       .panel-title {
         margin: 0 0 12px;
         font-size: 18px;
-      }
-
-      .panel-hint {
-        color: var(--muted);
-        line-height: 1.5;
       }
 
       .form {
@@ -225,24 +189,6 @@
 
       .form--420 {
         max-width: 420px;
-      }
-
-      .form--520 {
-        max-width: 520px;
-      }
-
-      .form--560 {
-        max-width: 560px;
-      }
-
-      .form--720 {
-        max-width: 720px;
-      }
-
-      .grid {
-        display: grid;
-        gap: 8px;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       }
 
       .input {
@@ -269,55 +215,7 @@
 
       .output {
         color: var(--ink);
-      }
-
-      .output-stack {
-        margin-top: 6px;
-        display: grid;
-        gap: 8px;
-      }
-
-      .output-list {
-        display: grid;
-        gap: 6px;
-      }
-
-      .card-grid {
-        margin-top: 16px;
-        display: grid;
-        gap: 12px;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      }
-
-      .calc-card {
-        display: block;
-        text-align: left;
-        width: 100%;
-        cursor: pointer;
-        text-decoration: none;
-        color: inherit;
-      }
-
-      .calc-card:hover {
-        transform: translateY(-1px);
-        transition: transform 160ms ease;
-      }
-
-      .calc-card-title {
-        font-weight: 800;
-        letter-spacing: -0.01em;
-        font-size: 18px;
-      }
-
-      .calc-card-text {
-        margin-top: 6px;
-        color: var(--muted);
         line-height: 1.55;
-        font-size: 16px;
-      }
-
-      .is-hidden {
-        display: none;
       }
     </style>
   </head>
@@ -348,73 +246,96 @@
         </div>
 
         <section class="card card--hero">
-          <h1 class="hero-title">Калькуляторы</h1>
-          <p class="hero-subtitle">ИМТ, основной обмен энергии, разовое повторение и пульсовые зоны — быстро и без регистрации.</p>
+          <h1 class="hero-title">ИМТ</h1>
+          <p class="hero-subtitle">Узнайте за 30 секунд вашу идеальную зону веса и риски для здоровья!</p>
         </section>
 
-        <section class="card-grid" aria-label="Калькуляторы">
-          <a href="/calculators/bmi" class="card calc-card">
-            <div class="calc-card-title">ИМТ</div>
-            <div class="calc-card-text">Узнайте за 30 секунд вашу идеальную зону веса и риски для здоровья!</div>
-          </a>
-          <a href="/calculators/tdee" class="card calc-card">
-            <div class="calc-card-title">Основной обмен энергии</div>
-            <div class="calc-card-text">Рассчитайте свой точный калораж за минуту — перестаньте гадать с едой!</div>
-          </a>
-          <a href="/calculators/1rm" class="card calc-card">
-            <div class="calc-card-title">Разовое повторение (1RM)</div>
-            <div class="calc-card-text">Раскройте свой силовой потолок мгновенно — какой вес Вам покорится?</div>
-          </a>
-          <a href="/calculators/hr-zones" class="card calc-card">
-            <div class="calc-card-title">Пульсовые зоны</div>
-            <div class="calc-card-text">Найдите свои идеальные пульсовые зоны — тренируйтесь умнее, безопаснее и результативнее!</div>
-          </a>
+        <section class="card panel">
+          <h2 class="panel-title">Калькулятор ИМТ</h2>
+          <div class="form form--420">
+            <label>Рост (см)<br /><input id="bmi_h" type="number" inputmode="decimal" class="input" /></label>
+            <label>Вес (кг)<br /><input id="bmi_w" type="number" inputmode="decimal" class="input" /></label>
+            <button id="bmi_btn" type="button" class="btn btn--narrow">Посчитать</button>
+            <div id="bmi_out" class="output"></div>
+          </div>
         </section>
 
-      <script>
-        (function () {
-          try {
-            var btn = document.getElementById('menu_btn');
-            var menu = document.getElementById('mobile_menu');
+        <script>
+          (function () {
+            try {
+              var btn = document.getElementById('menu_btn');
+              var menu = document.getElementById('mobile_menu');
+              if (btn && menu) {
+                function closeMenu() {
+                  menu.classList.remove('is-open');
+                  btn.setAttribute('aria-expanded', 'false');
+                }
 
-            function closeMenu() {
-              if (!btn || !menu) return;
-              menu.classList.remove('is-open');
-              btn.setAttribute('aria-expanded', 'false');
-            }
+                btn.addEventListener('click', function (e) {
+                  try { e && e.stopPropagation && e.stopPropagation(); } catch (e) {}
+                  if (menu.classList.contains('is-open')) closeMenu();
+                  else {
+                    menu.classList.add('is-open');
+                    btn.setAttribute('aria-expanded', 'true');
+                  }
+                });
 
-            function toggleMenu() {
-              if (!btn || !menu) return;
-              var next = !menu.classList.contains('is-open');
-              if (next) {
-                menu.classList.add('is-open');
-                btn.setAttribute('aria-expanded', 'true');
-              } else {
-                closeMenu();
+                document.addEventListener('click', function (e) {
+                  try {
+                    var t = e && e.target;
+                    if (t === btn || (btn.contains && btn.contains(t))) return;
+                    if (t === menu || (menu.contains && menu.contains(t))) return;
+                    closeMenu();
+                  } catch (e) {}
+                });
+
+                window.addEventListener('hashchange', function () {
+                  closeMenu();
+                });
               }
+            } catch (e) {}
+
+            function n(v) {
+              var x = Number(v);
+              return Number.isFinite(x) ? x : NaN;
             }
 
-            btn && btn.addEventListener('click', function (e) {
-              try { e && e.stopPropagation && e.stopPropagation(); } catch (e) {}
-              toggleMenu();
-            });
+            var bmiBtn = document.getElementById('bmi_btn');
+            bmiBtn && bmiBtn.addEventListener('click', function () {
+              var h = n(document.getElementById('bmi_h').value) / 100;
+              var w = n(document.getElementById('bmi_w').value);
+              var out = document.getElementById('bmi_out');
+              if (!out) return;
+              if (!h || !w) { out.textContent = 'Заполни рост и вес.'; return; }
 
-            document.addEventListener('click', function (e) {
-              try {
-                if (!menu || !btn) return;
-                var t = e && e.target;
-                if (t === btn || (btn.contains && btn.contains(t))) return;
-                if (t === menu || (menu.contains && menu.contains(t))) return;
-                closeMenu();
-              } catch (e) {}
-            });
+              var bmi = w / (h * h);
+              var title = '';
+              var msg = '';
 
-            window.addEventListener('hashchange', function () {
-              closeMenu();
+              if (bmi < 18.5) {
+                title = 'Дефицит';
+                msg = 'Мнимая легкость в теле за счет сниженной массы тела, но усиливайте рацион — защититесь от анемии, остеопороза и инфекций, наберите мышцы для выносливости.';
+              } else if (bmi < 25) {
+                title = 'Норма';
+                msg = 'Идеальный баланс — энергия бьёт ключом, сердце и суставы в гармонии, риски болезней на нуле. Здесь вы король фитнеса и повседневных побед!';
+              } else if (bmi < 30) {
+                title = 'Избыток';
+                msg = 'Резерв энергии помогает, но корректируйте — предотвратите развитие диабета 2 типа, повышенного давления и нарушений метаболизма по типу повышенного холестерина. Лёгкий сдвиг откроет дверь к идеальной форме!';
+              } else if (bmi < 35) {
+                title = 'Ожирение 1';
+                msg = 'Умеренные риски инфарктов (на 50% выше от стандартных рисков), артрита и хронической усталости — сброс 5-10% массы тела вернёт лёгкость, улучшит метаболизм и психологическую уверенность.';
+              } else if (bmi < 40) {
+                title = 'Ожирение 2';
+                msg = 'Высокие риски диабета, апноэ сна и гипертонии (в 3 раза чаще от стандартных рисков) — план действий (диета + спорт) сократит угрозы вдвое и вернёт свободу движений и жизни.';
+              } else {
+                title = 'Ожирение 3';
+                msg = 'Критические риски (инфаркты в 4 раза, рак, подвижность под угрозой от стандартных рисков) — даже 10% потери веса сотворит чудеса: Вы получите неимоверные плюсы для Вашего здоровья!';
+              }
+
+              out.innerHTML = '<b>ИМТ:</b> ' + bmi.toFixed(1) + '<br /><b>' + title + ':</b> ' + msg;
             });
-          } catch (e) {}
-        })();
-      </script>
+          })();
+        </script>
       </div>
     </main>
   </body>
