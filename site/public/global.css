@@ -54,14 +54,42 @@ textarea {
   transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease, border-color 160ms ease, opacity 160ms ease;
 }
 
+:where(.btn.btn--secondary) {
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--ink);
+  border-color: rgba(17, 24, 39, 0.14);
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.08);
+}
+
+:where(.btn.btn--ghost) {
+  background: transparent;
+  color: var(--ink);
+  border-color: rgba(17, 24, 39, 0.10);
+  box-shadow: none;
+}
+
 :where(.btn):hover {
   background: rgba(17, 24, 39, 1);
   box-shadow: 0 14px 34px rgba(15, 23, 42, 0.16);
 }
 
+:where(.btn.btn--secondary):hover {
+  background: rgba(255, 255, 255, 0.98);
+  border-color: rgba(17, 24, 39, 0.20);
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.12);
+}
+
+:where(.btn.btn--ghost):hover {
+  background: rgba(17, 24, 39, 0.05);
+}
+
 :where(.btn):active {
   transform: translateY(1px);
   box-shadow: 0 10px 26px rgba(15, 23, 42, 0.12);
+}
+
+:where(.btn.btn--ghost):active {
+  box-shadow: none;
 }
 
 :where(.btn):disabled,
