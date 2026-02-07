@@ -25,6 +25,8 @@ body {
 body {
   color: var(--ink);
   font-family: Manrope, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  line-height: 1.55;
+  text-rendering: optimizeLegibility;
 }
 
 a {
@@ -40,6 +42,62 @@ input,
 select,
 textarea {
   font: inherit;
+}
+
+:where(.btn) {
+  appearance: none;
+  border: 1px solid rgba(17, 24, 39, 0.16);
+  background: rgba(17, 24, 39, 0.96);
+  color: #ffffff;
+  border-radius: var(--radius-control);
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.12);
+  transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease, border-color 160ms ease, opacity 160ms ease;
+}
+
+:where(.btn):hover {
+  background: rgba(17, 24, 39, 1);
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.16);
+}
+
+:where(.btn):active {
+  transform: translateY(1px);
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.12);
+}
+
+:where(.btn):disabled,
+:where(.btn[aria-disabled="true"]) {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+:where(.input),
+:where(input.input),
+:where(select.input),
+:where(textarea.input) {
+  border-radius: var(--radius-control);
+  border: 1px solid rgba(229, 231, 235, 0.95);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+  transition: box-shadow 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+:where(.input):focus {
+  border-color: rgba(59, 130, 246, 0.35);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12), 0 8px 18px rgba(15, 23, 42, 0.06);
+  outline: none;
+}
+
+:where(.card) {
+  border-radius: var(--radius-card);
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+
+:where(a.card:hover),
+:where(button.card:hover),
+:where(.card.card--hover:hover) {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.10);
 }
 
 :focus-visible {
