@@ -1,6 +1,25 @@
 ---
 export type HeaderLink = { href: string; label: string };
 
+const pathname = Astro.url?.pathname ?? "/";
+
+function normPath(p: string) {
+  try {
+    if (!p) return "/";
+    return p.length > 1 ? p.replace(/\/$/, "") : p;
+  } catch {
+    return p;
+  }
+}
+
+const current = normPath(pathname);
+
+function isActive(href: string) {
+  const h = normPath(href);
+  if (h === "/") return current === "/";
+  return current === h || current.startsWith(h + "/");
+}
+
 const {
   links = [
     { href: "/", label: "Главная" },
@@ -21,17 +40,35 @@ const {
   </div>
 
   <nav class="dw-nav" aria-label="Навигация">
-    {links.map((l) => (
-      <a href={l.href} class="dw-nav-link">{l.label}</a>
-    ))}
+    {links.map((l) => {
+      const active = isActive(l.href);
+      return (
+        <a
+          href={l.href}
+          class={`dw-nav-link${active ? " is-active" : ""}`}
+          aria-current={active ? "page" : undefined}
+        >
+          {l.label}
+        </a>
+      );
+    })}
   </nav>
 
   <button type="button" class="dw-menu-btn" aria-label="Меню" aria-expanded="false">☰</button>
 
   <div class="dw-mobile-menu" aria-label="Меню">
-    {links.map((l) => (
-      <a href={l.href}>{l.label}</a>
-    ))}
+    {links.map((l) => {
+      const active = isActive(l.href);
+      return (
+        <a
+          href={l.href}
+          class={active ? "is-active" : undefined}
+          aria-current={active ? "page" : undefined}
+        >
+          {l.label}
+        </a>
+      );
+    })}
   </div>
 </header>
 
