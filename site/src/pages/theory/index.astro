@@ -1,5 +1,6 @@
 ---
 import { getCollection } from "astro:content";
+import Header from "../../components/Header.astro";
 
 const items = await getCollection("theory");
 const sorted = items
@@ -20,95 +21,11 @@ const sorted = items
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/global.css" />
     <title>Теория</title>
-    <style>
-      .menu-btn {
-        display: none;
-        width: 42px;
-        height: 42px;
-        border-radius: 12px;
-        border: 1px solid rgba(17, 24, 39, 0.12);
-        background: rgba(255, 255, 255, 0.92);
-        backdrop-filter: blur(8px);
-        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.10);
-        cursor: pointer;
-        font: inherit;
-      }
-
-      .mobile-menu {
-        display: none;
-        margin-top: 10px;
-        border: 1px solid rgba(229,231,235,.9);
-        background: rgba(255,255,255,.85);
-        backdrop-filter: blur(10px);
-        border-radius: 16px;
-        box-shadow: 0 10px 30px rgba(15,23,42,.08);
-        overflow: hidden;
-        max-height: 0;
-        opacity: 0;
-        transform: translateY(-6px);
-        transition: max-height 240ms ease, opacity 200ms ease, transform 240ms ease;
-      }
-
-      .mobile-menu.is-open {
-        max-height: 320px;
-        opacity: 1;
-        transform: translateY(0);
-      }
-
-      .mobile-menu a {
-        display: block;
-        padding: 12px 14px;
-        text-decoration: none;
-        color: #111827;
-        border-top: 1px solid rgba(229,231,235,.8);
-      }
-
-      .mobile-menu a:first-child {
-        border-top: 0;
-      }
-
-      @media (max-width: 640px) {
-        header nav {
-          display: none !important;
-        }
-
-        .menu-btn {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .mobile-menu {
-          display: block;
-        }
-      }
-    </style>
   </head>
   <body>
     <main style="min-height: 100vh; background: radial-gradient(1200px 600px at 20% -10%, #dbeafe 0%, rgba(219,234,254,0) 55%), radial-gradient(900px 520px at 90% 0%, #fce7f3 0%, rgba(252,231,243,0) 55%), #ffffff; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;">
       <div style="max-width: 980px; margin: 0 auto; padding: 28px 20px 36px;">
-        <header style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px;">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <img src="/logo.png" alt="Dr.Welnes" width="34" height="34" style="display:block; width:34px; height:34px; border-radius: 10px; object-fit: cover;" />
-            <div style="font-weight: 700; letter-spacing: -0.01em;">Dr.Welnes</div>
-          </div>
-          <nav style="display: flex; flex-wrap: wrap; gap: 10px;">
-            <a href="/" style="text-decoration: none; color: #111827; padding: 8px 10px; border-radius: 10px;">Главная</a>
-            <a href="/recipes" style="text-decoration: none; color: #111827; padding: 8px 10px; border-radius: 10px;">Рецепты</a>
-            <a href="/exercises" style="text-decoration: none; color: #111827; padding: 8px 10px; border-radius: 10px;">Упражнения</a>
-            <a href="/theory" style="text-decoration: none; color: #111827; padding: 8px 10px; border-radius: 10px;">Теория</a>
-            <a href="/calculators" style="text-decoration: none; color: #111827; padding: 8px 10px; border-radius: 10px;">Калькуляторы</a>
-          </nav>
-          <button id="menu_btn" type="button" class="menu-btn" aria-label="Меню" aria-expanded="false">☰</button>
-        </header>
-
-        <div id="mobile_menu" class="mobile-menu" aria-label="Меню">
-          <a href="/">Главная</a>
-          <a href="/recipes">Рецепты</a>
-          <a href="/exercises">Упражнения</a>
-          <a href="/theory">Теория</a>
-          <a href="/calculators">Калькуляторы</a>
-        </div>
+        <Header />
 
         <section style="border: 1px solid rgba(229,231,235,.9); background: rgba(255,255,255,.8); backdrop-filter: blur(10px); border-radius: 18px; padding: 22px; box-shadow: 0 10px 30px rgba(15,23,42,.08);">
           <h1 style="margin: 0 0 10px; font-size: 28px; line-height: 1.15; letter-spacing: -0.03em;">Теория</h1>
@@ -130,38 +47,5 @@ const sorted = items
         </section>
       </div>
     </main>
-
-    <script>
-      (function () {
-        try {
-          var btn = document.getElementById('menu_btn');
-          var menu = document.getElementById('mobile_menu');
-          if (!btn || !menu) return;
-
-          function closeMenu() {
-            menu.classList.remove('is-open');
-            btn.setAttribute('aria-expanded', 'false');
-          }
-
-          btn.addEventListener('click', function (e) {
-            try { e && e.stopPropagation && e.stopPropagation(); } catch (e) {}
-            if (menu.classList.contains('is-open')) closeMenu();
-            else {
-              menu.classList.add('is-open');
-              btn.setAttribute('aria-expanded', 'true');
-            }
-          });
-
-          document.addEventListener('click', function (e) {
-            try {
-              var t = e && e.target;
-              if (t === btn || (btn.contains && btn.contains(t))) return;
-              if (t === menu || (menu.contains && menu.contains(t))) return;
-              closeMenu();
-            } catch (e) {}
-          });
-        } catch (e) {}
-      })();
-    </script>
   </body>
 </html>

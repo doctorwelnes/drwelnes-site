@@ -1,0 +1,83 @@
+---
+export type HeaderLink = { href: string; label: string };
+
+const {
+  links = [
+    { href: "/", label: "Главная" },
+    { href: "/recipes", label: "Рецепты" },
+    { href: "/exercises", label: "Упражнения" },
+    { href: "/theory", label: "Теория" },
+    { href: "/calculators", label: "Калькуляторы" },
+  ],
+} = Astro.props as {
+  links?: HeaderLink[];
+};
+---
+
+<header class="dw-header" data-dw-header>
+  <div class="dw-brand">
+    <img src="/logo.png" alt="Dr.Welnes" width="34" height="34" class="dw-logo" />
+    <div class="dw-brand-name">Dr.Welnes</div>
+  </div>
+
+  <nav class="dw-nav" aria-label="Навигация">
+    {links.map((l) => (
+      <a href={l.href} class="dw-nav-link">{l.label}</a>
+    ))}
+  </nav>
+
+  <button type="button" class="dw-menu-btn" aria-label="Меню" aria-expanded="false">☰</button>
+
+  <div class="dw-mobile-menu" aria-label="Меню">
+    {links.map((l) => (
+      <a href={l.href}>{l.label}</a>
+    ))}
+  </div>
+</header>
+
+<script is:inline>
+  (function () {
+    try {
+      var root = document.querySelector('[data-dw-header]');
+      if (!root) return;
+      var btn = root.querySelector('.dw-menu-btn');
+      var menu = root.querySelector('.dw-mobile-menu');
+      if (!btn || !menu) return;
+
+      function closeMenu() {
+        menu.classList.remove('is-open');
+        btn.setAttribute('aria-expanded', 'false');
+      }
+
+      function toggleMenu() {
+        var next = !menu.classList.contains('is-open');
+        if (next) {
+          menu.classList.add('is-open');
+          btn.setAttribute('aria-expanded', 'true');
+        } else {
+          closeMenu();
+        }
+      }
+
+      btn.addEventListener('click', function (e) {
+        try {
+          e && e.stopPropagation && e.stopPropagation();
+        } catch (e) {}
+        toggleMenu();
+      });
+
+      document.addEventListener('click', function (e) {
+        try {
+          var t = e && e.target;
+          if (t === btn || (btn.contains && btn.contains(t))) return;
+          if (t === menu || (menu.contains && menu.contains(t))) return;
+          closeMenu();
+        } catch (e) {}
+      });
+
+      window.addEventListener('hashchange', function () {
+        closeMenu();
+      });
+    } catch (e) {}
+  })();
+</script>

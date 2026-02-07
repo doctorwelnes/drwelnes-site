@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import { toEmbedUrl } from "../../lib/video";
+import Header from "../../components/Header.astro";
 
 export async function getStaticPaths() {
   const items = await getCollection("recipes");
@@ -92,34 +93,38 @@ const initialKbruView = hasKbru ? "100g" : hasKbruTotal ? "dish" : "100g";
         min-width: 0;
       }
 
-      .recipe-header {
+      .dw-header {
         grid-column: 1 / -1;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 16px;
+        gap: 14px;
         flex-wrap: wrap;
         margin-bottom: 18px;
         min-width: 0;
       }
 
-      .recipe-brand {
+      .dw-brand {
         display: flex;
         align-items: center;
         gap: 10px;
       }
 
-      .recipe-logo {
-        display: block;
+      .dw-logo {
         width: 36px;
         height: 36px;
         border-radius: 12px;
         object-fit: cover;
       }
 
-      .recipe-name {
+      .dw-brand-name {
         font-weight: 700;
         letter-spacing: -0.01em;
+      }
+
+      .dw-nav a {
+        text-decoration: none;
+        color: #111827;
       }
 
       .recipe-main {
@@ -141,79 +146,6 @@ const initialKbruView = hasKbru ? "100g" : hasKbruTotal ? "dish" : "100g";
       .recipe-steps {
         grid-column: 1;
         min-width: 0;
-      }
-
-      .recipe-nav {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-      }
-
-      .recipe-nav a {
-        text-decoration: none;
-        color: #111827;
-      }
-
-      .menu-btn {
-        display: none;
-        width: 42px;
-        height: 42px;
-        border-radius: 12px;
-        border: 1px solid rgba(17, 24, 39, 0.12);
-        background: rgba(255, 255, 255, 0.92);
-        backdrop-filter: blur(8px);
-        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.10);
-        cursor: pointer;
-        font: inherit;
-      }
-
-      .mobile-menu {
-        display: none;
-        margin-top: 10px;
-        border: 1px solid rgba(229,231,235,.9);
-        background: rgba(255,255,255,.85);
-        backdrop-filter: blur(10px);
-        border-radius: 16px;
-        box-shadow: 0 10px 30px rgba(15,23,42,.08);
-        overflow: hidden;
-        max-height: 0;
-        opacity: 0;
-        transform: translateY(-6px);
-        transition: max-height 240ms ease, opacity 200ms ease, transform 240ms ease;
-      }
-
-      .mobile-menu.is-open {
-        max-height: 320px;
-        opacity: 1;
-        transform: translateY(0);
-      }
-
-      .mobile-menu a {
-        display: block;
-        padding: 12px 14px;
-        text-decoration: none;
-        color: #111827;
-        border-top: 1px solid rgba(229,231,235,.8);
-      }
-
-      .mobile-menu a:first-child {
-        border-top: 0;
-      }
-
-      @media (max-width: 640px) {
-        .recipe-nav {
-          display: none;
-        }
-
-        .menu-btn {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .mobile-menu {
-          display: block;
-        }
       }
 
       .recipe-title {
@@ -428,31 +360,10 @@ const initialKbruView = hasKbru ? "100g" : hasKbruTotal ? "dish" : "100g";
           grid-column: 1 !important;
         }
 
-        .recipe-header {
+        .dw-header {
           flex-direction: column;
           align-items: flex-start;
           margin-bottom: 10px !important;
-        }
-
-        .recipe-nav {
-          width: 100%;
-          overflow-x: auto;
-          flex-wrap: nowrap;
-          gap: 8px;
-          padding: 8px;
-          border-radius: 14px;
-          border: 1px solid rgba(229,231,235,.9);
-          background: rgba(255,255,255,.75);
-          -webkit-overflow-scrolling: touch;
-        }
-
-        .recipe-nav a {
-          padding: 8px 12px;
-          border-radius: 999px;
-          background: rgba(249,250,251,.9);
-          border: 1px solid rgba(229,231,235,.9);
-          font-size: 14px;
-          white-space: nowrap;
         }
 
         .recipe-title {
@@ -525,28 +436,7 @@ const initialKbruView = hasKbru ? "100g" : hasKbruTotal ? "dish" : "100g";
   <body>
     <main data-kbru-view={initialKbruView} class="recipe-page">
       <div class="recipe-shell">
-        <header class="recipe-header">
-          <div class="recipe-brand">
-            <img src="/logo.png" alt="Dr.Welnes" width="36" height="36" class="recipe-logo" />
-            <div class="recipe-name">Dr.Welnes</div>
-          </div>
-          <nav class="recipe-nav">
-            <a href="/">Главная</a>
-            <a href="/recipes">Рецепты</a>
-            <a href="/exercises">Упражнения</a>
-            <a href="/theory">Теория</a>
-            <a href="/calculators">Калькуляторы</a>
-          </nav>
-          <button id="menu_btn" type="button" class="menu-btn" aria-label="Меню" aria-expanded="false">☰</button>
-        </header>
-
-        <div id="mobile_menu" class="mobile-menu" aria-label="Меню">
-          <a href="/">Главная</a>
-          <a href="/recipes">Рецепты</a>
-          <a href="/exercises">Упражнения</a>
-          <a href="/theory">Теория</a>
-          <a href="/calculators">Калькуляторы</a>
-        </div>
+        <Header />
 
         <div class="recipe-main">
           <section class="card card--intro">
@@ -763,35 +653,6 @@ const initialKbruView = hasKbru ? "100g" : hasKbruTotal ? "dish" : "100g";
 
     <script>
       (() => {
-        try {
-          var btn = document.getElementById('menu_btn');
-          var menu = document.getElementById('mobile_menu');
-          if (btn && menu) {
-            function closeMenu() {
-              menu.classList.remove('is-open');
-              btn.setAttribute('aria-expanded', 'false');
-            }
-
-            btn.addEventListener('click', function (e) {
-              try { e && e.stopPropagation && e.stopPropagation(); } catch (e) {}
-              if (menu.classList.contains('is-open')) closeMenu();
-              else {
-                menu.classList.add('is-open');
-                btn.setAttribute('aria-expanded', 'true');
-              }
-            });
-
-            document.addEventListener('click', function (e) {
-              try {
-                var t = e && e.target;
-                if (t === btn || (btn.contains && btn.contains(t))) return;
-                if (t === menu || (menu.contains && menu.contains(t))) return;
-                closeMenu();
-              } catch (e) {}
-            });
-          }
-        } catch (e) {}
-
         const root = document.querySelector('[data-kbru-view]');
         if (!root) return;
         const toggles = document.querySelectorAll('[data-kbru-switch]');

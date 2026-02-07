@@ -1,4 +1,5 @@
 ---
+import Header from "../../components/Header.astro";
 ---
 
 <html lang="ru">
@@ -93,67 +94,6 @@
         border-radius: 10px;
       }
 
-      .menu-btn {
-        display: none;
-        width: 42px;
-        height: 42px;
-        border-radius: 12px;
-        border: 1px solid var(--stroke);
-        background: rgba(255,255,255,.8);
-        backdrop-filter: blur(10px);
-        cursor: pointer;
-        font: inherit;
-      }
-
-      .mobile-menu {
-        display: none;
-        margin-top: 10px;
-        border: 1px solid var(--stroke);
-        background: rgba(255,255,255,.85);
-        backdrop-filter: blur(10px);
-        border-radius: 16px;
-        box-shadow: var(--shadow-soft);
-        overflow: hidden;
-        max-height: 0;
-        opacity: 0;
-        transform: translateY(-6px);
-        transition: max-height 240ms ease, opacity 200ms ease, transform 240ms ease;
-      }
-
-      .mobile-menu.is-open {
-        max-height: 260px;
-        opacity: 1;
-        transform: translateY(0);
-      }
-
-      .mobile-menu a {
-        display: block;
-        padding: 12px 14px;
-        text-decoration: none;
-        color: var(--ink);
-        border-top: 1px solid rgba(229,231,235,.8);
-      }
-
-      .mobile-menu a:first-child {
-        border-top: 0;
-      }
-
-      @media (max-width: 640px) {
-        .nav {
-          display: none;
-        }
-
-        .menu-btn {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .mobile-menu {
-          display: block;
-        }
-      }
-
       .card {
         border: 1px solid var(--stroke);
         background: var(--surface);
@@ -233,28 +173,7 @@
   <body>
     <main class="page">
       <div class="container">
-        <header class="header">
-          <div class="brand">
-            <img src="/logo.png" alt="Dr.Welnes" width="34" height="34" class="brand-logo" />
-            <div class="brand-name">Dr.Welnes</div>
-          </div>
-          <nav class="nav">
-            <a href="/" class="nav-link">Главная</a>
-            <a href="/recipes" class="nav-link">Рецепты</a>
-            <a href="/exercises" class="nav-link">Упражнения</a>
-            <a href="/theory" class="nav-link">Теория</a>
-            <a href="/calculators" class="nav-link">Калькуляторы</a>
-          </nav>
-          <button id="menu_btn" type="button" class="menu-btn" aria-label="Меню" aria-expanded="false">☰</button>
-        </header>
-
-        <div id="mobile_menu" class="mobile-menu" aria-label="Меню">
-          <a href="/">Главная</a>
-          <a href="/recipes">Рецепты</a>
-          <a href="/exercises">Упражнения</a>
-          <a href="/theory">Теория</a>
-          <a href="/calculators">Калькуляторы</a>
-        </div>
+        <Header />
 
         <section class="card card--hero">
           <h1 class="hero-title">ИМТ</h1>
@@ -273,39 +192,6 @@
 
         <script>
           (function () {
-            try {
-              var btn = document.getElementById('menu_btn');
-              var menu = document.getElementById('mobile_menu');
-              if (btn && menu) {
-                function closeMenu() {
-                  menu.classList.remove('is-open');
-                  btn.setAttribute('aria-expanded', 'false');
-                }
-
-                btn.addEventListener('click', function (e) {
-                  try { e && e.stopPropagation && e.stopPropagation(); } catch (e) {}
-                  if (menu.classList.contains('is-open')) closeMenu();
-                  else {
-                    menu.classList.add('is-open');
-                    btn.setAttribute('aria-expanded', 'true');
-                  }
-                });
-
-                document.addEventListener('click', function (e) {
-                  try {
-                    var t = e && e.target;
-                    if (t === btn || (btn.contains && btn.contains(t))) return;
-                    if (t === menu || (menu.contains && menu.contains(t))) return;
-                    closeMenu();
-                  } catch (e) {}
-                });
-
-                window.addEventListener('hashchange', function () {
-                  closeMenu();
-                });
-              }
-            } catch (e) {}
-
             function n(v) {
               var x = Number(v);
               return Number.isFinite(x) ? x : NaN;

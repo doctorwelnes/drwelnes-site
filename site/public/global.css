@@ -50,3 +50,104 @@ textarea {
 ::selection {
   background: rgba(59, 130, 246, 0.18);
 }
+
+.dw-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.dw-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dw-logo {
+  display: block;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.dw-brand-name {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.dw-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.dw-nav-link {
+  text-decoration: none;
+  color: var(--ink);
+  padding: 8px 10px;
+  border-radius: 10px;
+}
+
+.dw-menu-btn {
+  display: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid var(--stroke);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  box-shadow: var(--shadow-soft);
+  cursor: pointer;
+}
+
+.dw-mobile-menu {
+  display: none;
+  margin-top: 10px;
+  border: 1px solid var(--stroke);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: max-height 240ms ease, opacity 200ms ease, transform 240ms ease;
+}
+
+.dw-mobile-menu.is-open {
+  max-height: 320px;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.dw-mobile-menu a {
+  display: block;
+  padding: 12px 14px;
+  text-decoration: none;
+  color: var(--ink);
+  border-top: 1px solid rgba(229, 231, 235, 0.8);
+}
+
+.dw-mobile-menu a:first-child {
+  border-top: 0;
+}
+
+@media (max-width: 640px) {
+  .dw-nav {
+    display: none;
+  }
+
+  .dw-menu-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dw-mobile-menu {
+    display: block;
+  }
+}
