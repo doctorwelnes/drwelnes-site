@@ -241,7 +241,8 @@ textarea {
   max-height: 0;
   opacity: 0;
   transform: translateY(-6px);
-  transition: max-height 240ms ease, opacity 200ms ease, transform 240ms ease;
+  will-change: transform, opacity;
+  transition: max-height 260ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 200ms ease, transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .dw-mobile-menu.is-open {
@@ -268,6 +269,24 @@ textarea {
 }
 
 @media (max-width: 640px) {
+  :where(.container) {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  :where(.hero-title) {
+    font-size: 24px;
+  }
+
+  :where(.recipe-title) {
+    font-size: 26px;
+  }
+
+  .dw-header {
+    padding-top: calc(10px + env(safe-area-inset-top));
+    margin-top: 0;
+  }
+
   .dw-nav {
     display: none;
   }
@@ -287,5 +306,9 @@ textarea {
     width: min(320px, calc(100vw - 40px));
     margin-top: 0;
     z-index: 50;
+  }
+
+  .dw-mobile-menu a {
+    padding: 14px 16px;
   }
 }

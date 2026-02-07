@@ -81,6 +81,10 @@ const {
       var menu = root.querySelector('.dw-mobile-menu');
       if (!btn || !menu) return;
 
+      function isOpen() {
+        return menu.classList.contains('is-open');
+      }
+
       function closeMenu() {
         menu.classList.remove('is-open');
         btn.classList.remove('is-open');
@@ -89,7 +93,7 @@ const {
       }
 
       function toggleMenu() {
-        var next = !menu.classList.contains('is-open');
+        var next = !isOpen();
         if (next) {
           menu.classList.add('is-open');
           btn.classList.add('is-open');
@@ -113,6 +117,27 @@ const {
           if (t === btn || (btn.contains && btn.contains(t))) return;
           if (t === menu || (menu.contains && menu.contains(t))) return;
           closeMenu();
+        } catch (e) {}
+      });
+
+      menu.addEventListener('click', function (e) {
+        try {
+          var t = e && e.target;
+          if (!t) return;
+          if (t.tagName && String(t.tagName).toLowerCase() === 'a') {
+            closeMenu();
+          }
+        } catch (e) {}
+      });
+
+      document.addEventListener('keydown', function (e) {
+        try {
+          if (!isOpen()) return;
+          var k = e && (e.key || e.code);
+          if (k === 'Escape' || k === 'Esc') {
+            closeMenu();
+            btn && btn.focus && btn.focus();
+          }
         } catch (e) {}
       });
 
