@@ -220,6 +220,11 @@ textarea {
   border-color: rgba(17, 24, 39, 0.18);
 }
 
+.dw-menu-btn.is-open {
+  background: rgba(17, 24, 39, 0.06);
+  border-color: rgba(17, 24, 39, 0.22);
+}
+
 .dw-menu-btn:active {
   transform: translateY(1px);
 }
