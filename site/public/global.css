@@ -228,8 +228,8 @@ textarea {
   display: none;
   margin-top: 10px;
   border: 1px solid var(--stroke);
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(10px);
+  background: #ffffff;
+  backdrop-filter: none;
   border-radius: 16px;
   box-shadow: var(--shadow);
   overflow: hidden;
