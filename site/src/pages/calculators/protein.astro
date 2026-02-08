@@ -164,7 +164,7 @@ import Header from "../../components/Header.astro";
             <label>Вес (кг)<br /><input id="prot_w" type="number" inputmode="decimal" class="input" /></label>
             <button id="prot_btn" type="button" class="btn btn--narrow">Рассчитать</button>
             <div id="prot_out" class="output"></div>
-            <div class="note">Формула: Белок (г/день) = Вес (кг) × (1,2–1,6)</div>
+            <div class="note">Белок должен составлять 10–35% от общего количества калорий в день.</div>
           </div>
         </section>
 
@@ -191,10 +191,8 @@ import Header from "../../components/Header.astro";
 
               out.innerHTML =
                 '<div class="output-stack">' +
-                '<div class="output-list">' +
-                '<div><b>Минимум:</b> ' + min + ' г/день</div>' +
-                '<div><b>Максимум:</b> ' + max + ' г/день</div>' +
-                '</div>' +
+                '<div><b>Потребляйте</b> ' + min + '–' + max + ' г белка.</div>' +
+                '<div class="note">Белок должен составлять 10–35% от общего количества калорий в день.</div>' +
                 '</div>';
             });
           })();
