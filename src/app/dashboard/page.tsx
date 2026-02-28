@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function DashboardPage() {
   return (
     <main>
@@ -6,27 +8,27 @@ export default function DashboardPage() {
         <p className="mt-1 text-sm text-zinc-600">Быстрые разделы</p>
 
         <div className="mt-6 grid gap-3 sm:grid-cols-2">
-          <a
-            className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm hover:bg-zinc-50"
+          <Link
+            className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm transition-colors hover:bg-zinc-50"
             href="/workouts"
           >
             <div className="font-medium">Тренировки</div>
             <div className="mt-1 text-sm text-zinc-600">История и создание тренировок</div>
-          </a>
-          <a
-            className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm hover:bg-zinc-50"
+          </Link>
+          <Link
+            className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm transition-colors hover:bg-zinc-50"
             href="/templates"
           >
             <div className="font-medium">Шаблоны</div>
             <div className="mt-1 text-sm text-zinc-600">Запуск тренировки в 1 клик</div>
-          </a>
-          <a
-            className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm hover:bg-zinc-50"
+          </Link>
+          <Link
+            className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm transition-colors hover:bg-zinc-50"
             href="/measurements"
           >
             <div className="font-medium">Замеры</div>
             <div className="mt-1 text-sm text-zinc-600">Вес и параметры тела</div>
-          </a>
+          </Link>
         </div>
 
         <div className="mt-6 text-sm text-zinc-600">

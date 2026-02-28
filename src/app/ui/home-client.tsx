@@ -1,12 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 export default function HomeClient() {
   const { data, status } = useSession();
 
   const email = data?.user?.email ?? null;
-  const role = (data as any)?.role ?? null;
+  const role = (data as { role?: string } | null)?.role ?? null;
 
   return (
     <div>
@@ -26,26 +27,20 @@ export default function HomeClient() {
       </div>
 
       <div className="flex flex-wrap gap-2">
-        <a
-          className="rounded-md border px-3 py-2 text-sm hover:bg-zinc-50"
-          href="/invite"
-        >
+        <Link className="rounded-md border px-3 py-2 text-sm transition-colors hover:bg-zinc-50" href="/invite">
           Регистрация по инвайту
-        </a>
-        <a
-          className="rounded-md border px-3 py-2 text-sm hover:bg-zinc-50"
-          href="/login"
-        >
+        </Link>
+        <Link className="rounded-md border px-3 py-2 text-sm transition-colors hover:bg-zinc-50" href="/login">
           Вход
-        </a>
+        </Link>
         <button
-          className="rounded-md border px-3 py-2 text-sm hover:bg-zinc-50"
+          className="rounded-md border px-3 py-2 text-sm transition-colors hover:bg-zinc-50"
           onClick={() => signIn(undefined, { callbackUrl: "/" })}
         >
           signIn()
         </button>
         <button
-          className="rounded-md border px-3 py-2 text-sm hover:bg-zinc-50"
+          className="rounded-md border px-3 py-2 text-sm transition-colors hover:bg-zinc-50"
           onClick={() => signOut({ callbackUrl: "/" })}
         >
           signOut()

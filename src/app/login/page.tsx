@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { signIn } from "next-auth/react";
 
 export default function LoginPage() {
@@ -82,7 +83,7 @@ export default function LoginPage() {
           </button>
 
           <div className="text-center text-sm text-zinc-600">
-            Нет аккаунта? <a href="/invite">Регистрация по инвайту</a>
+            Нет аккаунта? <Link href="/invite">Регистрация по инвайту</Link>
           </div>
         </form>
       </div>

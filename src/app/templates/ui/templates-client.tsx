@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 
 type TemplateExerciseDto = {
   id: string;
@@ -36,6 +37,7 @@ function humanizeError(code: string) {
 }
 
 export default function TemplatesClient() {
+  const router = useRouter();
   const [items, setItems] = useState<TemplateDto[]>([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -66,7 +68,7 @@ export default function TemplatesClient() {
   }
 
   useEffect(() => {
-    refresh();
+    void Promise.resolve().then(refresh);
   }, []);
 
   return (
@@ -226,7 +228,7 @@ export default function TemplatesClient() {
                           }
 
                           const data = (await res.json()) as { workout: { id: string } };
-                          window.location.href = `/workouts/${encodeURIComponent(data.workout.id)}`;
+                          router.push(`/workouts/${encodeURIComponent(data.workout.id)}`);
                         }}
                       >
                         {startingId === t.id ? "..." : "Старт"}
