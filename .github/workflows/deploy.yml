@@ -1,0 +1,61 @@
+name: Deploy Site
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci --prefer-offline --no-audit --fund=false
+      
+    - name: Generate Prisma Client
+      run: npx prisma generate
+      
+    - name: Build
+      run: npm run build
+      
+    - name: Deploy to server
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          cd /var/www/drwelnes-site
+          
+          # Create new release directory
+          RELEASE_DIR="release-$(date +%s)-$(git rev-parse --short HEAD)"
+          mkdir -p "releases/$RELEASE_DIR"
+          
+          # Sync files
+          rsync -avz --delete \
+            --exclude='.git' \
+            --exclude='node_modules' \
+            --exclude='.next' \
+            --exclude='.env.local' \
+            /home/github-runner/actions-runner/_work/drwelnes-site/drwelnes-site/ \
+            "/var/www/drwelnes-site/releases/$RELEASE_DIR/"
+          
+          # Update current symlink
+          ln -sfn "/var/www/drwelnes-site/releases/$RELEASE_DIR" "/var/www/drwelnes-site/current"
+          
+          # Restart services if needed
+          sudo systemctl reload nginx || true
+          
+          # Clean old releases (keep last 5)
+          cd /var/www/drwelnes-site/releases
+          ls -1t | tail -n +6 | xargs -r rm -rf
