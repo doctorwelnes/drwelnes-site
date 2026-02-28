@@ -2,10 +2,10 @@ name: Deploy Astro Site to VPS
 
 on:
   push:
-    branches: [ "master", "main" ]
-    paths:
-      - "site/**"
-      - ".github/workflows/**"
+    branches: ["master", "main"]
+    paths-ignore:
+      - "drwelnes-site/**"
+      - "README.md"
   schedule:
     - cron: "*/1 * * * *"
   workflow_dispatch:
@@ -37,8 +37,6 @@ jobs:
           set -euo pipefail
           echo "==> HEAD: $(git rev-parse HEAD)"
           echo "==> Expected: ${{ github.sha }}"
-          echo "==> Showing any kbruBasal occurrences in recipe file"
-          test -f "site/src/content/recipes/шоколадный-пирог-с-вишней.md" && (grep -n "kbruBasal" -n "site/src/content/recipes/шоколадный-пирог-с-вишней.md" || true)
 
       - name: Ensure clean workspace
         run: |
@@ -62,18 +60,17 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: 'site/package-lock.json'
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: "package-lock.json"
 
       - name: Install dependencies
         run: |
-          cd site
           npm ci --prefer-offline --no-audit --fund=false
 
-      - name: Build Astro site
+      - name: Build Next.js site
         run: |
-          cd site
+          npx prisma generate
           npm run build
 
       - name: Prepare release directory
@@ -84,7 +81,7 @@ jobs:
       - name: Sync built files to release
         run: |
           RELEASE_DIR="${{ env.BASE_DIR }}/releases/${{ env.RELEASE_NAME }}"
-          rsync -avz --delete site/dist/ "$RELEASE_DIR/"
+          rsync -avz --delete out/ "$RELEASE_DIR/"
 
       - name: Sync shared directories
         run: |
@@ -122,8 +119,6 @@ jobs:
 
           BASE_URL="https://drwelnes.ru"
 
-          # Retries are important because nginx reloads / file sync can create a short window
-          # where the site responds with transient errors.
           MAX_ATTEMPTS=20
           SLEEP_SECONDS=2
 
@@ -136,7 +131,6 @@ jobs:
 
             local attempt=1
             while [ "$attempt" -le "$MAX_ATTEMPTS" ]; do
-              # Get HTTP code separately from body
               http_code=$(curl -sS -L --max-time 15 -o /dev/null -w "%{http_code}" "$url" || echo "000")
               if [ "$http_code" = "$expect_code" ]; then
                 echo "OK: ${name}"
@@ -154,9 +148,6 @@ jobs:
           }
 
           check_url "Home" "${BASE_URL}/" "200"
-          check_url "Admin" "${BASE_URL}/admin/" "200"
-          check_url "Decap config" "${BASE_URL}/admin/config.yml" "200"
-          check_url "OAuth health" "${BASE_URL}/api/auth/health" "200"
 
       - name: Notify Telegram on failure
         if: ${{ failure() }}
