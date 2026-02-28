@@ -73,7 +73,7 @@ jobs:
           NODE_OPTIONS: "--max-old-space-size=1536"
         run: |
           npx prisma generate
-          npm run build -- --no-lint
+          npm run build
 
       - name: Prepare release directory
         run: |
