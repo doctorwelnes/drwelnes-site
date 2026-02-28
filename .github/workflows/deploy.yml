@@ -27,6 +27,10 @@ jobs:
       
     - name: Build
       run: npm run build
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
+        NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
       
     - name: Deploy to server
       uses: appleboy/ssh-action@v1.0.3
