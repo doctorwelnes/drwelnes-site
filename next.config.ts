@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
+  trailingSlash: true,
+  distDir: 'out',
+  excludeDefaultMomentLocales: false,
 };
 
 export default nextConfig;
