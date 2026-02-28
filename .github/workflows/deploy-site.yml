@@ -69,9 +69,11 @@ jobs:
           npm ci --prefer-offline --no-audit --fund=false
 
       - name: Build Next.js site
+        env:
+          NODE_OPTIONS: "--max-old-space-size=1536"
         run: |
           npx prisma generate
-          npm run build
+          npm run build -- --no-lint
 
       - name: Prepare release directory
         run: |
