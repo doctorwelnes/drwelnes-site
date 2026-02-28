@@ -1,0 +1,66 @@
+name: Diagnose VPS
+
+on:
+  workflow_dispatch:
+
+jobs:
+  diagnose:
+    runs-on: [self-hosted, linux, x64, vps]
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Docker version
+        run: |
+          echo "=== Docker ==="
+          docker --version
+          docker compose version
+
+      - name: Runner user & home
+        run: |
+          echo "=== Runner ==="
+          echo "USER: $(whoami)"
+          echo "HOME: $HOME"
+          echo "PWD:  $(pwd)"
+
+      - name: Check app directory
+        run: |
+          echo "=== /var/www/drwelnes ==="
+          ls -la /var/www/drwelnes/ 2>/dev/null && echo "DIR EXISTS" || echo "DIR NOT FOUND"
+
+      - name: Check .env.production
+        run: |
+          echo "=== .env.production ==="
+          if [ -f /var/www/drwelnes/.env.production ]; then
+            echo "EXISTS ✅"
+            echo "Keys present:"
+            grep -o '^[^=]*' /var/www/drwelnes/.env.production | sort
+          else
+            echo "MISSING ❌"
+          fi
+
+      - name: Check nginx
+        run: |
+          echo "=== nginx ==="
+          nginx -v 2>&1 || echo "nginx not found"
+          nginx -t 2>&1 || true
+          echo "--- Sites enabled ---"
+          ls /etc/nginx/sites-enabled/ 2>/dev/null || ls /etc/nginx/conf.d/ 2>/dev/null || echo "no sites dir"
+          echo "--- drwelnes config ---"
+          cat /etc/nginx/sites-enabled/drwelnes* 2>/dev/null || cat /etc/nginx/conf.d/drwelnes* 2>/dev/null || echo "no drwelnes nginx config found"
+
+      - name: Check running containers
+        run: |
+          echo "=== Docker containers ==="
+          docker ps -a --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" 2>/dev/null || echo "no containers"
+
+      - name: Check port 3000
+        run: |
+          echo "=== Port 3000 ==="
+          ss -tlnp | grep :3000 || echo "Nothing on :3000"
+
+      - name: Current site health
+        run: |
+          echo "=== https://drwelnes.ru/ ==="
+          curl -sS -L --max-time 10 -o /dev/null -w "HTTP %{http_code}" https://drwelnes.ru/ || echo "unreachable"
