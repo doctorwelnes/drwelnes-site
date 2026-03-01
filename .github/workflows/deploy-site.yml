@@ -133,6 +133,64 @@ jobs:
           $COMPOSE --profile migration run --rm migrator
           echo "Migrations completed."
 
+      - name: Configure Nginx
+        if: steps.check_skip.outputs.skip != 'true'
+        run: |
+          set -euo pipefail
+          NGINX_CONF="/etc/nginx/sites-available/drwelnes"
+          NGINX_LINK="/etc/nginx/sites-enabled/drwelnes"
+
+          # Check if sudo is available without password
+          if ! sudo -n true 2>/dev/null; then
+            echo "⚠️ sudo not available — skipping Nginx config"
+            echo "Please manually create: $NGINX_CONF"
+            exit 0
+          fi
+
+          # Create config only if it doesn't exist
+          if [ ! -f "$NGINX_CONF" ]; then
+            echo "Creating Nginx config for drwelnes.ru..."
+            printf '%s\n' \
+              'server {' \
+              '    listen 80;' \
+              '    server_name drwelnes.ru www.drwelnes.ru;' \
+              '    return 301 https://$server_name$request_uri;' \
+              '}' \
+              '' \
+              'server {' \
+              '    listen 443 ssl;' \
+              '    http2 on;' \
+              '    server_name drwelnes.ru www.drwelnes.ru;' \
+              '' \
+              '    ssl_certificate /etc/letsencrypt/live/drwelnes.ru/fullchain.pem;' \
+              '    ssl_certificate_key /etc/letsencrypt/live/drwelnes.ru/privkey.pem;' \
+              '    include /etc/letsencrypt/options-ssl-nginx.conf;' \
+              '    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;' \
+              '' \
+              '    client_max_body_size 10M;' \
+              '' \
+              '    location / {' \
+              '        proxy_pass         http://127.0.0.1:3000;' \
+              '        proxy_http_version 1.1;' \
+              '        proxy_set_header   Upgrade $http_upgrade;' \
+              '        proxy_set_header   Connection upgrade;' \
+              '        proxy_set_header   Host $host;' \
+              '        proxy_set_header   X-Real-IP $remote_addr;' \
+              '        proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;' \
+              '        proxy_set_header   X-Forwarded-Proto $scheme;' \
+              '        proxy_cache_bypass $http_upgrade;' \
+              '        proxy_read_timeout 90s;' \
+              '    }' \
+              '}' | sudo tee "$NGINX_CONF" > /dev/null
+            sudo ln -sf "$NGINX_CONF" "$NGINX_LINK"
+            echo "Nginx config created ✅"
+          else
+            echo "Nginx config already exists — skipping creation"
+          fi
+
+          sudo nginx -t && sudo nginx -s reload
+          echo "Nginx reloaded ✅"
+
       - name: Save deployed SHA
         if: steps.check_skip.outputs.skip != 'true'
         run: |
@@ -142,40 +200,58 @@ jobs:
         if: steps.check_skip.outputs.skip != 'true'
         run: |
           set -euo pipefail
-
-          echo "=== Docker containers status ==="
           cd "${{ env.APP_DIR }}/src"
           COMPOSE="docker compose --env-file .env -f docker-compose.prod.yml"
+
+          echo "=== Docker containers status ==="
           $COMPOSE ps
 
-          echo "=== Recent container logs (last 30 lines) ==="
-          $COMPOSE logs --tail=30
+          echo "=== Step 1: Direct Next.js check (localhost:3000) ==="
+          for i in $(seq 1 15); do
+            code=$(curl -sS --max-time 5 -o /tmp/nextjs_body.txt -w "%{http_code}" http://localhost:3000/ || echo "000")
+            if [ "$code" = "200" ] || [ "$code" = "308" ] || [ "$code" = "307" ]; then
+              echo "✅ Next.js responding: HTTP $code"
+              break
+            fi
+            echo "Attempt $i/15: Next.js HTTP $code"
+            if [ "$i" = "15" ]; then
+              echo "❌ Next.js direct check failed. Response body:"
+              cat /tmp/nextjs_body.txt || true
+              echo "=== Container logs ==="
+              $COMPOSE logs --tail=50 web
+              echo "=== Nginx error log ==="
+              sudo tail -30 /var/log/nginx/error.log 2>/dev/null || echo "no nginx log"
+              exit 1
+            fi
+            sleep 3
+          done
 
+          echo "=== Step 2: Domain check (https://drwelnes.ru/) ==="
           BASE_URL="https://drwelnes.ru"
-          MAX_ATTEMPTS=30
+          MAX_ATTEMPTS=20
           SLEEP_SECONDS=3
 
           check_url() {
-            local name="$1"
-            local url="$2"
-            local expect_code="$3"
-
+            local name="$1" url="$2" expect_code="$3"
             echo "==> Checking ${name}: ${url} (expect ${expect_code})"
             local attempt=1
             while [ "$attempt" -le "$MAX_ATTEMPTS" ]; do
-              http_code=$(curl -sS -L --max-time 15 -o /dev/null -w "%{http_code}" "$url" || echo "000")
+              http_code=$(curl -sS -L --max-time 15 -o /tmp/domain_body.txt -w "%{http_code}" "$url" || echo "000")
               if [ "$http_code" = "$expect_code" ]; then
-                echo "OK: ${name}"
+                echo "OK: ${name} — HTTP ${http_code}"
                 return 0
-              else
-                echo "Attempt ${attempt}/${MAX_ATTEMPTS}: got HTTP ${http_code}, expected ${expect_code}"
               fi
+              echo "Attempt ${attempt}/${MAX_ATTEMPTS}: HTTP ${http_code}"
               attempt=$((attempt + 1))
               sleep "$SLEEP_SECONDS"
             done
-            echo "FAIL: ${name} healthcheck did not pass"
-            echo "=== Full container logs on failure ==="
-            $COMPOSE logs
+            echo "FAIL: ${name}"
+            echo "Response body:"
+            cat /tmp/domain_body.txt || true
+            echo "=== Full container logs ==="
+            $COMPOSE logs --tail=50
+            echo "=== Nginx error log ==="
+            sudo tail -30 /var/log/nginx/error.log 2>/dev/null || echo "no nginx log"
             return 1
           }
 

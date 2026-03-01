@@ -18,9 +18,8 @@ export function getPrismaClient() {
   const adapter = new PrismaPg(pool);
   const prisma = new PrismaClient({ adapter });
 
-  if (process.env.NODE_ENV !== "production") {
-    globalForPrisma.prisma = prisma;
-  }
+  // Cache in all environments to prevent connection pool leaks
+  globalForPrisma.prisma = prisma;
 
   return prisma;
 }
