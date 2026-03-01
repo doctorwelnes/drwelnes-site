@@ -97,6 +97,7 @@ jobs:
           echo "POSTGRES_USER=drwelnes" > "$ENV_FILE"
           echo "POSTGRES_PASSWORD=drwelnes" >> "$ENV_FILE"
           echo "POSTGRES_DB=drwelnes" >> "$ENV_FILE"
+          echo "DATABASE_URL=postgresql://drwelnes:drwelnes@db:5432/drwelnes" >> "$ENV_FILE"
           echo "=== Created .env file ==="
           cat "$ENV_FILE"
           echo "=== .env file permissions ==="
