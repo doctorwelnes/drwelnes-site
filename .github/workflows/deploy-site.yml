@@ -112,11 +112,16 @@ jobs:
         run: |
           set -euo pipefail
           cd "${{ env.APP_DIR }}/src"
-          echo "=== Debug: compose file header (first 30 lines) ==="
-          sed -n '1,30p' docker-compose.prod.yml
-          echo "=== Debug: env files ==="
+          # Prep env variables
           ls -la .env .env.production 2>/dev/null || true
-          COMPOSE="docker compose --env-file .env -f docker-compose.prod.yml"
+          COMPOSE="docker compose --env-file .env.production -f docker-compose.prod.yml"
+
+          $COMPOSE pull
+
+          # Ensure uploads directory exists and is writable on the host
+          mkdir -p public/uploads/videos
+          chmod -R 777 public/uploads
+
           $COMPOSE build
           $COMPOSE up -d --remove-orphans
 

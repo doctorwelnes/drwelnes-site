@@ -27,7 +27,8 @@
               el.style.color = "#fff";
               el.style.borderRadius = "12px";
               el.style.padding = "12px 14px";
-              el.style.fontFamily = "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace";
+              el.style.fontFamily =
+                "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace";
               el.style.fontSize = "12px";
               el.style.lineHeight = "1.35";
               el.style.boxShadow = "0 10px 25px rgba(0,0,0,.25)";
@@ -41,14 +42,21 @@
               });
             }
 
-            var line = "[" + new Date().toISOString() + "] " + kind + ": " + String(message || "(no message)");
+            var line =
+              "[" +
+              new Date().toISOString() +
+              "] " +
+              kind +
+              ": " +
+              String(message || "(no message)");
             el.textContent = (el.textContent ? el.textContent + "\n\n" : "") + line;
           } catch (e) {}
         }
 
         window.addEventListener("error", function (e) {
           try {
-            var msg = e && e.error && e.error.stack ? e.error.stack : (e && e.message ? e.message : e);
+            var msg =
+              e && e.error && e.error.stack ? e.error.stack : e && e.message ? e.message : e;
             showError("error", msg);
           } catch (err) {}
         });
@@ -77,7 +85,7 @@
         (function () {
           try {
             var a = document.createElement("a");
-            a.href = ORIGIN + "/upload/";
+            a.href = ORIGIN + "/upload";
             a.target = "_blank";
             a.rel = "noopener noreferrer";
             a.textContent = "Загрузить видео (mp4)";
@@ -125,10 +133,18 @@
 
             var user = { token: token, provider: provider, backendName: "github" };
 
-            try { localStorage.setItem("decap-cms-user", JSON.stringify(user)); } catch (e) {}
-            try { localStorage.setItem("netlify-cms-user", JSON.stringify(user)); } catch (e) {}
-            try { sessionStorage.setItem("decap-cms-user", JSON.stringify(user)); } catch (e) {}
-            try { sessionStorage.setItem("netlify-cms-user", JSON.stringify(user)); } catch (e) {}
+            try {
+              localStorage.setItem("decap-cms-user", JSON.stringify(user));
+            } catch (e) {}
+            try {
+              localStorage.setItem("netlify-cms-user", JSON.stringify(user));
+            } catch (e) {}
+            try {
+              sessionStorage.setItem("decap-cms-user", JSON.stringify(user));
+            } catch (e) {}
+            try {
+              sessionStorage.setItem("netlify-cms-user", JSON.stringify(user));
+            } catch (e) {}
 
             clearCookie("decap_token");
             clearCookie("decap_provider");
@@ -142,7 +158,8 @@
           try {
             var s = String(url || "");
             if (s.indexOf("https://api.netlify.com/auth") === 0) return LOCAL_AUTH;
-            if (s.indexOf("https://api.netlify.com") === 0 && s.indexOf("/auth") !== -1) return LOCAL_AUTH;
+            if (s.indexOf("https://api.netlify.com") === 0 && s.indexOf("/auth") !== -1)
+              return LOCAL_AUTH;
             if (s.indexOf("api.netlify.com/auth") !== -1) return LOCAL_AUTH;
             return url;
           } catch (e) {
@@ -184,7 +201,7 @@
               window.location.href = newUrl;
             }
           },
-          true
+          true,
         );
       })();
     </script>
