@@ -30,5 +30,20 @@ services:
     ports:
       - "127.0.0.1:3000:3000"
 
+  migrator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+    env_file:
+      - .env.production
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    command: node node_modules/prisma/build/index.js migrate deploy
+    profiles:
+      - migration
+
 volumes:
   postgres_data:

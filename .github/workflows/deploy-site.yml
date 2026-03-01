@@ -116,7 +116,7 @@ jobs:
           echo "=== Debug: env files ==="
           ls -la .env .env.production 2>/dev/null || true
           COMPOSE="docker compose --env-file .env -f docker-compose.prod.yml"
-          $COMPOSE build --no-cache
+          $COMPOSE build
           $COMPOSE up -d --remove-orphans
 
       - name: Run database migrations
@@ -124,14 +124,13 @@ jobs:
         run: |
           set -euo pipefail
           cd "${{ env.APP_DIR }}/src"
-          # Wait for DB to be healthy, then run migrations
-          echo "Waiting for database to be ready..."
           COMPOSE="docker compose --env-file .env -f docker-compose.prod.yml"
+          # Wait for DB to be healthy
+          echo "Waiting for database to be ready..."
           timeout 60 bash -c 'until '"$COMPOSE"' exec -T db pg_isready -U ${POSTGRES_USER:-drwelnes} -d ${POSTGRES_DB:-drwelnes}; do sleep 2; done'
-          echo "=== Debug: DATABASE_URL inside web container ==="
-          $COMPOSE exec -T web sh -lc 'if [ -n "${DATABASE_URL:-}" ]; then echo "DATABASE_URL=SET"; else echo "DATABASE_URL=MISSING"; fi'
+          # Run migrations via dedicated migrator container (builder stage = full node_modules)
           echo "Running Prisma migrations..."
-          $COMPOSE exec -T web node node_modules/prisma/build/index.js migrate deploy
+          $COMPOSE --profile migration run --rm migrator
           echo "Migrations completed."
 
       - name: Save deployed SHA
