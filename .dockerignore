@@ -9,6 +9,7 @@ coverage
 *.log
 .vscode
 site
+deployment-patterns
 deploy-site.bat
 start-drwelnes*.bat
 README.md

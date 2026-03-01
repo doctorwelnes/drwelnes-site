@@ -238,9 +238,11 @@ jobs:
 
           echo "=== Deploy completed successfully ==="
 
-      - name: Cleanup old Docker images
+      - name: Cleanup old Docker images and build cache
         if: always()
-        run: docker image prune -f
+        run: |
+          docker image prune -af --filter "until=24h"
+          docker builder prune -af --filter "until=24h"
 
       - name: Notify Telegram on failure
         if: failure()
