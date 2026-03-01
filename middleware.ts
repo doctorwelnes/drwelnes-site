@@ -10,7 +10,6 @@ export async function middleware(req: NextRequest) {
   });
 
   const isAuthRoute = pathname.startsWith("/login") || pathname.startsWith("/invite");
-  const isAdminRoute = pathname.startsWith("/admin");
   const isProtectedClientRoute =
     pathname.startsWith("/dashboard") ||
     pathname.startsWith("/workouts") ||
@@ -20,27 +19,18 @@ export async function middleware(req: NextRequest) {
     if (token) {
       const role = (token as any).role;
       const url = req.nextUrl.clone();
-      url.pathname = role === "ADMIN" ? "/admin/invites" : "/dashboard";
+      url.pathname = role === "ADMIN" ? "/dashboard" : "/dashboard"; // Updated to redirect to dashboard
       return NextResponse.redirect(url);
     }
     return NextResponse.next();
   }
 
-  if (isAdminRoute || isProtectedClientRoute) {
+  if (isProtectedClientRoute) {
     if (!token) {
       const url = req.nextUrl.clone();
       url.pathname = "/login";
       url.searchParams.set("next", pathname);
       return NextResponse.redirect(url);
-    }
-
-    if (isAdminRoute) {
-      const role = (token as any).role;
-      if (role !== "ADMIN") {
-        const url = req.nextUrl.clone();
-        url.pathname = "/";
-        return NextResponse.redirect(url);
-      }
     }
   }
 
@@ -48,5 +38,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/dashboard/:path*", "/workouts/:path*", "/measurements/:path*", "/login", "/invite"],
+  matcher: ["/dashboard/:path*", "/workouts/:path*", "/measurements/:path*", "/login", "/invite"],
 };
