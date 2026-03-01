@@ -1,0 +1,219 @@
+backend:
+  name: github
+  repo: doctorwelnes/drwelnes-site
+  branch: master
+
+locale: "ru"
+
+media_folder: "public/uploads"
+public_folder: "/uploads"
+
+site_url: "https://drwelnes.ru"
+display_url: "https://drwelnes.ru"
+
+# OAuth шлюз в Next.js
+base_url: "https://drwelnes.ru"
+auth_endpoint: "/api/cms-auth"
+
+collections:
+  - name: "recipes"
+    label: "Рецепты"
+    folder: "content/recipes"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    fields:
+      - { name: "title", label: "Название", widget: "string" }
+      - { name: "description", label: "Описание", widget: "string", required: false }
+      - {
+          name: "prepTimeMinutes",
+          label: "Время подготовки (мин)",
+          widget: "number",
+          required: false,
+          value_type: "int",
+          min: 0,
+        }
+      - {
+          name: "cookTimeMinutes",
+          label: "Время приготовления (мин)",
+          widget: "number",
+          required: false,
+          value_type: "int",
+          min: 0,
+        }
+      - name: "kbru"
+        label: "КБЖУ (на 100 г)"
+        widget: "object"
+        required: false
+        collapsed: true
+        fields:
+          - {
+              name: "calories",
+              label: "Калории",
+              widget: "number",
+              required: false,
+              value_type: "int",
+            }
+          - {
+              name: "protein",
+              label: "Белки (г)",
+              widget: "number",
+              required: false,
+              value_type: "float",
+            }
+          - {
+              name: "fat",
+              label: "Жиры (г)",
+              widget: "number",
+              required: false,
+              value_type: "float",
+            }
+          - {
+              name: "carbs",
+              label: "Углеводы (г)",
+              widget: "number",
+              required: false,
+              value_type: "float",
+            }
+      - name: "kbruBasal"
+        label: "КБЖУ (100 г блюда на основной обмен)"
+        widget: "object"
+        required: false
+        collapsed: true
+        fields:
+          - {
+              name: "calories",
+              label: "Калории",
+              widget: "number",
+              required: false,
+              value_type: "int",
+            }
+          - {
+              name: "protein",
+              label: "Белки (г)",
+              widget: "number",
+              required: false,
+              value_type: "float",
+            }
+          - {
+              name: "fat",
+              label: "Жиры (г)",
+              widget: "number",
+              required: false,
+              value_type: "float",
+            }
+          - {
+              name: "carbs",
+              label: "Углеводы (г)",
+              widget: "number",
+              required: false,
+              value_type: "float",
+            }
+      - name: "kbruTotal"
+        label: "КБЖУ (на блюдо)"
+        widget: "object"
+        required: false
+        collapsed: true
+        fields:
+          - {
+              name: "calories",
+              label: "Калории",
+              widget: "number",
+              required: false,
+              value_type: "int",
+            }
+          - {
+              name: "protein",
+              label: "Белки (г)",
+              widget: "number",
+              required: false,
+              value_type: "float",
+            }
+          - {
+              name: "fat",
+              label: "Жиры (г)",
+              widget: "number",
+              required: false,
+              value_type: "float",
+            }
+          - {
+              name: "carbs",
+              label: "Углеводы (г)",
+              widget: "number",
+              required: false,
+              value_type: "float",
+            }
+      - name: "ingredients"
+        label: "Ингредиенты"
+        widget: "list"
+        required: false
+        collapsed: true
+        minimize_collapsed: true
+        summary: "{{fields.name}} — {{fields.amount}}"
+        fields:
+          - { name: "name", label: "Название", widget: "string" }
+          - { name: "amount", label: "Количество", widget: "string", required: false }
+      - name: "steps"
+        label: "Шаги приготовления"
+        widget: "list"
+        required: false
+        collapsed: true
+        minimize_collapsed: true
+        summary: "{{fields.text}}"
+        field: { name: "text", label: "Шаг", widget: "text" }
+      - {
+          name: "category",
+          label: "Категория",
+          widget: "select",
+          options: ["перекусы", "десерты"],
+          required: false,
+        }
+      - { name: "tags", label: "Теги", widget: "list", required: false }
+      - {
+          name: "videoFile",
+          label: "Путь к видео (/uploads/videos/..mp4)",
+          widget: "string",
+          required: false,
+        }
+      - { name: "videoPoster", label: "Постер (обложка) видео", widget: "image", required: false }
+
+  - name: "exercises"
+    label: "Упражнения"
+    folder: "content/exercises"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    fields:
+      - { name: "title", label: "Заголовок", widget: "string" }
+      - { name: "description", label: "Описание", widget: "string", required: false }
+      - {
+          name: "videoFile",
+          label: "Путь к видео (/uploads/videos/..mp4)",
+          widget: "string",
+          required: false,
+        }
+      - { name: "videoPoster", label: "Постер (обложка) видео", widget: "image", required: false }
+      - { name: "tags", label: "Теги", widget: "list", required: false }
+      - { name: "publishedAt", label: "Дата публикации", widget: "datetime", required: false }
+      - {
+          name: "body",
+          label: "Текст",
+          widget: "markdown",
+          default: "## Описание\n\n## Техника выполнения\n\n## Ошибки\n",
+        }
+
+  - name: "theory"
+    label: "Теория"
+    folder: "content/theory"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    fields:
+      - { name: "title", label: "Заголовок", widget: "string" }
+      - { name: "description", label: "Описание", widget: "string", required: false }
+      - { name: "tags", label: "Теги", widget: "list", required: false }
+      - { name: "publishedAt", label: "Дата публикации", widget: "datetime", required: false }
+      - { name: "body", label: "Текст", widget: "markdown" }

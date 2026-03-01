@@ -1,0 +1,365 @@
+/* Decap CMS Apple Human Interface redesign */
+:root {
+  --drw-font-size: 14px;
+  --drw-font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
+  --drw-bg: #f2f2f7;
+  --drw-bg-card: rgba(255, 255, 255, 0.72);
+  --drw-bg-card-hover: rgba(255, 255, 255, 0.88);
+  --drw-border: rgba(0, 0, 0, 0.08);
+  --drw-border-strong: rgba(0, 0, 0, 0.12);
+  --drw-fg: #1d1d1f;
+  --drw-fg-muted: #6e6e73;
+  --drw-fg-subtle: #8e8e93;
+  --drw-accent: #007aff;
+  --drw-accent-hover: #0056b3;
+  --drw-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --drw-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --drw-radius: 12px;
+  --drw-radius-small: 8px;
+  --drw-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Base */
+body.drw-admin {
+  font-family: var(--drw-font-family);
+  font-size: var(--drw-font-size);
+  color: var(--drw-fg);
+  background: var(--drw-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Fullscreen editor with preview */
+body.drw-admin .SplitPane {
+  background: var(--drw-bg);
+}
+
+body.drw-admin .SplitPane .Pane1 {
+  background: var(--drw-bg);
+  padding: 24px;
+  max-width: none;
+}
+
+/* Entry editor container: center and constrain for readability */
+body.drw-admin .SplitPane .Pane1 :where(.nc-entryEditor, [class*="EntryEditor"], [class*="entryEditor"], form) {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Multi-column compact layout for simple fields in the entry editor */
+body.drw-admin .SplitPane .Pane1 :where(.nc-entryEditor, [class*="EntryEditor"], [class*="entryEditor"], form)
+  :where([class*="Field"], [class*="field"]) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  column-gap: 16px;
+  row-gap: 12px;
+}
+
+/* Keep long/complex widgets full-width */
+body.drw-admin .SplitPane .Pane1 :where(.nc-entryEditor, [class*="EntryEditor"], [class*="entryEditor"], form)
+  :where([class*="Field"], [class*="field"]):has(:where(textarea, [class*="List"], [class*="list"], [class*="Object"], [class*="object"], [class*="Markdown"], [class*="markdown"])) {
+  grid-template-columns: 1fr;
+}
+
+/* Also keep explicit list/object wrappers from being squeezed */
+body.drw-admin .SplitPane .Pane1 :where([class*="List"], [class*="list"], [class*="Object"], [class*="object"]) {
+  width: 100%;
+}
+
+/* Compact fields grid (KBRU/time-like groups): best-effort for different Decap DOMs */
+body.drw-admin .SplitPane .Pane1 :where(.nc-entryEditor, [class*="EntryEditor"], [class*="entryEditor"], form)
+  :where([class*="Object"], [class*="object"]) {
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid var(--drw-border);
+  border-radius: var(--drw-radius);
+  padding: 12px;
+}
+
+body.drw-admin .SplitPane .Pane1 :where(.nc-entryEditor, [class*="EntryEditor"], [class*="entryEditor"], form)
+  :where([class*="Object"], [class*="object"]) :where(label) {
+  font-size: 12px;
+  color: var(--drw-fg-subtle);
+}
+
+/* Make small inputs look like minimal chips/fields */
+body.drw-admin .SplitPane .Pane1 :where(.nc-entryEditor, [class*="EntryEditor"], [class*="entryEditor"], form)
+  :where(input[type="text"], input[type="number"], select, textarea) {
+  padding: 10px 12px;
+  border: 1px solid var(--drw-border);
+  border-radius: var(--drw-radius-small);
+  background: rgba(255, 255, 255, 0.88);
+}
+
+/* Prefer 2-3 columns for compact rows where possible */
+body.drw-admin .SplitPane .Pane1 :where([class*="Object"], [class*="object"]) :where([class*="Field"], [class*="field"], [class*="Control"], [class*="control"], div) {
+  min-width: 0;
+}
+
+/* Preview: 30% width, Apple style */
+body.drw-admin .SplitPane .Pane2 {
+  flex: 0 0 30% !important;
+  width: 30% !important;
+  min-width: 380px;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-left: 1px solid var(--drw-border);
+  padding: 24px;
+  overflow-y: auto;
+}
+
+/* Hide preview when requested */
+body.drw-hide-preview .SplitPane .Pane2 {
+  display: none !important;
+}
+
+body.drw-hide-preview .SplitPane .Pane1 {
+  width: 100% !important;
+}
+
+/* Section cards */
+body.drw-admin .SplitPane .Pane1 :where([class*="Field"], [class*="field"]) {
+  background: var(--drw-bg-card);
+  border-radius: var(--drw-radius);
+  padding: 16px;
+  margin: 0;
+  box-shadow: var(--drw-shadow);
+  transition: var(--drw-transition);
+  border: 1px solid var(--drw-border);
+}
+
+body.drw-admin .SplitPane .Pane1 :where([class*="Field"], [class*="field"]):hover {
+  background: var(--drw-bg-card-hover);
+  box-shadow: var(--drw-shadow-hover);
+  transform: translateY(-1px);
+}
+
+/* Section headers */
+body.drw-admin .SplitPane .Pane1 :where(h1, h2, h3) {
+  font-weight: 600;
+  font-size: 17px;
+  color: var(--drw-fg);
+  margin: 0 0 12px 0;
+  letter-spacing: -0.022em;
+}
+
+/* Labels */
+body.drw-admin .SplitPane .Pane1 :where(label) {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--drw-fg-muted);
+  margin: 0 0 6px 0;
+  display: block;
+  letter-spacing: -0.008em;
+}
+
+/* Inputs: Apple style */
+body.drw-admin .SplitPane .Pane1 :where(input[type="text"], input[type="number"], select, textarea) {
+  width: 100%;
+  font-size: 14px;
+  font-family: var(--drw-font-family);
+  color: var(--drw-fg);
+  transition: var(--drw-transition);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+body.drw-admin .SplitPane .Pane1 :where(input[type="text"]:focus, input[type="number"]:focus, select:focus, textarea:focus) {
+  outline: none;
+  border-color: var(--drw-accent);
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+/* Textareas */
+body.drw-admin .SplitPane .Pane1 :where(textarea) {
+  min-height: 100px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+/* Buttons: Apple style */
+body.drw-admin .SplitPane .Pane1 :where(button) {
+  padding: 8px 16px;
+  border-radius: var(--drw-radius-small);
+  background: var(--drw-accent);
+  color: white;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: var(--drw-font-family);
+  cursor: pointer;
+  transition: var(--drw-transition);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+body.drw-admin .SplitPane .Pane1 :where(button):hover {
+  background: var(--drw-accent-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--drw-shadow-hover);
+}
+
+body.drw-admin .SplitPane .Pane1 :where(button):active {
+  transform: translateY(0);
+}
+
+/* Object widgets: default layout (fallback) */
+body.drw-admin .SplitPane .Pane1 :where([class*="Object"], [class*="object"]) {
+  margin: 8px 0;
+}
+
+body.drw-admin .SplitPane .Pane1 :where([class*="Object"], [class*="object"]) :where([class*="Field"], [class*="field"]) {
+  margin: 0;
+}
+
+/* KBRU object widgets: 4 columns on wide screens */
+body.drw-admin .SplitPane .Pane1 :where([class*="Object"], [class*="object"]):has(:where(input[name*="kbru"], input[id*="kbru"]))
+  :where([class*="Object"] > div, [class*="object"] > div) {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+@media (min-width: 980px) {
+  body.drw-admin .SplitPane .Pane1 :where([class*="Object"], [class*="object"]):has(:where(input[name*="kbru"], input[id*="kbru"]))
+    :where([class*="Object"] > div, [class*="object"] > div) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* Time object widgets: 3 columns on wide screens */
+body.drw-admin .SplitPane .Pane1 :where([class*="Object"], [class*="object"]):has(:where(input[name*="time"], input[id*="time"]))
+  :where([class*="Object"] > div, [class*="object"] > div) {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+
+@media (min-width: 980px) {
+  body.drw-admin .SplitPane .Pane1 :where([class*="Object"], [class*="object"]):has(:where(input[name*="time"], input[id*="time"]))
+    :where([class*="Object"] > div, [class*="object"] > div) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* List widgets (ingredients/steps) */
+body.drw-admin .SplitPane .Pane1 :where([class*="List"], [class*="list"]) {
+  margin: 8px 0;
+}
+
+body.drw-admin .SplitPane .Pane1 :where([class*="List"], [class*="list"]) :where(label) {
+  margin-bottom: 4px;
+}
+
+body.drw-admin .SplitPane .Pane1 :where([class*="List"], [class*="list"]) :where(textarea) {
+  min-height: 56px;
+  padding: 8px 10px;
+  line-height: 1.4;
+}
+
+/* List widget buttons: keep controls (plus/play/move/delete) neutral and compact */
+body.drw-admin .SplitPane .Pane1 :where([class*="List"], [class*="list"]) :where(button) {
+  padding: 6px 10px;
+  border-radius: var(--drw-radius-small);
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--drw-fg);
+  border: 1px solid var(--drw-border);
+  box-shadow: none;
+  transform: none;
+}
+
+body.drw-admin .SplitPane .Pane1 :where([class*="List"], [class*="list"]) :where(button:hover) {
+  background: rgba(255, 255, 255, 0.98);
+  border-color: var(--drw-border-strong);
+}
+
+body.drw-admin .SplitPane .Pane1 :where([class*="List"], [class*="list"]) :where(button:active) {
+  transform: none;
+}
+
+/* If list controls are icon-only, make them square and subtle */
+body.drw-admin .SplitPane .Pane1 :where([class*="List"], [class*="list"]) :where(button[aria-label], button[title]) {
+  padding: 6px;
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body.drw-admin .SplitPane .Pane1 :where([class*="List"], [class*="list"]) :where(svg) {
+  width: 16px;
+  height: 16px;
+}
+
+body.drw-admin .SplitPane .Pane1 :where([class*="List"] > div, [class*="list"] > div) {
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: var(--drw-radius-small);
+  padding: 6px 10px;
+  margin: 4px 0;
+  border: 1px solid var(--drw-border);
+  transition: var(--drw-transition);
+}
+
+body.drw-admin .SplitPane .Pane1 :where([class*="List"] > div:hover, [class*="list"] > div:hover) {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: var(--drw-border-strong);
+}
+
+/* Select dropdown styling */
+body.drw-admin .SplitPane .Pane1 select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 8px center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  padding-right: 36px;
+}
+
+/* Preview styling */
+body.drw-admin .SplitPane .Pane2 :where(h1, h2, h3) {
+  font-weight: 600;
+  font-size: 20px;
+  margin: 0 0 16px 0;
+  color: var(--drw-fg);
+}
+
+body.drw-admin .SplitPane .Pane2 :where(p) {
+  margin: 8px 0;
+  line-height: 1.6;
+  color: var(--drw-fg-muted);
+}
+
+body.drw-admin .SplitPane .Pane2 :where(img) {
+  border-radius: var(--drw-radius);
+  box-shadow: var(--drw-shadow);
+  margin: 12px 0;
+}
+
+/* Remove visual noise */
+body.drw-admin .SplitPane .Pane1 :where([class*="Card"], [class*="card"], [class*="Panel"], [class*="panel"]) {
+  box-shadow: none !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+/* Smooth scrolling */
+body.drw-admin {
+  scroll-behavior: smooth;
+}
+
+/* Loading animation */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+body.drw-admin .SplitPane .Pane1 :where([class*="loading"], [class*="Loading"]) {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Focus visible for accessibility */
+body.drw-admin .SplitPane .Pane1 :where(button:focus-visible) {
+  outline: 2px solid var(--drw-accent);
+  outline-offset: 2px;
+}

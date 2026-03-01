@@ -1,0 +1,194 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Dr.Welnes Admin</title>
+    <link rel="stylesheet" href="./admin.css" />
+  </head>
+  <body class="drw-admin">
+    <script>
+      (function () {
+        function showError(kind, message) {
+          try {
+            var id = "drw-admin-error-overlay";
+            var el = document.getElementById(id);
+            if (!el) {
+              el = document.createElement("div");
+              el.id = id;
+              el.style.position = "fixed";
+              el.style.left = "16px";
+              el.style.right = "16px";
+              el.style.bottom = "16px";
+              el.style.zIndex = "2147483647";
+              el.style.maxHeight = "40vh";
+              el.style.overflow = "auto";
+              el.style.background = "rgba(17, 24, 39, 0.92)";
+              el.style.color = "#fff";
+              el.style.borderRadius = "12px";
+              el.style.padding = "12px 14px";
+              el.style.fontFamily = "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace";
+              el.style.fontSize = "12px";
+              el.style.lineHeight = "1.35";
+              el.style.boxShadow = "0 10px 25px rgba(0,0,0,.25)";
+              el.style.whiteSpace = "pre-wrap";
+              el.style.userSelect = "text";
+              el.textContent = "";
+              document.addEventListener("DOMContentLoaded", function () {
+                try {
+                  document.body.appendChild(el);
+                } catch (e) {}
+              });
+            }
+
+            var line = "[" + new Date().toISOString() + "] " + kind + ": " + String(message || "(no message)");
+            el.textContent = (el.textContent ? el.textContent + "\n\n" : "") + line;
+          } catch (e) {}
+        }
+
+        window.addEventListener("error", function (e) {
+          try {
+            var msg = e && e.error && e.error.stack ? e.error.stack : (e && e.message ? e.message : e);
+            showError("error", msg);
+          } catch (err) {}
+        });
+
+        window.addEventListener("unhandledrejection", function (e) {
+          try {
+            var r = e && e.reason;
+            var msg = r && r.stack ? r.stack : r;
+            showError("unhandledrejection", msg);
+          } catch (err) {}
+        });
+      })();
+
+      (function () {
+        (function () {
+          try {
+            var qs = new URLSearchParams(window.location.search);
+            var p = qs.get("preview");
+            if (p === "0") document.body.classList.add("drw-hide-preview");
+          } catch (e) {}
+        })();
+
+        var ORIGIN = window.location.origin;
+        var LOCAL_AUTH = ORIGIN + "/api/auth";
+
+        (function () {
+          try {
+            var a = document.createElement("a");
+            a.href = ORIGIN + "/upload/";
+            a.target = "_blank";
+            a.rel = "noopener noreferrer";
+            a.textContent = "Загрузить видео (mp4)";
+            a.style.position = "fixed";
+            a.style.right = "16px";
+            a.style.bottom = "16px";
+            a.style.zIndex = "99999";
+            a.style.padding = "10px 14px";
+            a.style.borderRadius = "12px";
+            a.style.background = "#111827";
+            a.style.color = "#ffffff";
+            a.style.fontFamily = "system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif";
+            a.style.fontSize = "14px";
+            a.style.textDecoration = "none";
+            a.style.boxShadow = "0 10px 25px rgba(0,0,0,.2)";
+            document.addEventListener("DOMContentLoaded", function () {
+              try {
+                document.body.appendChild(a);
+              } catch (e) {}
+            });
+          } catch (e) {}
+        })();
+
+        function getCookie(name) {
+          try {
+            var m = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+            return m ? decodeURIComponent(m[2]) : null;
+          } catch (e) {
+            return null;
+          }
+        }
+
+        function clearCookie(name) {
+          try {
+            document.cookie = name + "=; Path=/admin; Max-Age=0; Secure; SameSite=Lax";
+          } catch (e) {}
+        }
+
+        // 1) Если OAuth callback поставил cookie — сохраняем токен для Decap и перезагружаем /admin
+        (function () {
+          try {
+            var token = getCookie("decap_token");
+            var provider = getCookie("decap_provider") || "github";
+            if (!token) return;
+
+            var user = { token: token, provider: provider, backendName: "github" };
+
+            try { localStorage.setItem("decap-cms-user", JSON.stringify(user)); } catch (e) {}
+            try { localStorage.setItem("netlify-cms-user", JSON.stringify(user)); } catch (e) {}
+            try { sessionStorage.setItem("decap-cms-user", JSON.stringify(user)); } catch (e) {}
+            try { sessionStorage.setItem("netlify-cms-user", JSON.stringify(user)); } catch (e) {}
+
+            clearCookie("decap_token");
+            clearCookie("decap_provider");
+
+            window.location.reload();
+          } catch (e) {}
+        })();
+
+        // 2) Жёстко блокируем уход в Netlify OAuth
+        function rewrite(url) {
+          try {
+            var s = String(url || "");
+            if (s.indexOf("https://api.netlify.com/auth") === 0) return LOCAL_AUTH;
+            if (s.indexOf("https://api.netlify.com") === 0 && s.indexOf("/auth") !== -1) return LOCAL_AUTH;
+            if (s.indexOf("api.netlify.com/auth") !== -1) return LOCAL_AUTH;
+            return url;
+          } catch (e) {
+            return url;
+          }
+        }
+
+        var _open = window.open;
+        window.open = function (url, name, features) {
+          var next = rewrite(url);
+          try {
+            var s = String(next || "");
+            if (s.indexOf(LOCAL_AUTH) === 0) {
+              window.location.href = next;
+              return null;
+            }
+          } catch (e) {}
+          return _open.call(window, next, name, features);
+        };
+
+        var _assign = window.location.assign.bind(window.location);
+        window.location.assign = function (url) {
+          return _assign(rewrite(url));
+        };
+
+        var _replace = window.location.replace.bind(window.location);
+        window.location.replace = function (url) {
+          return _replace(rewrite(url));
+        };
+
+        document.addEventListener(
+          "click",
+          function (e) {
+            var a = e.target && e.target.closest ? e.target.closest("a") : null;
+            if (!a || !a.href) return;
+            var newUrl = rewrite(a.href);
+            if (newUrl !== a.href) {
+              e.preventDefault();
+              window.location.href = newUrl;
+            }
+          },
+          true
+        );
+      })();
+    </script>
+
+    <script src="https://unpkg.com/decap-cms@^3.6.0/dist/decap-cms.js"></script>
+  </body>
+</html>

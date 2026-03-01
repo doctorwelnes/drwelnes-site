@@ -75,6 +75,7 @@ jobs:
             --exclude='.git' \
             --exclude='site' \
             --exclude='node_modules' \
+            --exclude='public/uploads' \
             ./ "${{ env.APP_DIR }}/src/"
 
       - name: Copy production env file
