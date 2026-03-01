@@ -1,0 +1,14 @@
+node_modules
+.git
+.env
+.env.*
+!.env.example
+.next
+dist
+coverage
+*.log
+.vscode
+site
+deploy-site.bat
+start-drwelnes*.bat
+README.md
