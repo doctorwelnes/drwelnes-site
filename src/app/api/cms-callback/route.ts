@@ -28,8 +28,15 @@ export async function GET(request: Request) {
     const data = await response.json();
 
     if (data.error) {
+      console.error("GitHub OAuth Error:", data);
       return NextResponse.json(data, { status: 400 });
     }
+
+    // Decap CMS expects 'token' and 'provider'
+    const formattedData = {
+      token: data.access_token,
+      provider: "github",
+    };
 
     // Decap CMS expects the response to be sent via postMessage to the opener window
     const content = `
@@ -39,7 +46,7 @@ export async function GET(request: Request) {
         <script>
           const receiveMessage = (message) => {
             window.opener.postMessage(
-              'authorization:github:success:${JSON.stringify(data)}',
+              'authorization:github:success:${JSON.stringify(formattedData)}',
               message.origin
             );
             window.removeEventListener("message", receiveMessage, false);
