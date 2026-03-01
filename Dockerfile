@@ -11,8 +11,6 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npx prisma generate
 ENV NEXT_TELEMETRY_DISABLED=1
-# Placeholder for build phase only — real value injected at runtime via docker env_file
-ENV DATABASE_URL="postgresql://build:build@localhost:5432/build"
 RUN npm run build
 
 FROM node:20-alpine AS runner

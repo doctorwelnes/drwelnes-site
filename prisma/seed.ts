@@ -1,4 +1,4 @@
-import { PrismaClient, Role } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { Pool } from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
@@ -28,11 +28,11 @@ async function main() {
     create: {
       email,
       passwordHash,
-      role: Role.ADMIN,
+      role: "ADMIN",
     },
     update: {
       passwordHash,
-      role: Role.ADMIN,
+      role: "ADMIN",
     },
   });
 }

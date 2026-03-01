@@ -11,7 +11,14 @@ export function getPrismaClient() {
 
   const databaseUrl = process.env.DATABASE_URL;
   if (!databaseUrl) {
-    throw new Error("DATABASE_URL must be set");
+    // During build phase (next build), DATABASE_URL may not be available.
+    // Return a proxy that throws only when actually used at runtime.
+    return new Proxy({} as PrismaClient, {
+      get(_, prop) {
+        if (prop === "then" || prop === Symbol.toPrimitive) return undefined;
+        throw new Error(`DATABASE_URL must be set. Attempted to access prisma.${String(prop)}`);
+      },
+    });
   }
 
   const pool = new Pool({ connectionString: databaseUrl });
