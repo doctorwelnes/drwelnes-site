@@ -13,10 +13,17 @@ function sanitizeFilename(filename: string) {
 }
 
 export async function POST(request: NextRequest) {
+  console.log("=== Upload API: Request received ===");
+
   // 1. Проверяем сессию
   const session = (await getServerSession(authOptions)) as { role?: string } | null;
+  console.log(
+    "=== Upload API: Session status:",
+    session ? `Logged in as ${session.role}` : "No session",
+  );
 
   if (!session || session.role !== "ADMIN") {
+    console.warn("=== Upload API: Unauthorized access attempt ===");
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -25,8 +32,13 @@ export async function POST(request: NextRequest) {
     const file = formData.get("file") as File;
 
     if (!file) {
+      console.warn("=== Upload API: No file in form data ===");
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
+
+    console.log(
+      `=== Upload API: Processing file: ${file.name} (${file.size} bytes), type: ${file.type}`,
+    );
 
     // Проверка типа (только mp4 для видео)
     if (!file.type.startsWith("video/") && !file.name.endsWith(".mp4")) {

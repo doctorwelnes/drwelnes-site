@@ -172,7 +172,7 @@ jobs:
               '    include /etc/letsencrypt/options-ssl-nginx.conf;' \
               '    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;' \
               '' \
-              '    client_max_body_size 10M;' \
+              '    client_max_body_size 100M;' \
               '' \
               '    location /uploads/ {' \
               '        alias /var/www/drwelnes-site/uploads/;' \
