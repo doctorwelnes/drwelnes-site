@@ -1,0 +1,68 @@
+name: Deploy Astro Site to VPS
+
+on:
+  push:
+    branches: ["master", "main"]
+    paths:
+      - "site/**"
+      - ".github/workflows/deploy-astro-site.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-drwelnes-astro-site
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: [self-hosted, linux, x64, vps]
+
+    env:
+      SITE_DIR: /var/www/drwelnes-site
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          clean: true
+
+      - name: Install dependencies
+        run: |
+          set -euo pipefail
+          cd site
+          npm ci
+
+      - name: Build Astro site
+        run: |
+          set -euo pipefail
+          cd site
+          npm run build
+
+      - name: Deploy dist to web root
+        run: |
+          set -euo pipefail
+          mkdir -p "${{ env.SITE_DIR }}"
+
+          if [ ! -w "${{ env.SITE_DIR }}" ]; then
+            echo "ERROR: Runner user $(whoami) has no write permission to ${{ env.SITE_DIR }}"
+            echo "Fix on VPS (example):"
+            echo "  sudo chown -R $(whoami):$(whoami) ${{ env.SITE_DIR }}"
+            echo "or adjust permissions/owner so the GitHub runner user can deploy."
+            exit 1
+          fi
+
+          if command -v rsync >/dev/null 2>&1; then
+            rsync -avz --delete site/dist/ "${{ env.SITE_DIR }}/"
+          else
+            rm -rf "${{ env.SITE_DIR }}"/*
+            cp -r site/dist/* "${{ env.SITE_DIR }}/"
+          fi
+
+      - name: Healthcheck
+        run: |
+          set -euo pipefail
+          curl -sS -L --max-time 15 -o /dev/null -w "HTTP %{http_code}\n" https://drwelnes.ru/

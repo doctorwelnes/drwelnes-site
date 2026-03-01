@@ -1,0 +1,80 @@
+name: Setup VPS (Run Once)
+
+# Run this ONCE to configure Docker permissions for the runner user
+# After running, the runner process needs to be restarted on the VPS
+
+on:
+  workflow_dispatch:
+
+jobs:
+  setup:
+    runs-on: [self-hosted, linux, x64, vps]
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Check current user
+        run: |
+          echo "=== Current user ==="
+          whoami
+          id
+          echo "=== Docker group members ==="
+          getent group docker || echo "docker group not found"
+
+      - name: Add runner user to docker group
+        run: |
+          RUNNER_USER=$(whoami)
+          echo "Runner user: $RUNNER_USER"
+          # Try with sudo (passwordless), if configured
+          if sudo -n usermod -aG docker "$RUNNER_USER" 2>/dev/null; then
+            echo "✅ Added $RUNNER_USER to docker group via sudo"
+          else
+            echo "⚠️ sudo not available without password"
+            echo "Please run manually on VPS:"
+            echo "  usermod -aG docker $RUNNER_USER"
+            echo "  Then restart the runner service"
+          fi
+
+      - name: Check docker socket permissions
+        run: |
+          echo "=== Docker socket ==="
+          ls -la /var/run/docker.sock
+          echo "=== Docker accessible? ==="
+          docker info > /dev/null 2>&1 && echo "✅ Docker accessible" || echo "❌ Docker NOT accessible (runner restart needed)"
+
+      - name: Check nginx
+        run: |
+          echo "=== nginx ==="
+          which nginx && nginx -v 2>&1 || echo "nginx not found"
+          nginx -t 2>&1 || true
+          echo "--- Sites enabled ---"
+          ls /etc/nginx/sites-enabled/ 2>/dev/null || ls /etc/nginx/conf.d/ 2>/dev/null || echo "no config dirs"
+          echo "--- drwelnes config ---"
+          cat /etc/nginx/sites-enabled/drwelnes* 2>/dev/null \
+            || cat /etc/nginx/conf.d/drwelnes* 2>/dev/null \
+            || echo "no drwelnes nginx config found ❌"
+
+      - name: Check app directories
+        run: |
+          echo "=== /var/www/drwelnes ==="
+          ls -la /var/www/drwelnes/ 2>/dev/null || echo "DIR NOT FOUND"
+          echo "=== .env.production ==="
+          if [ -f /var/www/drwelnes/.env.production ]; then
+            echo "EXISTS ✅"
+            grep -o '^[^=]*' /var/www/drwelnes/.env.production | sort
+          else
+            echo "MISSING ❌"
+          fi
+
+      - name: Check running containers
+        run: |
+          echo "=== Docker containers ==="
+          docker ps -a 2>/dev/null || echo "Cannot access docker"
+          echo "=== Port 3000 ==="
+          ss -tlnp | grep :3000 || echo "Nothing listening on :3000"
+
+      - name: Check site
+        run: |
+          echo "=== https://drwelnes.ru/ ==="
+          curl -sS -L --max-time 10 -o /dev/null -w "HTTP %{http_code}" https://drwelnes.ru/ 2>/dev/null || echo "unreachable"

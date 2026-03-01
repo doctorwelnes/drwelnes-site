@@ -32,6 +32,23 @@ jobs:
           fetch-depth: 0
           clean: true
 
+      - name: Preflight checks
+        run: |
+          set -euo pipefail
+          echo "=== Docker access ==="
+          if ! docker info >/dev/null 2>&1; then
+            echo "ERROR: Cannot access Docker. Add runner user to docker group and restart runner service."
+            exit 1
+          fi
+          echo "Docker OK"
+          echo "=== .env.production ==="
+          if [ ! -f "${{ env.APP_DIR }}/.env.production" ]; then
+            echo "ERROR: ${{ env.APP_DIR }}/.env.production not found on VPS"
+            echo "Create it with required variables (DATABASE_URL, NEXTAUTH_SECRET, NEXTAUTH_URL)."
+            exit 1
+          fi
+          echo ".env.production OK"
+
       - name: Skip if already deployed
         id: check_skip
         run: |
@@ -71,13 +88,34 @@ jobs:
           fi
           cp "${{ env.APP_DIR }}/.env.production" "${{ env.APP_DIR }}/src/.env.production"
 
+      - name: Create docker-compose .env for PostgreSQL
+        if: steps.check_skip.outputs.skip != 'true'
+        run: |
+          set -euo pipefail
+          ENV_FILE="${{ env.APP_DIR }}/src/.env"
+          echo "Creating $ENV_FILE with PostgreSQL defaults..."
+          cat > "$ENV_FILE" <<EOF
+POSTGRES_USER=drwelnes
+POSTGRES_PASSWORD=drwelnes
+POSTGRES_DB=drwelnes
+EOF
+          echo "=== Created .env file ==="
+          cat "$ENV_FILE"
+          echo "=== .env file permissions ==="
+          ls -la "$ENV_FILE"
+
       - name: Build and deploy Docker containers
         if: steps.check_skip.outputs.skip != 'true'
         run: |
           set -euo pipefail
           cd "${{ env.APP_DIR }}/src"
-          docker compose -f docker-compose.prod.yml build --no-cache
-          docker compose -f docker-compose.prod.yml up -d --remove-orphans
+          echo "=== Debug: compose file header (first 30 lines) ==="
+          sed -n '1,30p' docker-compose.prod.yml
+          echo "=== Debug: env files ==="
+          ls -la .env .env.production 2>/dev/null || true
+          COMPOSE="docker compose --env-file .env -f docker-compose.prod.yml"
+          $COMPOSE build --no-cache
+          $COMPOSE up -d --remove-orphans
 
       - name: Run database migrations
         if: steps.check_skip.outputs.skip != 'true'
@@ -85,8 +123,12 @@ jobs:
           set -euo pipefail
           cd "${{ env.APP_DIR }}/src"
           # Wait for DB to be healthy, then run migrations
-          docker compose -f docker-compose.prod.yml exec -T web \
-            npx prisma migrate deploy || true
+          echo "Waiting for database to be ready..."
+          COMPOSE="docker compose --env-file .env -f docker-compose.prod.yml"
+          timeout 60 bash -c 'until '"$COMPOSE"' exec -T db pg_isready -U ${POSTGRES_USER:-drwelnes} -d ${POSTGRES_DB:-drwelnes}; do sleep 2; done'
+          echo "Running Prisma migrations..."
+          $COMPOSE exec -T web npx prisma migrate deploy
+          echo "Migrations completed."
 
       - name: Save deployed SHA
         if: steps.check_skip.outputs.skip != 'true'
@@ -97,6 +139,14 @@ jobs:
         if: steps.check_skip.outputs.skip != 'true'
         run: |
           set -euo pipefail
+
+          echo "=== Docker containers status ==="
+          cd "${{ env.APP_DIR }}/src"
+          COMPOSE="docker compose --env-file .env -f docker-compose.prod.yml"
+          $COMPOSE ps
+
+          echo "=== Recent container logs (last 30 lines) ==="
+          $COMPOSE logs --tail=30
 
           BASE_URL="https://drwelnes.ru"
           MAX_ATTEMPTS=30
@@ -121,6 +171,8 @@ jobs:
               sleep "$SLEEP_SECONDS"
             done
             echo "FAIL: ${name} healthcheck did not pass"
+            echo "=== Full container logs on failure ==="
+            $COMPOSE logs
             return 1
           }
 
