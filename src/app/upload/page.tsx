@@ -2,13 +2,17 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 export default function UploadPage() {
+  const { data: session, status } = useSession();
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [url, setUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+
+  const isAdmin = (session?.user as any)?.role === "ADMIN";
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,9 +56,36 @@ export default function UploadPage() {
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white flex items-center justify-center p-4">
       <div className="max-w-md w-full glass-card p-8 rounded-3xl border border-white/10 shadow-2xl">
-        <h1 className="text-2xl font-bold mb-6 bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">
+        <h1 className="text-2xl font-bold mb-2 bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">
           Загрузка видео
         </h1>
+
+        {status === "loading" ? (
+          <p className="text-xs text-gray-500 mb-6 font-mono">Проверка авторизации...</p>
+        ) : session ? (
+          <div className="flex items-center gap-2 mb-6 p-2 px-3 bg-white/5 rounded-full border border-white/5 w-fit">
+            <div
+              className={`w-2 h-2 rounded-full ${isAdmin ? "bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]" : "bg-yellow-500"}`}
+            ></div>
+            <span className="text-xs font-medium text-gray-300">
+              {session.user?.email} ({isAdmin ? "ADMIN" : "USER"})
+            </span>
+          </div>
+        ) : (
+          <div className="mb-6 p-3 bg-red-500/10 border border-red-500/20 text-red-400 text-xs rounded-xl flex items-center gap-2">
+            <span>⚠️ Вы не вошли в систему</span>
+            <button onClick={() => router.push("/login")} className="ml-auto underline font-bold">
+              Войти
+            </button>
+          </div>
+        )}
+
+        {!isAdmin && session && (
+          <div className="mb-6 p-3 bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 text-xs rounded-xl">
+            Для загрузки файлов требуется роль <strong>ADMIN</strong>. Обратитесь к администратору
+            или проверьте базу данных.
+          </div>
+        )}
 
         <form onSubmit={handleUpload} className="space-y-6">
           <div className="space-y-2">
@@ -69,7 +100,7 @@ export default function UploadPage() {
 
           <button
             type="submit"
-            disabled={!file || uploading}
+            disabled={!file || uploading || !isAdmin}
             className="w-full bg-white text-black font-semibold py-3 rounded-xl hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             {uploading ? "Загрузка..." : "Загрузить"}
