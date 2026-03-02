@@ -173,8 +173,7 @@
           try {
             var s = String(next || "");
             if (s.indexOf(LOCAL_AUTH) === 0) {
-              window.location.href = next;
-              return null;
+              return _open.call(window, next, name, features || "width=600,height=600");
             }
           } catch (e) {}
           return _open.call(window, next, name, features);
