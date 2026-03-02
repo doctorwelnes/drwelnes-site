@@ -22,6 +22,7 @@ export async function GET(request: Request) {
         client_id,
         client_secret,
         code,
+        redirect_uri: `${process.env.NEXTAUTH_URL}/api/cms-callback`,
       }),
     });
 

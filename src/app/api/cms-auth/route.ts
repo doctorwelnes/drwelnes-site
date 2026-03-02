@@ -7,6 +7,7 @@ export async function GET() {
     return NextResponse.json({ error: "GITHUB_CMS_CLIENT_ID not set" }, { status: 500 });
   }
 
-  const url = `https://github.com/login/oauth/authorize?client_id=${client_id}&scope=repo,user`;
+  const redirect_uri = `${process.env.NEXTAUTH_URL}/api/cms-callback`;
+  const url = `https://github.com/login/oauth/authorize?client_id=${client_id}&scope=repo,user&redirect_uri=${encodeURIComponent(redirect_uri)}`;
   return NextResponse.redirect(url);
 }
