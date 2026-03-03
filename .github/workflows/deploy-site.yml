@@ -177,8 +177,15 @@ jobs:
             '' \
             '    location /uploads/ {' \
             '        alias /var/www/drwelnes/src/public/uploads/;' \
+            '        types {' \
+            '            video/mp4 mp4;' \
+            '            image/jpeg jpg jpeg;' \
+            '            image/png png;' \
+            '            image/webp webp;' \
+            '        }' \
             '        expires 30d;' \
             '        add_header Cache-Control "public, immutable";' \
+            '        add_header Access-Control-Allow-Origin *;' \
             '    }' \
             '' \
             '    location / {' \

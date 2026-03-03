@@ -87,29 +87,60 @@ export default function RecipeDetailClient({ recipe }: { recipe: Recipe }) {
             )}
           </section>
 
-          {/* Video */}
-          {recipe.videoFile ? (
-            <div className="rounded-2xl overflow-hidden bg-black shadow-xl">
-              <video
-                controls
-                playsInline
-                preload="metadata"
-                className="w-full h-auto max-h-[75vh]"
-                src={recipe.videoFile}
-                poster={recipe.videoPoster}
-              />
-            </div>
-          ) : recipe.videoUrl ? (
-            <iframe
-              width="100%"
-              height="420"
-              src={toEmbedUrl(recipe.videoUrl)}
-              title={recipe.title}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className="rounded-2xl border-0 shadow-xl"
-            />
-          ) : null}
+          {/* Video Section with Smart Detection */}
+          {(() => {
+            const vFile = recipe.videoFile?.trim();
+            const vUrl = recipe.videoUrl?.trim();
+
+            // Если есть локальный файл или ссылка на mp4
+            const isLocalVideo =
+              (vFile && (vFile.toLowerCase().endsWith(".mp4") || vFile.startsWith("/uploads"))) ||
+              (vUrl && vUrl.toLowerCase().endsWith(".mp4"));
+
+            const finalVideoSrc = isLocalVideo ? vFile || vUrl : null;
+
+            if (finalVideoSrc) {
+              const cleanedSrc = finalVideoSrc.startsWith("http")
+                ? finalVideoSrc
+                : finalVideoSrc.startsWith("/")
+                  ? finalVideoSrc
+                  : `/${finalVideoSrc}`;
+
+              return (
+                <div className="rounded-2xl overflow-hidden bg-black shadow-xl aspect-video flex items-center justify-center">
+                  <video
+                    key={cleanedSrc}
+                    controls
+                    playsInline
+                    preload="metadata"
+                    className="w-full h-full object-contain"
+                    poster={recipe.videoPoster}
+                  >
+                    <source src={cleanedSrc} type="video/mp4" />
+                    Ваш браузер не поддерживает встроенные видео.
+                  </video>
+                </div>
+              );
+            }
+
+            // Если это YouTube/RuTube (или любая другая ссылка)
+            if (vUrl || vFile) {
+              const embedUrl = toEmbedUrl(vUrl || vFile || "");
+              return (
+                <iframe
+                  width="100%"
+                  height="420"
+                  src={embedUrl}
+                  title={recipe.title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="rounded-2xl border-0 shadow-xl"
+                />
+              );
+            }
+
+            return null;
+          })()}
 
           {/* KBRU toggle */}
           {showToggle && (
