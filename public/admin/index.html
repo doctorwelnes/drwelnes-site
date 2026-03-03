@@ -245,7 +245,7 @@
             }
 
             // Dashboard Cards (Collections)
-            var h2s = document.querySelectorAll("main h2");
+            var h2s = root.querySelectorAll("main h2");
             h2s.forEach(function (h2) {
               var card = h2.closest("a");
               if (card && !card.classList.contains("drw-card")) card.classList.add("drw-card");
@@ -261,9 +261,11 @@
                 text.includes("создать") ||
                 text.includes("опубликовать") ||
                 text.includes("сохранить") ||
+                text.includes("добав") ||
                 text.includes("publish") ||
                 text.includes("save") ||
-                text.includes("create")
+                text.includes("create") ||
+                text.includes("add")
               ) {
                 if (!btn.classList.contains("drw-btn-primary"))
                   btn.classList.add("drw-btn-primary");
@@ -281,14 +283,14 @@
             });
 
             // Search Bar
-            var searchInput = document.querySelector(
+            var searchInput = root.querySelector(
               "input[placeholder*='Искать'], input[placeholder*='Search']",
             );
             if (searchInput && !searchInput.classList.contains("drw-search"))
               searchInput.classList.add("drw-search");
 
             // Editor Fields Container
-            var form = document.querySelector("form");
+            var form = root.querySelector("form");
             if (form) {
               if (!form.classList.contains("drw-editor-form"))
                 form.classList.add("drw-editor-form");
@@ -305,6 +307,26 @@
                 });
               });
             }
+
+            // Dropdown Menus (Rendered outside nc-root sometimes)
+            var menus = document.querySelectorAll(
+              "[role='menu'], [id^='menu-'], div[class*='Menu']",
+            );
+            menus.forEach(function (m) {
+              // Ensure we don't accidentally tag the whole header or sidebar
+              if (
+                m.tagName !== "HEADER" &&
+                m.tagName !== "ASIDE" &&
+                !m.classList.contains("drw-dropdown")
+              ) {
+                m.classList.add("drw-dropdown");
+              }
+            });
+            var menuItems = document.querySelectorAll("[role='menuitem'], li[class*='MenuItem']");
+            menuItems.forEach(function (mi) {
+              if (!mi.classList.contains("drw-dropdown-item"))
+                mi.classList.add("drw-dropdown-item");
+            });
           } catch (e) {}
         };
 
