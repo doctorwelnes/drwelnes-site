@@ -4,6 +4,13 @@ import { authOptions } from "@/lib/auth";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 
+export const config = {
+  api: {
+    bodyParser: false,
+    responseLimit: false,
+  },
+};
+
 // Простая функция для очистки имен файлов
 function sanitizeFilename(filename: string) {
   return filename
@@ -97,5 +104,64 @@ export async function POST(request: NextRequest) {
     const message = error instanceof Error ? error.message : "Failed to upload file";
     console.error("Upload error:", error);
     return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
+export async function GET(request: NextRequest) {
+  // 1. Проверяем авторизацию (NextAuth или CMS token)
+  const session = (await getServerSession(authOptions)) as { role?: string } | null;
+  let isAdmin = session?.role === "ADMIN";
+
+  if (!isAdmin) {
+    const authHeader = request.headers.get("Authorization");
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      const token = authHeader.split(" ")[1];
+      try {
+        const ghRes = await fetch("https://api.github.com/user", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/vnd.github.v3+json",
+          },
+        });
+        if (ghRes.ok) isAdmin = true;
+      } catch (e) {}
+    }
+  }
+
+  if (!isAdmin) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const uploadDir = path.join(process.cwd(), "public", "uploads", "videos");
+    try {
+      await import("fs/promises").then((fs) => fs.access(uploadDir));
+    } catch {
+      // Если папки еще нет, возвращаем пустой массив
+      return NextResponse.json({ files: [] });
+    }
+
+    const { readdir, stat } = await import("fs/promises");
+    const filenames = await readdir(uploadDir);
+
+    const filesInfo = await Promise.all(
+      filenames.map(async (name) => {
+        const filePath = path.join(uploadDir, name);
+        const stats = await stat(filePath);
+        return {
+          name,
+          url: `/uploads/videos/${name}`,
+          size: stats.size,
+          mtime: stats.mtime,
+        };
+      }),
+    );
+
+    // Сортировка: сначала новые
+    filesInfo.sort((a, b) => b.mtime.getTime() - a.mtime.getTime());
+
+    return NextResponse.json({ files: filesInfo });
+  } catch (error) {
+    return NextResponse.json({ error: "Failed to read directory" }, { status: 500 });
   }
 }
