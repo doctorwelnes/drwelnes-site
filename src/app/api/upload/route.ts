@@ -4,12 +4,58 @@ import { authOptions } from "@/lib/auth";
 import { mkdir } from "fs/promises";
 import path from "path";
 
-// Простая функция для очистки имен файлов
+// Функция для транслитерации кириллицы в латиницу
+function transliterate(text: string) {
+  const map: Record<string, string> = {
+    а: "a",
+    б: "b",
+    в: "v",
+    г: "g",
+    д: "d",
+    е: "e",
+    ё: "yo",
+    ж: "zh",
+    з: "z",
+    и: "i",
+    й: "y",
+    к: "k",
+    л: "l",
+    м: "m",
+    н: "n",
+    о: "o",
+    п: "p",
+    р: "r",
+    с: "s",
+    т: "t",
+    у: "u",
+    ф: "f",
+    х: "kh",
+    ц: "ts",
+    ч: "ch",
+    ш: "sh",
+    щ: "shch",
+    ы: "y",
+    э: "e",
+    ю: "yu",
+    я: "ya",
+    " ": "_",
+    ".": ".",
+    "-": "-",
+  };
+  return text
+    .toLowerCase()
+    .split("")
+    .map((char) => map[char] || (/[a-z0-9]/.test(char) ? char : "_"))
+    .join("");
+}
+
+// Улучшенная функция для очистки имен файлов
 function sanitizeFilename(filename: string) {
-  return filename
-    .replace(/[^a-zA-Z0-9.-]/g, "_")
+  const transliterated = transliterate(filename);
+  return transliterated
+    .replace(/[^a-z0-9.-]/g, "_")
     .replace(/_{2,}/g, "_")
-    .toLowerCase();
+    .replace(/^_|_$/g, "");
 }
 
 export async function POST(request: NextRequest) {
