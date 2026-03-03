@@ -75,8 +75,16 @@ export async function GET(request: Request) {
               }
             });
             
-            // Закрываем окно с небольшой задержкой, чтобы сообщение успело уйти
+            // Надежный фолбэк: так как мы поставили cookie, просто просим родителя перезагрузиться
+            // После перезагрузки скрипт в index.html сам прочитает cookie и зайдет в панель
             setTimeout(function() {
+              if (window.opener) {
+                try {
+                  window.opener.location.reload();
+                } catch(err) {
+                  console.error(err);
+                }
+              }
               window.close();
             }, 1000);
           })();
@@ -85,9 +93,23 @@ export async function GET(request: Request) {
       </html>
     `;
 
-    return new NextResponse(content, {
+    const htmlResponse = new NextResponse(content, {
       headers: { "Content-Type": "text/html" },
     });
+
+    // Устанавливаем cookies для кастомного обработчика в public/admin/index.html
+    htmlResponse.cookies.set("decap_token", data.access_token, {
+      path: "/admin",
+      secure: true,
+      sameSite: "lax",
+    });
+    htmlResponse.cookies.set("decap_provider", "github", {
+      path: "/admin",
+      secure: true,
+      sameSite: "lax",
+    });
+
+    return htmlResponse;
   } catch (error) {
     return NextResponse.json({ error: "Failed to exchange token" }, { status: 500 });
   }
