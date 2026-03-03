@@ -46,17 +46,37 @@ export async function GET(request: Request) {
     const content = `
       <!DOCTYPE html>
       <html>
+      <head><title>Авторизация...</title></head>
       <body>
+        <div style="font-family: sans-serif; text-align: center; margin-top: 50px;">
+          Авторизация завершена. Это окно закроется автоматически...
+        </div>
         <script>
-          const receiveMessage = (message) => {
-            window.opener.postMessage(
-              'authorization:github:success:${JSON.stringify(formattedData)}',
-              message.origin
-            );
-            window.removeEventListener("message", receiveMessage, false);
-          }
-          window.addEventListener("message", receiveMessage, false);
-          window.opener.postMessage("authorizing:github", "*");
+          (function() {
+            const data = ${JSON.stringify(formattedData)};
+            const message = 'authorization:github:success:' + JSON.stringify(data);
+            
+            console.log("Sending auth data to opener...");
+            
+            // Отправляем сразу (для некоторых версий)
+            window.opener.postMessage(message, "*");
+            
+            // Слушаем рукопожатие (для стандартного протокола)
+            const receiveMessage = (event) => {
+              console.log("Received message from opener:", event.data);
+              if (event.data === "authorizing:github") {
+                window.opener.postMessage(message, event.origin);
+              }
+            };
+            
+            window.addEventListener("message", receiveMessage, false);
+            window.opener.postMessage("authorizing:github", "*");
+            
+            // Принудительно закрываем окно через небольшой промежуток времени
+            setTimeout(() => {
+              window.close();
+            }, 1000);
+          })();
         </script>
       </body>
       </html>
