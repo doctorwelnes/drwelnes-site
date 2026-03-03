@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { writeFile, mkdir } from "fs/promises";
+import { mkdir } from "fs/promises";
 import path from "path";
 
 // Простая функция для очистки имен файлов
@@ -69,9 +69,6 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-
     // Папка для загрузки
     const uploadDir = path.join(process.cwd(), "public", "uploads", "videos");
 
@@ -84,7 +81,17 @@ export async function POST(request: NextRequest) {
     const uniqueName = `${timestamp}-${originalName}`;
     const filePath = path.join(uploadDir, uniqueName);
 
-    await writeFile(filePath, buffer);
+    // Потоковая запись: Web Stream (Next.js) -> Node Stream -> Диск
+    const { createWriteStream } = await import("fs");
+    const { Readable } = await import("stream");
+    const nodeStream = Readable.fromWeb(file.stream() as any);
+    const writeStream = createWriteStream(filePath);
+
+    await new Promise<void>((resolve, reject) => {
+      nodeStream.pipe(writeStream);
+      writeStream.on("finish", () => resolve());
+      writeStream.on("error", reject);
+    });
 
     const fileUrl = `/uploads/videos/${uniqueName}`;
 
