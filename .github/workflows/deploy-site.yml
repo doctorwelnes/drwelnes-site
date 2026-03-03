@@ -119,8 +119,9 @@ jobs:
           $COMPOSE pull
 
           # Ensure uploads directory exists and is writable on the host
-          mkdir -p public/uploads/videos
-          chmod -R 777 public/uploads
+          # Using sudo because files created by Docker container belong to root
+          sudo mkdir -p public/uploads/videos
+          sudo chmod -R 777 public/uploads || true
 
           $COMPOSE build
           $COMPOSE up -d --remove-orphans
