@@ -2,247 +2,259 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
 :root {
-  /* Colors - Minimalist Pro Palette */
-  --bg-darker: #080809;
-  --bg-main: #0c0c0e;
-  --bg-sidebar: #0f0f12;
-  --bg-card: #151518;
-  --bg-card-elevated: #1a1a1f;
+  /* Minimalist Pro Dark Palette */
+  --drw-bg: #09090b;
+  --drw-bg-sidebar: #0f0f12;
+  --drw-bg-card: #151518;
+  --drw-bg-input: #000000;
 
-  --border-dim: rgba(255, 255, 255, 0.05);
-  --border-base: rgba(255, 255, 255, 0.1);
-  --border-focus: #f59e0b;
+  --drw-border: rgba(255, 255, 255, 0.1);
+  --drw-border-hover: rgba(255, 255, 255, 0.25);
+  --drw-accent: #f59e0b;
+  --drw-accent-hover: #d97706;
 
-  --text-pure: #ffffff;
-  --text-primary: #f1f5f9;
-  --text-muted: #94a3b8;
-  --text-subtle: #475569;
+  --drw-fg: #f8fafc;
+  --drw-fg-muted: #94a3b8;
 
-  --accent: #f59e0b;
-  --accent-hover: #fbbf24;
-  --accent-contrast: #000000;
-
-  --shadow-sharp: 0 4px 0 rgba(0, 0, 0, 0.2);
-  --radius-sharp: 6px;
-  --radius-base: 10px;
-
-  --font-inter: "Inter", system-ui, -apple-system, sans-serif;
+  --drw-font-family: "Inter", system-ui, -apple-system, sans-serif;
+  --drw-radius: 8px;
+  --drw-radius-sm: 4px;
 }
 
-/* Base resets */
-body.drw-dark-theme {
-  background-color: var(--bg-main) !important;
-  color: var(--text-primary) !important;
-  font-family: var(--font-inter) !important;
+/* ==============================================================
+   1. GLOBAL OVERRIDES (Font & Base Colors)
+   ============================================================== */
+body.drw-dark-theme,
+body.drw-dark-theme .drw-app-root {
+  font-family: var(--drw-font-family) !important;
+  color: var(--drw-fg) !important;
+  background-color: var(--drw-bg) !important;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Top Navigation Bar */
-header[class*="AppHeader"] {
-  background: var(--bg-darker) !important;
-  border-bottom: 2px solid var(--border-base) !important;
-  padding: 0 40px !important;
+/* Ensure SplitPane and main areas are dark */
+body.drw-dark-theme .SplitPane,
+body.drw-dark-theme .SplitPane .Pane1,
+body.drw-dark-theme header,
+body.drw-dark-theme main {
+  background-color: var(--drw-bg) !important;
+  color: var(--drw-fg) !important;
 }
 
-/* Sidebar Styling - Ultra Clean */
-aside[class*="SidebarContainer"] {
-  background: var(--bg-sidebar) !important;
-  border-right: 2px solid var(--border-base) !important;
+/* Keep the preview pane white */
+body.drw-dark-theme .SplitPane .Pane2 {
+  background-color: #ffffff !important;
+  color: #000 !important;
+  border-left: 1px solid var(--drw-border) !important;
 }
 
-[class*="SidebarLink"] {
-  margin: 2px 14px !important;
-  padding: 12px 16px !important;
-  border-radius: var(--radius-sharp) !important;
-  color: var(--text-muted) !important;
-  font-size: 14px !important;
-  font-weight: 500 !important;
-  transition: all 0.1s ease-out !important;
-}
-
-[class*="SidebarLink"]:hover {
-  background: var(--bg-card) !important;
-  color: var(--text-pure) !important;
-}
-
-[class*="SidebarLinkActive"] {
-  background: transparent !important;
-  color: var(--accent) !important;
+/* Headings */
+body.drw-dark-theme h1,
+body.drw-dark-theme h2,
+body.drw-dark-theme h3 {
+  color: var(--drw-fg) !important;
+  font-family: var(--drw-font-family) !important;
   font-weight: 700 !important;
-  border-left: 3px solid var(--accent) !important;
-  border-radius: 0 !important;
+  letter-spacing: -0.01em !important;
 }
 
-/* Dashboard Grid View */
-[class*="Card"] {
-  background: var(--bg-card) !important;
-  border: 1px solid var(--border-base) !important;
-  border-radius: var(--radius-base) !important;
+/* ==============================================================
+   2. DASHBOARD / COLLECTIONS VIEW
+   ============================================================== */
+
+/* Sidebar */
+body.drw-dark-theme aside {
+  background-color: var(--drw-bg-sidebar) !important;
+  border-right: 1px solid var(--drw-border) !important;
+}
+
+/* Sidebar Links (Injected class) */
+.drw-sidebar-link {
+  color: var(--drw-fg-muted) !important;
+  border-radius: var(--drw-radius-sm) !important;
+  padding: 10px 16px !important;
+  margin: 4px 12px !important;
+  transition: all 0.2s ease !important;
+  font-weight: 500 !important;
+}
+
+.drw-sidebar-link:hover {
+  background-color: var(--drw-bg-card) !important;
+  color: var(--drw-fg) !important;
+}
+
+/* Collection Cards (Injected class) */
+.drw-card {
+  background-color: var(--drw-bg-card) !important;
+  border: 1px solid var(--drw-border) !important;
+  border-radius: var(--drw-radius) !important;
   padding: 24px !important;
-  transition:
-    transform 0.2s,
-    border-color 0.2s !important;
+  margin-bottom: 16px !important;
+  transition: border-color 0.2s ease !important;
+  box-shadow: none !important; /* Remove Decap shadow */
 }
 
-[class*="Card"]:hover {
-  border-color: var(--accent) !important;
-  background: var(--bg-card-elevated) !important;
+.drw-card:hover {
+  border-color: var(--drw-accent) !important;
+  background-color: #1a1a1f !important;
 }
 
-/* Editor Header (Floating look) */
-[class*="EditorHeader"] {
-  background: var(--bg-darker) !important;
-  border-bottom: 1px solid var(--border-base) !important;
+.drw-card h2 {
+  margin: 0 !important;
+  font-size: 16px !important;
 }
 
-/* Main Editor Form */
-form[class*="EntryEditor"] {
-  max-width: 960px !important;
-  margin: 40px auto !important;
+/* App Header (Top Nav) */
+body.drw-dark-theme [class*="AppHeader"] {
+  border-bottom: 1px solid var(--drw-border) !important;
+  background-color: var(--drw-bg) !important;
 }
 
-/* Control Fields - The core of Minimalist Pro */
-[class*="ControlContainer"] {
-  background: var(--bg-sidebar) !important;
-  border: 1px solid var(--border-base) !important;
-  border-radius: var(--radius-base) !important;
+/* Search Bar */
+body.drw-dark-theme [class*="SearchContainer"] input {
+  background-color: var(--drw-bg-input) !important;
+  border: 1px solid var(--drw-border) !important;
+  color: var(--drw-fg) !important;
+  border-radius: var(--drw-radius-sm) !important;
+  padding: 8px 16px !important;
+}
+body.drw-dark-theme [class*="SearchContainer"] input:focus {
+  border-color: var(--drw-accent) !important;
+  outline: none !important;
+}
+
+/* ==============================================================
+   3. ENTRY EDITOR (THE FORM)
+   ============================================================== */
+
+/* The form itself (Injected class) */
+.drw-editor-form {
+  max-width: 900px !important; /* Perfect width for readability */
+  margin: 0 auto !important;
+  padding: 32px 0 !important;
+}
+
+/* The fields wrappers (Injected class) */
+.drw-field {
+  background-color: var(--drw-bg-card) !important;
+  border: 1px solid var(--drw-border) !important;
+  border-radius: var(--drw-radius) !important;
   padding: 24px !important;
-  margin-bottom: 20px !important;
-  box-shadow: none !important;
+  margin-bottom: 24px !important;
+  transition: border-color 0.2s ease !important;
 }
 
-[class*="ControlContainer"]:focus-within {
-  border-color: var(--accent) !important;
+.drw-field:focus-within {
+  border-color: var(--drw-accent) !important;
 }
 
-/* Labels - High Contrast */
-[class*="Label"] {
-  color: var(--text-pure) !important;
+/* Field Labels */
+.drw-field > label {
+  color: var(--drw-fg) !important;
+  font-family: var(--drw-font-family) !important;
   font-size: 13px !important;
   font-weight: 700 !important;
-  letter-spacing: 0.02em !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
   margin-bottom: 12px !important;
+  display: block !important;
 }
 
-/* Inputs - Sharp and focused */
-input[type="text"],
-input[type="number"],
-textarea,
-select {
-  background: var(--bg-darker) !important;
-  border: 1px solid var(--border-base) !important;
-  border-radius: var(--radius-sharp) !important;
-  color: var(--text-primary) !important;
-  padding: 12px 14px !important;
+/* Inputs / Selects / Textareas inside fields */
+.drw-field input[type="text"],
+.drw-field input[type="number"],
+.drw-field textarea,
+.drw-field select {
+  background-color: var(--drw-bg-input) !important;
+  border: 1px solid var(--drw-border) !important;
+  border-radius: var(--drw-radius-sm) !important;
+  color: var(--drw-fg) !important;
+  padding: 12px 16px !important;
+  font-family: var(--drw-font-family) !important;
   font-size: 15px !important;
-  transition: border-color 0.15s ease !important;
+  width: 100% !important;
+  transition: all 0.2s ease !important;
 }
 
-input:focus,
-textarea:focus {
-  border-color: var(--accent) !important;
-  background: #000 !important;
+.drw-field input:focus,
+.drw-field textarea:focus,
+.drw-field select:focus {
+  border-color: var(--drw-accent) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 1px var(--drw-accent) !important;
 }
 
-/* Buttons - Solid and Professional */
-button[class*="Button"] {
-  border-radius: var(--radius-sharp) !important;
-  font-weight: 600 !important;
-  text-transform: none !important;
-}
-
-/* Primary Button (Save/Publish) */
-[class*="Button-button-primary"],
-button[class*="PublishButton"] {
-  background: var(--accent) !important;
-  color: #000 !important;
-  padding: 10px 24px !important;
+/* Markdown Editor Toolbar Override */
+body.drw-dark-theme [class*="EditorContainer"] {
   border: none !important;
 }
-
-[class*="Button-button-primary"]:hover {
-  background: var(--accent-hover) !important;
+body.drw-dark-theme [class*="EditorContainer"] [class*="Toolbar"] {
+  background-color: var(--drw-bg) !important;
+  border-bottom: 1px solid var(--drw-border) !important;
+  border-radius: var(--drw-radius-sm) var(--drw-radius-sm) 0 0 !important;
+}
+body.drw-dark-theme [class*="EditorContainer"] button {
+  color: var(--drw-fg-muted) !important;
+}
+body.drw-dark-theme [class*="EditorContainer"] button:hover {
+  color: var(--drw-accent) !important;
 }
 
-/* List Widgets - Organized and Clean */
-[class*="ListWidget"] {
-  background: var(--bg-darker) !important;
-  border-radius: var(--radius-base) !important;
-  border: 1px dashed var(--border-base) !important;
+/* Primary Buttons (Save / Publish) */
+body.drw-dark-theme [class*="Button-button-primary"],
+body.drw-dark-theme button[class*="PublishButton"] {
+  background-color: var(--drw-accent) !important;
+  color: #000 !important; /* High contrast text */
+  border: none !important;
+  border-radius: var(--drw-radius-sm) !important;
+  font-weight: 700 !important;
+  font-family: var(--drw-font-family) !important;
+  padding: 10px 24px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  transition: background-color 0.2s ease !important;
+}
+
+body.drw-dark-theme [class*="Button-button-primary"]:hover,
+body.drw-dark-theme button[class*="PublishButton"]:hover {
+  background-color: var(--drw-accent-hover) !important;
+}
+
+/* Object & List Wrappers inside Editor */
+.drw-field [class*="ObjectWidget"],
+.drw-field [class*="ListWidget"] {
+  background-color: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+}
+
+.drw-field [class*="ListItemContainer"] {
+  background-color: var(--drw-bg) !important;
+  border: 1px dashed var(--drw-border-hover) !important;
+  border-radius: var(--drw-radius-sm) !important;
   padding: 16px !important;
-}
-
-[class*="ListItemContainer"] {
-  background: var(--bg-card) !important;
-  border: 1px solid var(--border-base) !important;
-  border-radius: var(--radius-sharp) !important;
   margin-bottom: 12px !important;
-}
-
-/* Preview Pane - Strict Separation */
-[class*="PreviewPaneContainer"] {
-  background: #fdfdfd !important;
-  border-left: 2px solid var(--bg-sidebar) !important;
 }
 
 /* Custom Upload Link Styling */
 body.drw-dark-theme a[style*="position: fixed"] {
-  background: var(--text-pure) !important;
+  background-color: var(--drw-fg) !important;
   color: #000 !important;
-  border-radius: 4px !important;
   font-weight: 700 !important;
   text-transform: uppercase !important;
-  font-size: 12px !important;
-  letter-spacing: 0.1em !important;
-  padding: 12px 20px !important;
+  letter-spacing: 0.05em !important;
   border: 2px solid #000 !important;
-  box-shadow: 4px 4px 0 var(--accent) !important;
+  box-shadow: 4px 4px 0 var(--drw-accent) !important;
+  transition: transform 0.1s !important;
 }
 
-/* Scrollbars - Stealthy */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: var(--bg-main);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--border-base);
-  border-radius: 0;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--text-subtle);
+body.drw-dark-theme a[style*="position: fixed"]:active {
+  transform: translate(2px, 2px) !important;
+  box-shadow: 2px 2px 0 var(--drw-accent) !important;
 }
 
-/* Grouping fields for KBRU (Compact rows) */
-[class*="FieldGroup"] {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-  border: none !important;
-  padding-left: 0 !important;
-  margin-left: 0 !important;
-}
-
-/* Markdown specific fixes */
-[class*="EditorContainer"] {
-  border: 1px solid var(--border-base) !important;
-  border-radius: var(--radius-sharp) !important;
-  background: var(--bg-darker) !important;
-}
-
-/* Tooltips & Modals */
-[class*="Modal"],
-[class*="Dialog"] {
-  background: var(--bg-darker) !important;
-  border: 1px solid var(--border-base) !important;
-  color: var(--text-primary) !important;
-}
-
-/* Add some character to titles */
-h1,
-h2,
-h3 {
-  font-weight: 700 !important;
-  color: var(--text-pure) !important;
+/* Top bar fixed styles inside editor */
+body.drw-dark-theme [class*="EditorHeader"] {
+  background-color: var(--drw-bg-sidebar) !important;
+  border-bottom: 1px solid var(--drw-border) !important;
 }
