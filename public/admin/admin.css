@@ -1,71 +1,90 @@
-/* Dr.Welnes Minimalist Pro (Variant 2) Design for Decap CMS */
+/* Dr.Welnes Modern SaaS (Variant 3) Design for Decap CMS */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
 :root {
-  /* Minimalist Pro Dark Palette */
-  --drw-bg: #09090b;
-  --drw-bg-sidebar: #0f0f12;
-  --drw-bg-card: #151518;
-  --drw-bg-input: #000000;
+  /* Modern SaaS Light Palette & Glassmorphism */
+  --drw-bg: #f8fafc; /* Cool, very light gray background */
+  --drw-bg-sidebar: #ffffff;
+  --drw-bg-card: rgba(255, 255, 255, 0.85); /* Semi-transparent for glass effect */
+  --drw-bg-input: #ffffff;
 
-  --drw-border: rgba(255, 255, 255, 0.1);
-  --drw-border-hover: rgba(255, 255, 255, 0.25);
-  --drw-accent: #f59e0b;
+  --drw-border: rgba(15, 23, 42, 0.08); /* Very subtle crisp borders */
+  --drw-border-hover: rgba(15, 23, 42, 0.15);
+
+  --drw-accent: #f59e0b; /* Dr.Welnes Amber */
   --drw-accent-hover: #d97706;
+  --drw-accent-glow: rgba(245, 158, 11, 0.2);
 
-  --drw-fg: #f8fafc;
-  --drw-fg-muted: #94a3b8;
+  --drw-fg: #0f172a; /* Deep charcoal for main text, not pure black */
+  --drw-fg-muted: #64748b;
 
   --drw-font-family: "Inter", system-ui, -apple-system, sans-serif;
-  --drw-radius: 8px;
-  --drw-radius-sm: 4px;
+  --drw-radius: 12px; /* Softer, modern corners */
+  --drw-radius-sm: 6px;
+
+  /* Modern soft shadows */
+  --drw-shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+  --drw-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --drw-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+
+  --drw-glass-filter: blur(12px);
 }
 
 /* ==============================================================
    1. GLOBAL OVERRIDES (Font & Base Colors)
    ============================================================== */
-body.drw-dark-theme,
-body.drw-dark-theme .drw-app-root {
+body.drw-light-theme,
+body.drw-light-theme .drw-app-root {
   font-family: var(--drw-font-family) !important;
   color: var(--drw-fg) !important;
   background-color: var(--drw-bg) !important;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Ensure SplitPane and main areas are dark */
-body.drw-dark-theme .SplitPane,
-body.drw-dark-theme .SplitPane .Pane1,
-body.drw-dark-theme header,
-body.drw-dark-theme main {
+/* Ensure SplitPane and main areas are cool gray */
+body.drw-light-theme .SplitPane,
+body.drw-light-theme .SplitPane .Pane1,
+body.drw-light-theme main {
   background-color: var(--drw-bg) !important;
   color: var(--drw-fg) !important;
 }
 
-/* Keep the preview pane white */
-body.drw-dark-theme .SplitPane .Pane2 {
+/* Keep the preview pane mostly unchanged but matching the background */
+body.drw-light-theme .SplitPane .Pane2 {
   background-color: #ffffff !important;
-  color: #000 !important;
+  color: var(--drw-fg) !important;
   border-left: 1px solid var(--drw-border) !important;
 }
 
 /* Headings */
-body.drw-dark-theme h1,
-body.drw-dark-theme h2,
-body.drw-dark-theme h3 {
+body.drw-light-theme h1,
+body.drw-light-theme h2,
+body.drw-light-theme h3 {
   color: var(--drw-fg) !important;
   font-family: var(--drw-font-family) !important;
   font-weight: 700 !important;
-  letter-spacing: -0.01em !important;
+  letter-spacing: -0.02em !important; /* Tighter modern tracking */
 }
 
 /* ==============================================================
    2. DASHBOARD / COLLECTIONS VIEW
    ============================================================== */
 
+/* App Header (Top Nav) */
+body.drw-light-theme [class*="AppHeader"] {
+  border-bottom: 1px solid var(--drw-border) !important;
+  background-color: rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: var(--drw-glass-filter) !important;
+  -webkit-backdrop-filter: var(--drw-glass-filter) !important;
+  box-shadow: var(--drw-shadow-sm) !important;
+  z-index: 10 !important;
+}
+
 /* Sidebar */
-body.drw-dark-theme aside {
+body.drw-light-theme aside {
   background-color: var(--drw-bg-sidebar) !important;
   border-right: 1px solid var(--drw-border) !important;
+  box-shadow: var(--drw-shadow-sm) !important;
 }
 
 /* Sidebar Links (Injected class) */
@@ -73,30 +92,41 @@ body.drw-dark-theme aside {
   color: var(--drw-fg-muted) !important;
   border-radius: var(--drw-radius-sm) !important;
   padding: 10px 16px !important;
-  margin: 4px 12px !important;
-  transition: all 0.2s ease !important;
+  margin: 6px 16px !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
   font-weight: 500 !important;
 }
 
 .drw-sidebar-link:hover {
-  background-color: var(--drw-bg-card) !important;
+  background-color: var(--drw-bg) !important;
   color: var(--drw-fg) !important;
+  transform: translateX(2px) !important;
+}
+
+/* Active Sidebar Link Indicator */
+body.drw-light-theme [class*="SidebarLinkActive"] {
+  background-color: var(--drw-accent-glow) !important;
+  color: var(--drw-accent-hover) !important;
+  font-weight: 600 !important;
 }
 
 /* Collection Cards (Injected class) */
 .drw-card {
   background-color: var(--drw-bg-card) !important;
+  backdrop-filter: var(--drw-glass-filter) !important;
+  -webkit-backdrop-filter: var(--drw-glass-filter) !important;
   border: 1px solid var(--drw-border) !important;
   border-radius: var(--drw-radius) !important;
   padding: 24px !important;
   margin-bottom: 16px !important;
-  transition: border-color 0.2s ease !important;
-  box-shadow: none !important; /* Remove Decap shadow */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: var(--drw-shadow-sm) !important;
 }
 
 .drw-card:hover {
   border-color: var(--drw-accent) !important;
-  background-color: #1a1a1f !important;
+  box-shadow: var(--drw-shadow-lg) !important;
+  transform: translateY(-2px) !important;
 }
 
 .drw-card h2 {
@@ -104,23 +134,20 @@ body.drw-dark-theme aside {
   font-size: 16px !important;
 }
 
-/* App Header (Top Nav) */
-body.drw-dark-theme [class*="AppHeader"] {
-  border-bottom: 1px solid var(--drw-border) !important;
-  background-color: var(--drw-bg) !important;
-}
-
 /* Search Bar */
-body.drw-dark-theme [class*="SearchContainer"] input {
+body.drw-light-theme [class*="SearchContainer"] input {
   background-color: var(--drw-bg-input) !important;
   border: 1px solid var(--drw-border) !important;
   color: var(--drw-fg) !important;
-  border-radius: var(--drw-radius-sm) !important;
-  padding: 8px 16px !important;
+  border-radius: 999px !important; /* Pill shape for search */
+  padding: 10px 20px !important;
+  box-shadow: var(--drw-shadow-sm) !important;
+  transition: all 0.2s ease !important;
 }
-body.drw-dark-theme [class*="SearchContainer"] input:focus {
+body.drw-light-theme [class*="SearchContainer"] input:focus {
   border-color: var(--drw-accent) !important;
   outline: none !important;
+  box-shadow: 0 0 0 3px var(--drw-accent-glow) !important;
 }
 
 /* ==============================================================
@@ -129,34 +156,51 @@ body.drw-dark-theme [class*="SearchContainer"] input:focus {
 
 /* The form itself (Injected class) */
 .drw-editor-form {
-  max-width: 900px !important; /* Perfect width for readability */
+  max-width: 900px !important;
   margin: 0 auto !important;
   padding: 32px 0 !important;
+}
+
+/* Top bar fixed styles inside editor */
+body.drw-light-theme [class*="EditorHeader"] {
+  background-color: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: var(--drw-glass-filter) !important;
+  -webkit-backdrop-filter: var(--drw-glass-filter) !important;
+  border-bottom: 1px solid var(--drw-border) !important;
+  box-shadow: var(--drw-shadow-sm) !important;
+  z-index: 10 !important;
 }
 
 /* The fields wrappers (Injected class) */
 .drw-field {
   background-color: var(--drw-bg-card) !important;
+  backdrop-filter: var(--drw-glass-filter) !important;
+  -webkit-backdrop-filter: var(--drw-glass-filter) !important;
   border: 1px solid var(--drw-border) !important;
   border-radius: var(--drw-radius) !important;
   padding: 24px !important;
   margin-bottom: 24px !important;
-  transition: border-color 0.2s ease !important;
+  transition: all 0.2s ease !important;
+  box-shadow: var(--drw-shadow-sm) !important;
 }
 
 .drw-field:focus-within {
   border-color: var(--drw-accent) !important;
+  box-shadow:
+    var(--drw-shadow-md),
+    0 0 0 2px var(--drw-accent-glow) !important;
+  transform: translateY(-1px) !important;
 }
 
 /* Field Labels */
 .drw-field > label {
-  color: var(--drw-fg) !important;
+  color: var(--drw-fg-muted) !important;
   font-family: var(--drw-font-family) !important;
-  font-size: 13px !important;
-  font-weight: 700 !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
   text-transform: uppercase !important;
   letter-spacing: 0.05em !important;
-  margin-bottom: 12px !important;
+  margin-bottom: 10px !important;
   display: block !important;
 }
 
@@ -169,11 +213,12 @@ body.drw-dark-theme [class*="SearchContainer"] input:focus {
   border: 1px solid var(--drw-border) !important;
   border-radius: var(--drw-radius-sm) !important;
   color: var(--drw-fg) !important;
-  padding: 12px 16px !important;
+  padding: 12px 14px !important;
   font-family: var(--drw-font-family) !important;
   font-size: 15px !important;
   width: 100% !important;
   transition: all 0.2s ease !important;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02) !important;
 }
 
 .drw-field input:focus,
@@ -181,43 +226,47 @@ body.drw-dark-theme [class*="SearchContainer"] input:focus {
 .drw-field select:focus {
   border-color: var(--drw-accent) !important;
   outline: none !important;
-  box-shadow: 0 0 0 1px var(--drw-accent) !important;
+  box-shadow: 0 0 0 3px var(--drw-accent-glow) !important;
+  background-color: #ffffff !important;
 }
 
 /* Markdown Editor Toolbar Override */
-body.drw-dark-theme [class*="EditorContainer"] {
-  border: none !important;
+body.drw-light-theme [class*="EditorContainer"] {
+  border: 1px solid var(--drw-border) !important;
+  border-radius: var(--drw-radius-sm) !important;
+  overflow: hidden !important;
 }
-body.drw-dark-theme [class*="EditorContainer"] [class*="Toolbar"] {
-  background-color: var(--drw-bg) !important;
+body.drw-light-theme [class*="EditorContainer"] [class*="Toolbar"] {
+  background-color: rgba(248, 250, 252, 0.8) !important;
   border-bottom: 1px solid var(--drw-border) !important;
-  border-radius: var(--drw-radius-sm) var(--drw-radius-sm) 0 0 !important;
 }
-body.drw-dark-theme [class*="EditorContainer"] button {
+body.drw-light-theme [class*="EditorContainer"] button {
   color: var(--drw-fg-muted) !important;
 }
-body.drw-dark-theme [class*="EditorContainer"] button:hover {
+body.drw-light-theme [class*="EditorContainer"] button:hover {
   color: var(--drw-accent) !important;
+  background-color: var(--drw-bg-card) !important;
 }
 
 /* Primary Buttons (Save / Publish) */
-body.drw-dark-theme [class*="Button-button-primary"],
-body.drw-dark-theme button[class*="PublishButton"] {
+body.drw-light-theme [class*="Button-button-primary"],
+body.drw-light-theme button[class*="PublishButton"] {
   background-color: var(--drw-accent) !important;
-  color: #000 !important; /* High contrast text */
+  color: #ffffff !important;
   border: none !important;
   border-radius: var(--drw-radius-sm) !important;
-  font-weight: 700 !important;
+  font-weight: 600 !important;
   font-family: var(--drw-font-family) !important;
-  padding: 10px 24px !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
-  transition: background-color 0.2s ease !important;
+  padding: 10px 20px !important;
+  box-shadow: 0 4px 6px rgba(245, 158, 11, 0.2) !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
-body.drw-dark-theme [class*="Button-button-primary"]:hover,
-body.drw-dark-theme button[class*="PublishButton"]:hover {
+body.drw-light-theme [class*="Button-button-primary"]:hover,
+body.drw-light-theme button[class*="PublishButton"]:hover {
   background-color: var(--drw-accent-hover) !important;
+  box-shadow: 0 6px 10px rgba(245, 158, 11, 0.3) !important;
+  transform: translateY(-1px) !important;
 }
 
 /* Object & List Wrappers inside Editor */
@@ -229,32 +278,29 @@ body.drw-dark-theme button[class*="PublishButton"]:hover {
 }
 
 .drw-field [class*="ListItemContainer"] {
-  background-color: var(--drw-bg) !important;
-  border: 1px dashed var(--drw-border-hover) !important;
+  background-color: #ffffff !important;
+  border: 1px solid var(--drw-border) !important;
   border-radius: var(--drw-radius-sm) !important;
   padding: 16px !important;
   margin-bottom: 12px !important;
+  box-shadow: var(--drw-shadow-sm) !important;
 }
 
-/* Custom Upload Link Styling */
-body.drw-dark-theme a[style*="position: fixed"] {
-  background-color: var(--drw-fg) !important;
-  color: #000 !important;
-  font-weight: 700 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
-  border: 2px solid #000 !important;
-  box-shadow: 4px 4px 0 var(--drw-accent) !important;
-  transition: transform 0.1s !important;
+/* Custom Upload Link Styling (Modern Float) */
+body.drw-light-theme a[style*="position: fixed"] {
+  background-color: #ffffff !important;
+  color: var(--drw-fg) !important;
+  font-weight: 600 !important;
+  border: 1px solid var(--drw-border) !important;
+  border-radius: 999px !important; /* Pill shape */
+  padding: 12px 24px !important;
+  box-shadow: var(--drw-shadow-lg) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
-body.drw-dark-theme a[style*="position: fixed"]:active {
-  transform: translate(2px, 2px) !important;
-  box-shadow: 2px 2px 0 var(--drw-accent) !important;
-}
-
-/* Top bar fixed styles inside editor */
-body.drw-dark-theme [class*="EditorHeader"] {
-  background-color: var(--drw-bg-sidebar) !important;
-  border-bottom: 1px solid var(--drw-border) !important;
+body.drw-light-theme a[style*="position: fixed"]:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.1) !important;
+  color: var(--drw-accent) !important;
+  border-color: var(--drw-accent-glow) !important;
 }
