@@ -3,91 +3,90 @@
 
 :root {
   /* Modern SaaS Light Palette & Glassmorphism */
-  --drw-bg: #f8fafc; /* Cool, very light gray background */
+  --drw-bg: #f8fafc;
   --drw-bg-sidebar: #ffffff;
-  --drw-bg-card: rgba(255, 255, 255, 0.85); /* Semi-transparent for glass effect */
+  --drw-bg-card: rgba(255, 255, 255, 0.85);
   --drw-bg-input: #ffffff;
 
-  --drw-border: rgba(15, 23, 42, 0.08); /* Very subtle crisp borders */
+  --drw-border: rgba(15, 23, 42, 0.08);
   --drw-border-hover: rgba(15, 23, 42, 0.15);
 
   --drw-accent: #f59e0b; /* Dr.Welnes Amber */
-  --drw-accent-hover: #d97706;
   --drw-accent-glow: rgba(245, 158, 11, 0.2);
+  --drw-accent-hover: #d97706;
 
-  --drw-fg: #0f172a; /* Deep charcoal for main text, not pure black */
+  --drw-fg: #0f172a;
   --drw-fg-muted: #64748b;
 
   --drw-font-family: "Inter", system-ui, -apple-system, sans-serif;
-  --drw-radius: 12px; /* Softer, modern corners */
+  --drw-radius: 12px;
   --drw-radius-sm: 6px;
 
   /* Modern soft shadows */
   --drw-shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
-  --drw-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
   --drw-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
-
   --drw-glass-filter: blur(12px);
 }
 
-/* ==============================================================
-   1. GLOBAL OVERRIDES (Font & Base Colors)
-   ============================================================== */
+/* Base resets */
 *,
 *::before,
 *::after {
   font-family: var(--drw-font-family) !important;
 }
 
-body.drw-light-theme,
-body.drw-light-theme .drw-app-root {
-  font-family: var(--drw-font-family) !important;
-  color: var(--drw-fg) !important;
+body {
   background-color: var(--drw-bg) !important;
+  color: var(--drw-fg) !important;
+  font-family: var(--drw-font-family) !important;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Ensure SplitPane and main areas are cool gray */
-body.drw-light-theme .SplitPane,
-body.drw-light-theme .SplitPane .Pane1,
-body.drw-light-theme main {
+/* ==============================================================
+   HIGH-SPECIFICITY DECAP CMS OVERRIDES
+   Prefixing with `body #nc-root` guarantees we beat Emotion CSS
+   ============================================================== */
+
+/* Layout & SplitPanes */
+body #nc-root [class*="AppMainContainer"],
+body #nc-root .SplitPane,
+body #nc-root .SplitPane .Pane1,
+body #nc-root header,
+body #nc-root main,
+body #nc-root [class*="CollectionContainer"],
+body #nc-root [class*="CollectionMain"] {
   background-color: var(--drw-bg) !important;
   color: var(--drw-fg) !important;
 }
 
-/* Headings */
-body.drw-light-theme h1,
-body.drw-light-theme h2,
-body.drw-light-theme h3 {
+/* Typography */
+body #nc-root h1,
+body #nc-root h2,
+body #nc-root h3 {
   color: var(--drw-fg) !important;
-  font-family: var(--drw-font-family) !important;
   font-weight: 700 !important;
-  letter-spacing: -0.02em !important; /* Tighter modern tracking */
+  letter-spacing: -0.02em !important;
 }
 
-/* ==============================================================
-   2. DASHBOARD / COLLECTIONS VIEW
-   ============================================================== */
+/* Sidebar */
+body #nc-root aside {
+  background-color: var(--drw-bg-sidebar) !important;
+  border-right: 1px solid var(--drw-border) !important;
+  box-shadow: var(--drw-shadow-sm) !important;
+  z-index: 5 !important;
+}
 
-/* App Header (Top Nav) */
-body.drw-light-theme [class*="AppHeader"] {
+/* Top Navbar (AppHeader) */
+body #nc-root [class*="AppHeader"] {
   border-bottom: 1px solid var(--drw-border) !important;
   background-color: rgba(255, 255, 255, 0.8) !important;
   backdrop-filter: var(--drw-glass-filter) !important;
   -webkit-backdrop-filter: var(--drw-glass-filter) !important;
   box-shadow: var(--drw-shadow-sm) !important;
-  z-index: 10 !important;
 }
 
-/* Sidebar */
-body.drw-light-theme aside {
-  background-color: var(--drw-bg-sidebar) !important;
-  border-right: 1px solid var(--drw-border) !important;
-  box-shadow: var(--drw-shadow-sm) !important;
-}
-
-/* Sidebar Links (Injected class) */
-.drw-sidebar-link {
+/* Sidebar Links */
+body #nc-root aside a {
   color: var(--drw-fg-muted) !important;
   border-radius: var(--drw-radius-sm) !important;
   padding: 10px 16px !important;
@@ -96,21 +95,21 @@ body.drw-light-theme aside {
   font-weight: 500 !important;
 }
 
-.drw-sidebar-link:hover {
+body #nc-root aside a:hover {
   background-color: var(--drw-bg) !important;
   color: var(--drw-fg) !important;
   transform: translateX(2px) !important;
 }
 
-/* Active Sidebar Link Indicator */
-body.drw-light-theme [class*="SidebarLinkActive"] {
+body #nc-root aside a[class*="SidebarLinkActive"] {
   background-color: var(--drw-accent-glow) !important;
   color: var(--drw-accent-hover) !important;
   font-weight: 600 !important;
 }
 
-/* Collection Cards (Injected class) */
-.drw-card {
+/* Collection Cards */
+body #nc-root [class*="CardContainer"],
+body #nc-root a[class*="Card"] {
   background-color: var(--drw-bg-card) !important;
   backdrop-filter: var(--drw-glass-filter) !important;
   -webkit-backdrop-filter: var(--drw-glass-filter) !important;
@@ -122,56 +121,52 @@ body.drw-light-theme [class*="SidebarLinkActive"] {
   box-shadow: var(--drw-shadow-sm) !important;
 }
 
-.drw-card:hover {
+body #nc-root [class*="CardContainer"]:hover,
+body #nc-root a[class*="Card"]:hover {
   border-color: var(--drw-accent) !important;
   box-shadow: var(--drw-shadow-lg) !important;
   transform: translateY(-2px) !important;
 }
 
-.drw-card h2 {
-  margin: 0 !important;
-  font-size: 16px !important;
-}
-
 /* Search Bar */
-body.drw-light-theme [class*="SearchContainer"] input {
+body #nc-root [class*="SearchContainer"] input {
   background-color: var(--drw-bg-input) !important;
   border: 1px solid var(--drw-border) !important;
   color: var(--drw-fg) !important;
-  border-radius: 999px !important; /* Pill shape for search */
+  border-radius: 999px !important;
   padding: 10px 20px !important;
   box-shadow: var(--drw-shadow-sm) !important;
   transition: all 0.2s ease !important;
 }
-body.drw-light-theme [class*="SearchContainer"] input:focus {
+
+body #nc-root [class*="SearchContainer"] input:focus {
   border-color: var(--drw-accent) !important;
   outline: none !important;
   box-shadow: 0 0 0 3px var(--drw-accent-glow) !important;
 }
 
 /* ==============================================================
-   3. ENTRY EDITOR (THE FORM)
+   EDITOR FORM
    ============================================================== */
 
-/* The form itself (Injected class) */
-.drw-editor-form {
+/* Editor Form Wrap */
+body #nc-root form {
   max-width: 900px !important;
   margin: 0 auto !important;
   padding: 32px 0 !important;
 }
 
-/* Top bar fixed styles inside editor */
-body.drw-light-theme [class*="EditorHeader"] {
+/* Editor Header (Toolbar with Save button) */
+body #nc-root [class*="EditorHeader"] {
   background-color: rgba(255, 255, 255, 0.85) !important;
   backdrop-filter: var(--drw-glass-filter) !important;
   -webkit-backdrop-filter: var(--drw-glass-filter) !important;
   border-bottom: 1px solid var(--drw-border) !important;
   box-shadow: var(--drw-shadow-sm) !important;
-  z-index: 10 !important;
 }
 
-/* The fields wrappers (Injected class) */
-.drw-field {
+/* Field Wrappers */
+body #nc-root [class*="ControlContainer"] {
   background-color: var(--drw-bg-card) !important;
   backdrop-filter: var(--drw-glass-filter) !important;
   -webkit-backdrop-filter: var(--drw-glass-filter) !important;
@@ -183,16 +178,16 @@ body.drw-light-theme [class*="EditorHeader"] {
   box-shadow: var(--drw-shadow-sm) !important;
 }
 
-.drw-field:focus-within {
+body #nc-root [class*="ControlContainer"]:focus-within {
   border-color: var(--drw-accent) !important;
   box-shadow:
-    var(--drw-shadow-md),
+    var(--drw-shadow-sm),
     0 0 0 2px var(--drw-accent-glow) !important;
   transform: translateY(-1px) !important;
 }
 
-/* Field Labels */
-.drw-field > label {
+/* Labels */
+body #nc-root label {
   color: var(--drw-fg-muted) !important;
   font-family: var(--drw-font-family) !important;
   font-size: 12px !important;
@@ -203,11 +198,11 @@ body.drw-light-theme [class*="EditorHeader"] {
   display: block !important;
 }
 
-/* Inputs / Selects / Textareas inside fields */
-.drw-field input[type="text"],
-.drw-field input[type="number"],
-.drw-field textarea,
-.drw-field select {
+/* Inputs */
+body #nc-root [class*="ControlContainer"] input[type="text"],
+body #nc-root [class*="ControlContainer"] input[type="number"],
+body #nc-root [class*="ControlContainer"] textarea,
+body #nc-root [class*="ControlContainer"] select {
   background-color: var(--drw-bg-input) !important;
   border: 1px solid var(--drw-border) !important;
   border-radius: var(--drw-radius-sm) !important;
@@ -220,63 +215,25 @@ body.drw-light-theme [class*="EditorHeader"] {
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02) !important;
 }
 
-.drw-field input:focus,
-.drw-field textarea:focus,
-.drw-field select:focus {
+body #nc-root [class*="ControlContainer"] input:focus,
+body #nc-root [class*="ControlContainer"] textarea:focus,
+body #nc-root [class*="ControlContainer"] select:focus {
   border-color: var(--drw-accent) !important;
   outline: none !important;
   box-shadow: 0 0 0 3px var(--drw-accent-glow) !important;
   background-color: #ffffff !important;
 }
 
-/* Markdown Editor Toolbar Override */
-body.drw-light-theme [class*="EditorContainer"] {
-  border: 1px solid var(--drw-border) !important;
-  border-radius: var(--drw-radius-sm) !important;
-  overflow: hidden !important;
-}
-body.drw-light-theme [class*="EditorContainer"] [class*="Toolbar"] {
-  background-color: rgba(248, 250, 252, 0.8) !important;
-  border-bottom: 1px solid var(--drw-border) !important;
-}
-body.drw-light-theme [class*="EditorContainer"] button {
-  color: var(--drw-fg-muted) !important;
-}
-body.drw-light-theme [class*="EditorContainer"] button:hover {
-  color: var(--drw-accent) !important;
-  background-color: var(--drw-bg-card) !important;
-}
-
-/* Primary Buttons (Save / Publish) */
-body.drw-light-theme [class*="Button-button-primary"],
-body.drw-light-theme button[class*="PublishButton"] {
-  background-color: var(--drw-accent) !important;
-  color: #ffffff !important;
-  border: none !important;
-  border-radius: var(--drw-radius-sm) !important;
-  font-weight: 600 !important;
-  font-family: var(--drw-font-family) !important;
-  padding: 10px 20px !important;
-  box-shadow: 0 4px 6px rgba(245, 158, 11, 0.2) !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
-
-body.drw-light-theme [class*="Button-button-primary"]:hover,
-body.drw-light-theme button[class*="PublishButton"]:hover {
-  background-color: var(--drw-accent-hover) !important;
-  box-shadow: 0 6px 10px rgba(245, 158, 11, 0.3) !important;
-  transform: translateY(-1px) !important;
-}
-
-/* Object & List Wrappers inside Editor */
-.drw-field [class*="ObjectWidget"],
-.drw-field [class*="ListWidget"] {
+/* Nested Lists & Objects */
+body #nc-root [class*="ControlContainer"] [class*="ObjectWidget"],
+body #nc-root [class*="ControlContainer"] [class*="ListWidget"] {
   background-color: transparent !important;
   border: none !important;
   padding: 0 !important;
+  box-shadow: none !important;
 }
 
-.drw-field [class*="ListItemContainer"] {
+body #nc-root [class*="ControlContainer"] [class*="ListItemContainer"] {
   background-color: #ffffff !important;
   border: 1px solid var(--drw-border) !important;
   border-radius: var(--drw-radius-sm) !important;
@@ -285,19 +242,43 @@ body.drw-light-theme button[class*="PublishButton"]:hover {
   box-shadow: var(--drw-shadow-sm) !important;
 }
 
-/* Custom Upload Link Styling (Modern Float) */
-body.drw-light-theme a[style*="position: fixed"] {
+/* Primary Buttons */
+body #nc-root button[class*="Button-button-primary"],
+body #nc-root button[class*="PublishButton"] {
+  background-color: var(--drw-accent) !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: var(--drw-radius-sm) !important;
+  font-weight: 600 !important;
+  padding: 10px 20px !important;
+  box-shadow: 0 4px 6px rgba(245, 158, 11, 0.2) !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+body #nc-root button[class*="Button-button-primary"]:hover,
+body #nc-root button[class*="PublishButton"]:hover {
+  background-color: var(--drw-accent-hover) !important;
+  box-shadow: 0 6px 10px rgba(245, 158, 11, 0.3) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* ==============================================================
+   CUSTOM UPLOAD BUTTON (Same style as variant 3)
+   ============================================================== */
+a[style*="position: fixed"] {
   background-color: #ffffff !important;
   color: var(--drw-fg) !important;
   font-weight: 600 !important;
   border: 1px solid var(--drw-border) !important;
-  border-radius: 999px !important; /* Pill shape */
+  border-radius: 999px !important;
   padding: 12px 24px !important;
   box-shadow: var(--drw-shadow-lg) !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  z-index: 9999 !important;
+  font-family: var(--drw-font-family) !important;
 }
 
-body.drw-light-theme a[style*="position: fixed"]:hover {
+a[style*="position: fixed"]:hover {
   transform: translateY(-4px) !important;
   box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.1) !important;
   color: var(--drw-accent) !important;
@@ -305,24 +286,17 @@ body.drw-light-theme a[style*="position: fixed"]:hover {
 }
 
 /* ==============================================================
-   4. PREVIEW PANE (The right side AND IFRAME CONTENTS)
+   PREVIEW PANE SECRETS (IFRAME)
    ============================================================== */
 
-/* Apply base styling to the iframe body itself */
-body {
-  font-family: var(--drw-font-family);
-  color: var(--drw-fg);
-  background-color: var(--drw-bg);
-}
-
-/* Container for Pane2 in the main document */
-body.drw-light-theme .SplitPane .Pane2 {
+/* Pane2 in main UI */
+body #nc-root .SplitPane .Pane2 {
   background-color: #ffffff !important;
   color: var(--drw-fg) !important;
   border-left: 1px solid var(--drw-border) !important;
 }
 
-/* Universal Preview Content Styling (works inside iframe) */
+/* Content inside the iframe */
 .nc-previewPane,
 div[class*="PreviewPane"] {
   font-family: var(--drw-font-family) !important;
@@ -333,20 +307,22 @@ div[class*="PreviewPane"] {
   background-color: #ffffff !important;
 }
 
+html,
+body {
+  background-color: #ffffff !important;
+}
+
 .nc-previewPane h1,
 div[class*="PreviewPane"] h1 {
-  font-family: var(--drw-font-family) !important;
   font-size: 28px !important;
   font-weight: 700 !important;
   line-height: 1.2 !important;
   margin-bottom: 24px !important;
   color: var(--drw-fg) !important;
-  margin-top: 0 !important;
 }
 
 .nc-previewPane h2,
 div[class*="PreviewPane"] h2 {
-  font-family: var(--drw-font-family) !important;
   font-size: 20px !important;
   font-weight: 600 !important;
   margin-top: 32px !important;
@@ -355,29 +331,16 @@ div[class*="PreviewPane"] h2 {
 }
 
 .nc-previewPane p,
-.nc-previewPane div,
-.nc-previewPane span,
 .nc-previewPane ul,
 .nc-previewPane ol,
 div[class*="PreviewPane"] p,
-div[class*="PreviewPane"] div,
-div[class*="PreviewPane"] span,
 div[class*="PreviewPane"] ul,
 div[class*="PreviewPane"] ol {
-  font-family: var(--drw-font-family) !important;
   font-size: 15px !important;
   line-height: 1.6 !important;
   color: var(--drw-fg-muted) !important;
 }
 
-/* Decap CMS injects raw key-value pairs sometimes in preview */
-.nc-previewPane strong,
-div[class*="PreviewPane"] strong {
-  color: var(--drw-fg) !important;
-  font-weight: 600 !important;
-}
-
-/* Preview Image / Video styling */
 .nc-previewPane img,
 .nc-previewPane video,
 div[class*="PreviewPane"] img,
@@ -386,17 +349,4 @@ div[class*="PreviewPane"] video {
   border-radius: var(--drw-radius) !important;
   margin: 16px 0 !important;
   box-shadow: var(--drw-shadow-sm) !important;
-}
-
-/* Make preview toggle buttons fit the theme (in main doc) */
-body.drw-light-theme [class*="PreviewPaneContainer"] > div:first-child > button {
-  background-color: #ffffff !important;
-  border: 1px solid var(--drw-border) !important;
-  box-shadow: var(--drw-shadow-sm) !important;
-  color: var(--drw-fg-muted) !important;
-  transition: all 0.2s !important;
-}
-body.drw-light-theme [class*="PreviewPaneContainer"] > div:first-child > button:hover {
-  color: var(--drw-accent) !important;
-  border-color: var(--drw-accent) !important;
 }

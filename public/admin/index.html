@@ -209,51 +209,6 @@
           true,
         );
       })();
-
-      // DR.WELNES MINIMALIST PRO - MutationObserver for safe CSS targeting
-      (function () {
-        var observer = new MutationObserver(function (mutations) {
-          try {
-            // 1. Sidebar Links
-            var links = document.querySelectorAll("aside a");
-            links.forEach(function (l) {
-              l.classList.add("drw-sidebar-link");
-            });
-
-            // 2. Collection Cards
-            var h2s = document.querySelectorAll("main h2");
-            h2s.forEach(function (h2) {
-              var card = h2.closest("a");
-              if (card && !card.classList.contains("drw-card")) card.classList.add("drw-card");
-            });
-
-            // 3. Editor Fields Container (Find labels and go up)
-            var labels = document.querySelectorAll("form label");
-            labels.forEach(function (label) {
-              var fieldContainer = label.parentElement;
-              if (fieldContainer && !fieldContainer.classList.contains("drw-field")) {
-                fieldContainer.classList.add("drw-field");
-              }
-            });
-
-            // 4. Editor Form itself
-            var form = document.querySelector("form");
-            if (form && !form.classList.contains("drw-editor-form")) {
-              form.classList.add("drw-editor-form");
-            }
-
-            // 5. Main App Container
-            var app = document.getElementById("nc-root");
-            if (app && !app.classList.contains("drw-app-root")) {
-              app.classList.add("drw-app-root");
-            }
-          } catch (e) {}
-        });
-
-        document.addEventListener("DOMContentLoaded", function () {
-          observer.observe(document.body, { childList: true, subtree: true });
-        });
-      })();
     </script>
 
     <script src="https://unpkg.com/decap-cms@^3.6.0/dist/decap-cms.js"></script>
