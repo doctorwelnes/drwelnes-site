@@ -49,13 +49,6 @@ body.drw-light-theme main {
   color: var(--drw-fg) !important;
 }
 
-/* Keep the preview pane mostly unchanged but matching the background */
-body.drw-light-theme .SplitPane .Pane2 {
-  background-color: #ffffff !important;
-  color: var(--drw-fg) !important;
-  border-left: 1px solid var(--drw-border) !important;
-}
-
 /* Headings */
 body.drw-light-theme h1,
 body.drw-light-theme h2,
@@ -303,4 +296,77 @@ body.drw-light-theme a[style*="position: fixed"]:hover {
   box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.1) !important;
   color: var(--drw-accent) !important;
   border-color: var(--drw-accent-glow) !important;
+}
+
+/* ==============================================================
+   4. PREVIEW PANE (The right side)
+   ============================================================== */
+body.drw-light-theme .SplitPane .Pane2 {
+  background-color: #ffffff !important;
+  color: var(--drw-fg) !important;
+  border-left: 1px solid var(--drw-border) !important;
+  font-family: var(--drw-font-family) !important;
+  padding: 32px !important;
+}
+
+/* Preview Content Styling */
+body.drw-light-theme .SplitPane .Pane2 div[class*="PreviewPane"] {
+  font-family: var(--drw-font-family) !important;
+  color: var(--drw-fg) !important;
+  max-width: 800px !important;
+  margin: 0 auto !important;
+}
+
+body.drw-light-theme .SplitPane .Pane2 h1 {
+  font-size: 28px !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+  margin-bottom: 24px !important;
+  color: var(--drw-fg) !important;
+}
+
+body.drw-light-theme .SplitPane .Pane2 h2 {
+  font-size: 20px !important;
+  font-weight: 600 !important;
+  margin-top: 32px !important;
+  margin-bottom: 16px !important;
+}
+
+body.drw-light-theme .SplitPane .Pane2 p,
+body.drw-light-theme .SplitPane .Pane2 div,
+body.drw-light-theme .SplitPane .Pane2 span,
+body.drw-light-theme .SplitPane .Pane2 ul,
+body.drw-light-theme .SplitPane .Pane2 ol {
+  font-family: var(--drw-font-family) !important;
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+  color: var(--drw-fg-muted) !important;
+}
+
+/* Decap CMS injects raw key-value pairs sometimes in preview */
+body.drw-light-theme .SplitPane .Pane2 strong {
+  color: var(--drw-fg) !important;
+  font-weight: 600 !important;
+}
+
+/* Preview Image / Video styling */
+body.drw-light-theme .SplitPane .Pane2 img,
+body.drw-light-theme .SplitPane .Pane2 video {
+  max-width: 100% !important;
+  border-radius: var(--drw-radius) !important;
+  margin: 16px 0 !important;
+  box-shadow: var(--drw-shadow-sm) !important;
+}
+
+/* Make preview toggle buttons fit the theme */
+body.drw-light-theme [class*="PreviewPaneContainer"] > div:first-child > button {
+  background-color: #ffffff !important;
+  border: 1px solid var(--drw-border) !important;
+  box-shadow: var(--drw-shadow-sm) !important;
+  color: var(--drw-fg-muted) !important;
+  transition: all 0.2s !important;
+}
+body.drw-light-theme [class*="PreviewPaneContainer"] > div:first-child > button:hover {
+  color: var(--drw-accent) !important;
+  border-color: var(--drw-accent) !important;
 }
