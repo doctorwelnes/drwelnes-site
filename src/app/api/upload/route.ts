@@ -4,13 +4,6 @@ import { authOptions } from "@/lib/auth";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 
-export const config = {
-  api: {
-    bodyParser: false,
-    responseLimit: false,
-  },
-};
-
 // Простая функция для очистки имен файлов
 function sanitizeFilename(filename: string) {
   return filename

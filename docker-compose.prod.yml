@@ -35,9 +35,9 @@ services:
       resources:
         limits:
           cpus: "1.0"
-          memory: 512M
+          memory: 1536M
         reservations:
-          memory: 128M
+          memory: 256M
 
   migrator:
     build:
