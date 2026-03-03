@@ -209,6 +209,55 @@
           true,
         );
       })();
+
+      // DR.WELNES MODERN SAAS - Forceful DOM styling injector
+      // Bypasses React/Emotion class obfuscation in Production mode
+      (function () {
+        var observer = new MutationObserver(function () {
+          try {
+            // Apply class to main app wrapper
+            var root = document.getElementById("nc-root");
+            if (root && !root.classList.contains("drw-app")) root.classList.add("drw-app");
+
+            // Style Sidebar
+            var sidebar = document.querySelector("aside");
+            if (sidebar && !sidebar.classList.contains("drw-sidebar"))
+              sidebar.classList.add("drw-sidebar");
+
+            // Style Sidebar Links
+            var links = document.querySelectorAll("aside a");
+            links.forEach(function (l) {
+              if (!l.classList.contains("drw-sidebar-link")) l.classList.add("drw-sidebar-link");
+            });
+
+            // Style Dashboard Cards (Collections)
+            var h2s = document.querySelectorAll("main h2");
+            h2s.forEach(function (h2) {
+              var card = h2.closest("a");
+              if (card && !card.classList.contains("drw-card")) card.classList.add("drw-card");
+            });
+
+            // Style Editor Fields Container
+            var labels = document.querySelectorAll("form label");
+            labels.forEach(function (label) {
+              var fieldContainer = label.parentElement;
+              if (fieldContainer && !fieldContainer.classList.contains("drw-field")) {
+                fieldContainer.classList.add("drw-field");
+              }
+            });
+
+            // Style Editor Form Wrap
+            var form = document.querySelector("form");
+            if (form && !form.classList.contains("drw-editor-form")) {
+              form.classList.add("drw-editor-form");
+            }
+          } catch (e) {}
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+          observer.observe(document.body, { childList: true, subtree: true });
+        });
+      })();
     </script>
 
     <script src="https://unpkg.com/decap-cms@^3.6.0/dist/decap-cms.js"></script>
