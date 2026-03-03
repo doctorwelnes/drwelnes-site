@@ -12,8 +12,8 @@ export async function GET(request: Request) {
   const client_secret = process.env.GITHUB_CMS_CLIENT_SECRET;
 
   try {
-    const urlObj = new URL(request.url);
-    const redirect_uri = `${urlObj.origin}/api/cms-callback`;
+    const baseUrl = process.env.NEXTAUTH_URL?.replace(/\/$/, "") || "https://drwelnes.ru";
+    const redirect_uri = `${baseUrl}/api/cms-callback`;
 
     const response = await fetch("https://github.com/login/oauth/access_token", {
       method: "POST",
