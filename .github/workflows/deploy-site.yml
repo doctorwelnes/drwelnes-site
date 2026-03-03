@@ -121,7 +121,7 @@ jobs:
           # Ensure uploads directory exists and is writable on the host
           # We use a temporary docker container to fix permissions because the runner might not have sudo
           mkdir -p public/uploads/videos
-          docker run --rm -v "$(pwd)/public/uploads:/data" alpine chmod -R 777 /data || true
+          docker run --rm -v "$(pwd)/public:/data" alpine chmod -R 777 /data || true
 
           $COMPOSE build
           $COMPOSE up -d --remove-orphans
@@ -176,7 +176,7 @@ jobs:
             '    client_body_timeout 600s;' \
             '' \
             '    location /uploads/ {' \
-            '        alias /var/www/drwelnes/src/public/uploads/;' \
+            '        root /var/www/drwelnes/src/public;' \
             '        types {' \
             '            video/mp4 mp4;' \
             '            image/jpeg jpg jpeg;' \
