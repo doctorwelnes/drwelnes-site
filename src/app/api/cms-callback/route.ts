@@ -46,34 +46,37 @@ export async function GET(request: Request) {
     const content = `
       <!DOCTYPE html>
       <html>
-      <head><title>Авторизация...</title></head>
+      <head>
+        <meta charset="utf-8">
+        <title>Авторизация...</title>
+      </head>
       <body>
         <div style="font-family: sans-serif; text-align: center; margin-top: 50px;">
-          Авторизация завершена. Это окно закроется автоматически...
+          Авторизация успешна. Это окно закроется автоматически...
         </div>
         <script>
           (function() {
             const data = ${JSON.stringify(formattedData)};
-            const message = 'authorization:github:success:' + JSON.stringify(data);
+            const msg = 'authorization:github:success:' + JSON.stringify(data);
             
-            console.log("Sending auth data to opener...");
-            
-            // Отправляем сразу (для некоторых версий)
-            window.opener.postMessage(message, "*");
-            
-            // Слушаем рукопожатие (для стандартного протокола)
-            const receiveMessage = (event) => {
-              console.log("Received message from opener:", event.data);
-              if (event.data === "authorizing:github") {
-                window.opener.postMessage(message, event.origin);
+            function sendMsg() {
+              if (window.opener) {
+                window.opener.postMessage(msg, "*");
               }
-            };
+            }
             
-            window.addEventListener("message", receiveMessage, false);
-            window.opener.postMessage("authorizing:github", "*");
+            // Отправляем данные сразу
+            sendMsg();
             
-            // Принудительно закрываем окно через небольшой промежуток времени
-            setTimeout(() => {
+            // Если админка пришлет запрос
+            window.addEventListener("message", function(e) {
+              if (e.data === "authorizing:github") {
+                sendMsg();
+              }
+            });
+            
+            // Закрываем окно с небольшой задержкой, чтобы сообщение успело уйти
+            setTimeout(function() {
               window.close();
             }, 1000);
           })();
