@@ -98,17 +98,33 @@ body #nc-root .drw-card {
   background-color: var(--drw-bg-card) !important;
   border: 1px solid var(--drw-border) !important;
   border-radius: 16px !important;
-  padding: 24px !important;
+  padding: 20px !important;
   margin-bottom: 16px !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
   box-shadow: var(--drw-shadow-sm) !important;
   overflow: hidden !important;
+  display: block !important;
 }
 
 body #nc-root .drw-card:hover {
   border-color: var(--drw-accent) !important;
   box-shadow: var(--drw-shadow-lg) !important;
   transform: translateY(-4px) !important;
+}
+
+/* Force inner Decap card elements to drop their default borders/backgrounds */
+body #nc-root .drw-card > div,
+body #nc-root .drw-card [class*="Card"] {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+body #nc-root .drw-card h2 {
+  margin-top: 0 !important;
+  font-size: 16px !important;
 }
 
 /* Search Bar */
@@ -227,14 +243,14 @@ body #nc-root .drw-btn-default:hover {
 body #nc-root .drw-editor-form {
   max-width: 800px !important;
   margin: 0 auto !important;
-  padding: 40px 0 !important;
+  padding: 24px 0 !important;
 }
 
 body #nc-root .drw-field {
   background-color: transparent !important;
   border: none !important;
   padding: 0 !important;
-  margin-bottom: 24px !important;
+  margin-bottom: 20px !important;
   box-shadow: none !important;
 }
 
@@ -252,10 +268,10 @@ body #nc-root .drw-field > label {
 body #nc-root .drw-input {
   background-color: #ffffff !important;
   border: 1px solid var(--drw-border) !important;
-  border-radius: 10px !important;
+  border-radius: 8px !important;
   color: var(--drw-fg) !important;
-  padding: 14px 16px !important;
-  font-size: 15px !important;
+  padding: 10px 14px !important;
+  font-size: 14px !important;
   width: 100% !important;
   transition: all 0.2s ease !important;
   box-shadow: var(--drw-shadow-sm) !important;
@@ -269,11 +285,14 @@ body #nc-root .drw-input:focus {
 
 /* Nested lists in editor remain clean */
 body #nc-root .drw-field [class*="ListItemContainer"] {
-  border-radius: 12px !important;
+  border-radius: 8px !important;
   border: 1px solid var(--drw-border) !important;
-  background-color: #ffffff !important;
-  padding: 16px !important;
-  margin-top: 12px !important;
+  background-color: var(--drw-bg) !important;
+  padding: 12px !important;
+  margin-top: 8px !important;
+}
+body #nc-root .drw-field [class*="ListItemContainer"]:hover {
+  border-color: var(--drw-border-hover) !important;
 }
 
 /* Header */
@@ -309,29 +328,46 @@ a[style*="position: fixed"]:hover {
 }
 
 /* Preview Pane */
+html,
+body {
+  background-color: var(--drw-bg) !important;
+}
+
 .nc-previewPane,
 div[class*="PreviewPane"] {
   font-family: var(--drw-font) !important;
   color: var(--drw-fg) !important;
   padding: 40px !important;
   background-color: #ffffff !important;
+  border-radius: 16px !important;
+  box-shadow: var(--drw-shadow-lg) !important;
+  max-width: 800px !important;
+  margin: 32px auto !important;
+  border: 1px solid var(--drw-border) !important;
 }
+
 .nc-previewPane h1,
 div[class*="PreviewPane"] h1 {
   margin-top: 0 !important;
-  font-size: 32px !important;
+  font-size: 28px !important;
   font-weight: 800 !important;
   color: var(--drw-fg) !important;
+  letter-spacing: -0.02em !important;
 }
 .nc-previewPane h2,
 div[class*="PreviewPane"] h2 {
-  font-size: 22px !important;
+  font-size: 20px !important;
   margin-top: 2rem !important;
   color: var(--drw-fg) !important;
 }
 .nc-previewPane p,
 .nc-previewPane li {
-  font-size: 16px !important;
-  line-height: 1.7 !important;
+  font-size: 15px !important;
+  line-height: 1.6 !important;
   color: var(--drw-fg-muted) !important;
+}
+.nc-previewPane img,
+.nc-previewPane video {
+  border-radius: 12px !important;
+  box-shadow: var(--drw-shadow-sm) !important;
 }
