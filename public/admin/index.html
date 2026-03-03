@@ -213,50 +213,117 @@
       // DR.WELNES MODERN SAAS - Forceful DOM styling injector
       // Bypasses React/Emotion class obfuscation in Production mode
       (function () {
-        var observer = new MutationObserver(function () {
+        var applyClasses = function () {
           try {
-            // Apply class to main app wrapper
             var root = document.getElementById("nc-root");
-            if (root && !root.classList.contains("drw-app")) root.classList.add("drw-app");
+            if (!root) return;
+            if (!root.classList.contains("drw-app")) root.classList.add("drw-app");
+
+            var hash = window.location.hash || window.location.pathname;
 
             // Style Sidebar
-            var sidebar = document.querySelector("aside");
-            if (sidebar && !sidebar.classList.contains("drw-sidebar"))
-              sidebar.classList.add("drw-sidebar");
+            var aside = document.querySelector("aside");
+            if (aside && !aside.classList.contains("drw-sidebar"))
+              aside.classList.add("drw-sidebar");
 
-            // Style Sidebar Links
-            var links = document.querySelectorAll("aside a");
-            links.forEach(function (l) {
-              if (!l.classList.contains("drw-sidebar-link")) l.classList.add("drw-sidebar-link");
-            });
+            // Style Sidebar Links and Active State
+            if (aside) {
+              var links = aside.querySelectorAll("a");
+              links.forEach(function (l) {
+                if (!l.classList.contains("drw-sidebar-link")) l.classList.add("drw-sidebar-link");
 
-            // Style Dashboard Cards (Collections)
+                // Smart active link detection (checks if current hash matches link href)
+                var href = l.getAttribute("href");
+                if (href && hash.indexOf(href) !== -1 && href.length > 2) {
+                  if (!l.classList.contains("drw-active-link")) l.classList.add("drw-active-link");
+                } else if (href === "#/" && (hash === "" || hash === "#/")) {
+                  if (!l.classList.contains("drw-active-link")) l.classList.add("drw-active-link");
+                } else {
+                  l.classList.remove("drw-active-link");
+                }
+              });
+            }
+
+            // Dashboard Cards (Collections)
             var h2s = document.querySelectorAll("main h2");
             h2s.forEach(function (h2) {
               var card = h2.closest("a");
               if (card && !card.classList.contains("drw-card")) card.classList.add("drw-card");
             });
 
-            // Style Editor Fields Container
-            var labels = document.querySelectorAll("form label");
-            labels.forEach(function (label) {
-              var fieldContainer = label.parentElement;
-              if (fieldContainer && !fieldContainer.classList.contains("drw-field")) {
-                fieldContainer.classList.add("drw-field");
+            // Smart Button Styler (Primary, Danger, Default)
+            var buttons = document.querySelectorAll("button");
+            buttons.forEach(function (btn) {
+              var text = btn.textContent ? btn.textContent.toLowerCase() : "";
+              if (!btn.classList.contains("drw-btn")) btn.classList.add("drw-btn");
+
+              if (
+                text.includes("создать") ||
+                text.includes("опубликовать") ||
+                text.includes("сохранить") ||
+                text.includes("publish") ||
+                text.includes("save") ||
+                text.includes("create")
+              ) {
+                if (!btn.classList.contains("drw-btn-primary"))
+                  btn.classList.add("drw-btn-primary");
+              } else if (text.includes("удалить") || text.includes("delete")) {
+                if (!btn.classList.contains("drw-btn-danger")) btn.classList.add("drw-btn-danger");
+              } else {
+                if (
+                  !btn.classList.contains("drw-btn-default") &&
+                  !btn.classList.contains("drw-btn-primary") &&
+                  !btn.classList.contains("drw-btn-danger")
+                ) {
+                  btn.classList.add("drw-btn-default");
+                }
               }
             });
 
-            // Style Editor Form Wrap
+            // Search Bar
+            var searchInput = document.querySelector(
+              "input[placeholder*='Искать'], input[placeholder*='Search']",
+            );
+            if (searchInput && !searchInput.classList.contains("drw-search"))
+              searchInput.classList.add("drw-search");
+
+            // Editor Fields Container
             var form = document.querySelector("form");
-            if (form && !form.classList.contains("drw-editor-form")) {
-              form.classList.add("drw-editor-form");
+            if (form) {
+              if (!form.classList.contains("drw-editor-form"))
+                form.classList.add("drw-editor-form");
+
+              var labels = form.querySelectorAll("label");
+              labels.forEach(function (label) {
+                var fieldContainer = label.parentElement;
+                if (fieldContainer && !fieldContainer.classList.contains("drw-field")) {
+                  fieldContainer.classList.add("drw-field");
+                }
+                var inputs = fieldContainer.querySelectorAll("input, textarea, select");
+                inputs.forEach(function (inp) {
+                  if (!inp.classList.contains("drw-input")) inp.classList.add("drw-input");
+                });
+              });
             }
           } catch (e) {}
+        };
+
+        // Batch DOM updates for high performance
+        var observer = new MutationObserver(function () {
+          window.requestAnimationFrame(applyClasses);
         });
 
         document.addEventListener("DOMContentLoaded", function () {
-          observer.observe(document.body, { childList: true, subtree: true });
+          observer.observe(document.body, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+            attributeFilter: ["href", "class"],
+          });
+          applyClasses();
         });
+
+        window.addEventListener("hashchange", applyClasses);
       })();
     </script>
 
