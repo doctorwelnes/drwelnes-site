@@ -1,265 +1,248 @@
-/* Dr.Welnes Premium Dark Glassmorphism Redesign for Decap CMS */
+/* Dr.Welnes Minimalist Pro (Variant 2) Design for Decap CMS */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
 :root {
-  /* Colors */
-  --bg-color: #0d0d0f;
-  --bg-sidebar: #131316;
-  --bg-card: rgba(26, 26, 30, 0.4);
-  --bg-card-hover: rgba(36, 36, 42, 0.6);
-  --border-color: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.15);
+  /* Colors - Minimalist Pro Palette */
+  --bg-darker: #080809;
+  --bg-main: #0c0c0e;
+  --bg-sidebar: #0f0f12;
+  --bg-card: #151518;
+  --bg-card-elevated: #1a1a1f;
 
-  --primary-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-  --accent-color: #f59e0b;
-  --accent-soft: rgba(245, 158, 11, 0.15);
+  --border-dim: rgba(255, 255, 255, 0.05);
+  --border-base: rgba(255, 255, 255, 0.1);
+  --border-focus: #f59e0b;
 
-  --text-primary: #f8fafc;
+  --text-pure: #ffffff;
+  --text-primary: #f1f5f9;
   --text-muted: #94a3b8;
-  --text-subtle: #64748b;
+  --text-subtle: #475569;
 
-  /* Shadows & Radius */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  --radius: 14px;
-  --radius-sm: 8px;
+  --accent: #f59e0b;
+  --accent-hover: #fbbf24;
+  --accent-contrast: #000000;
 
-  /* Layout */
-  --sidebar-width: 280px;
-  --font-main: "Inter", system-ui, -apple-system, sans-serif;
+  --shadow-sharp: 0 4px 0 rgba(0, 0, 0, 0.2);
+  --radius-sharp: 6px;
+  --radius-base: 10px;
+
+  --font-inter: "Inter", system-ui, -apple-system, sans-serif;
 }
 
-/* Base Overrides */
+/* Base resets */
 body.drw-dark-theme {
-  margin: 0;
-  padding: 0;
-  background-color: var(--bg-color) !important;
+  background-color: var(--bg-main) !important;
   color: var(--text-primary) !important;
-  font-family: var(--font-main) !important;
-  -webkit-font-smoothing: antialiased;
+  font-family: var(--font-inter) !important;
 }
 
-/* Header & Navigation */
-header {
-  background: rgba(13, 13, 15, 0.8) !important;
-  backdrop-filter: blur(12px) !important;
-  border-bottom: 1px solid var(--border-color) !important;
+/* Top Navigation Bar */
+header[class*="AppHeader"] {
+  background: var(--bg-darker) !important;
+  border-bottom: 2px solid var(--border-base) !important;
+  padding: 0 40px !important;
 }
 
-/* Main Layout Structure */
-[class*="AppContainer"] {
-  background-color: var(--bg-color) !important;
-}
-
-/* Sidebar Styling */
-[class*="SidebarContainer"],
-aside {
+/* Sidebar Styling - Ultra Clean */
+aside[class*="SidebarContainer"] {
   background: var(--bg-sidebar) !important;
-  border-right: 1px solid var(--border-color) !important;
-  padding-top: 20px !important;
+  border-right: 2px solid var(--border-base) !important;
 }
 
 [class*="SidebarLink"] {
-  margin: 4px 12px !important;
-  padding: 10px 16px !important;
-  border-radius: var(--radius-sm) !important;
+  margin: 2px 14px !important;
+  padding: 12px 16px !important;
+  border-radius: var(--radius-sharp) !important;
   color: var(--text-muted) !important;
+  font-size: 14px !important;
   font-weight: 500 !important;
-  transition: all 0.2s ease !important;
+  transition: all 0.1s ease-out !important;
 }
 
 [class*="SidebarLink"]:hover {
-  background: var(--bg-card-hover) !important;
-  color: var(--text-primary) !important;
+  background: var(--bg-card) !important;
+  color: var(--text-pure) !important;
 }
 
 [class*="SidebarLinkActive"] {
-  background: var(--accent-soft) !important;
-  color: var(--accent-color) !important;
-  border: 1px solid rgba(245, 158, 11, 0.3) !important;
-}
-
-/* Main content area */
-main {
-  background-color: var(--bg-color) !important;
-}
-
-/* Collection View / Toolbar */
-[class*="ToolbarContainer"] {
   background: transparent !important;
-  border: none !important;
-  padding: 24px 40px !important;
+  color: var(--accent) !important;
+  font-weight: 700 !important;
+  border-left: 3px solid var(--accent) !important;
+  border-radius: 0 !important;
 }
 
-/* Search Bar */
-[class*="SearchContainer"] input {
-  background: var(--bg-card) !important;
-  border: 1px solid var(--border-color) !important;
-  border-radius: var(--radius-sm) !important;
-  color: var(--text-primary) !important;
-  padding: 8px 16px !important;
-}
-
-/* Cards (Grid view) */
+/* Dashboard Grid View */
 [class*="Card"] {
   background: var(--bg-card) !important;
-  border: 1px solid var(--border-color) !important;
-  border-radius: var(--radius) !important;
-  box-shadow: var(--shadow-sm) !important;
-  overflow: hidden !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border: 1px solid var(--border-base) !important;
+  border-radius: var(--radius-base) !important;
+  padding: 24px !important;
+  transition:
+    transform 0.2s,
+    border-color 0.2s !important;
 }
 
 [class*="Card"]:hover {
-  transform: translateY(-4px) !important;
-  border-color: var(--border-strong) !important;
-  box-shadow: var(--glass-shadow) !important;
-  background: var(--bg-card-hover) !important;
+  border-color: var(--accent) !important;
+  background: var(--bg-card-elevated) !important;
 }
 
-/* Editor Header */
+/* Editor Header (Floating look) */
 [class*="EditorHeader"] {
-  background: rgba(13, 13, 15, 0.8) !important;
-  backdrop-filter: blur(20px) !important;
-  border-bottom: 1px solid var(--border-color) !important;
+  background: var(--bg-darker) !important;
+  border-bottom: 1px solid var(--border-base) !important;
 }
 
-/* Save / Publish Buttons */
-[class*="Button-button-primary"],
-button[class*="PublishButton"] {
-  background: var(--primary-gradient) !important;
-  border: none !important;
-  border-radius: var(--radius-sm) !important;
-  font-weight: 600 !important;
-  padding: 8px 20px !important;
-  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3) !important;
+/* Main Editor Form */
+form[class*="EntryEditor"] {
+  max-width: 960px !important;
+  margin: 40px auto !important;
 }
 
-/* Field Containers */
+/* Control Fields - The core of Minimalist Pro */
 [class*="ControlContainer"] {
-  background: var(--bg-card) !important;
-  border: 1px solid var(--border-color) !important;
-  border-radius: var(--radius) !important;
-  padding: 20px !important;
-  margin-bottom: 16px !important;
-  transition: border-color 0.2s ease !important;
+  background: var(--bg-sidebar) !important;
+  border: 1px solid var(--border-base) !important;
+  border-radius: var(--radius-base) !important;
+  padding: 24px !important;
+  margin-bottom: 20px !important;
+  box-shadow: none !important;
 }
 
 [class*="ControlContainer"]:focus-within {
-  border-color: var(--accent-color) !important;
-  background: rgba(26, 26, 30, 0.6) !important;
+  border-color: var(--accent) !important;
 }
 
-/* Labels */
+/* Labels - High Contrast */
 [class*="Label"] {
-  color: var(--text-muted) !important;
-  font-size: 0.85rem !important;
-  font-weight: 600 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
-  margin-bottom: 10px !important;
+  color: var(--text-pure) !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em !important;
+  margin-bottom: 12px !important;
 }
 
-/* Inputs & Textareas */
+/* Inputs - Sharp and focused */
 input[type="text"],
 input[type="number"],
 textarea,
 select {
-  background: transparent !important;
-  border: 1px solid var(--border-color) !important;
-  border-radius: var(--radius-sm) !important;
+  background: var(--bg-darker) !important;
+  border: 1px solid var(--border-base) !important;
+  border-radius: var(--radius-sharp) !important;
   color: var(--text-primary) !important;
-  padding: 12px !important;
-  width: 100% !important;
-  font-family: var(--font-main) !important;
-  transition: all 0.2s ease !important;
+  padding: 12px 14px !important;
+  font-size: 15px !important;
+  transition: border-color 0.15s ease !important;
 }
 
 input:focus,
 textarea:focus {
-  border-color: var(--accent-color) !important;
-  outline: none !important;
-  box-shadow: 0 0 0 2px var(--accent-soft) !important;
+  border-color: var(--accent) !important;
+  background: #000 !important;
 }
 
-/* Nested Objects & Lists */
-[class*="ObjectWidget"],
+/* Buttons - Solid and Professional */
+button[class*="Button"] {
+  border-radius: var(--radius-sharp) !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+}
+
+/* Primary Button (Save/Publish) */
+[class*="Button-button-primary"],
+button[class*="PublishButton"] {
+  background: var(--accent) !important;
+  color: #000 !important;
+  padding: 10px 24px !important;
+  border: none !important;
+}
+
+[class*="Button-button-primary"]:hover {
+  background: var(--accent-hover) !important;
+}
+
+/* List Widgets - Organized and Clean */
 [class*="ListWidget"] {
-  background: rgba(255, 255, 255, 0.02) !important;
-  border-radius: var(--radius) !important;
-  padding: 12px 0 !important;
+  background: var(--bg-darker) !important;
+  border-radius: var(--radius-base) !important;
+  border: 1px dashed var(--border-base) !important;
+  padding: 16px !important;
 }
 
-/* List Items (draggable) */
 [class*="ListItemContainer"] {
   background: var(--bg-card) !important;
-  border: 1px solid var(--border-color) !important;
-  border-radius: var(--radius-sm) !important;
-  margin: 10px 0 !important;
-  padding: 12px !important;
+  border: 1px solid var(--border-base) !important;
+  border-radius: var(--radius-sharp) !important;
+  margin-bottom: 12px !important;
 }
 
-/* Media handling */
-[class*="ImageWrapper"] {
-  border-radius: var(--radius-sm) !important;
-  overflow: hidden !important;
-  border: 1px solid var(--border-color) !important;
-}
-
-/* Markdown Editor */
-[class*="EditorContainer"] {
-  background: transparent !important;
-  border: 1px solid var(--border-color) !important;
-  border-radius: var(--radius-sm) !important;
-}
-
-/* Preview Pane */
+/* Preview Pane - Strict Separation */
 [class*="PreviewPaneContainer"] {
-  background: #fff !important; /* Keep preview white for accuracy */
-  color: #1a1a1a !important;
-  border-left: 4px solid var(--bg-sidebar) !important;
+  background: #fdfdfd !important;
+  border-left: 2px solid var(--bg-sidebar) !important;
 }
 
-/* Custom "Upload" link fixed in index.html */
+/* Custom Upload Link Styling */
 body.drw-dark-theme a[style*="position: fixed"] {
-  background: var(--primary-gradient) !important;
-  font-weight: 600 !important;
-  box-shadow: var(--glass-shadow) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: var(--text-pure) !important;
+  color: #000 !important;
+  border-radius: 4px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  font-size: 12px !important;
+  letter-spacing: 0.1em !important;
+  padding: 12px 20px !important;
+  border: 2px solid #000 !important;
+  box-shadow: 4px 4px 0 var(--accent) !important;
 }
 
-/* Scrollbars */
+/* Scrollbars - Stealthy */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--bg-color);
+  background: var(--bg-main);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--border-strong);
-  border-radius: 10px;
+  background: var(--border-base);
+  border-radius: 0;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-subtle);
 }
 
-/* Micro-animations */
-[class*="SidebarLink"],
-[class*="Card"],
-button {
-  cursor: pointer;
-}
-
-/* Fix for Decap CMS "grotesque" default nesting */
+/* Grouping fields for KBRU (Compact rows) */
 [class*="FieldGroup"] {
-  border-left: 2px solid var(--border-color) !important;
-  padding-left: 16px !important;
-  margin-left: 4px !important;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  border: none !important;
+  padding-left: 0 !important;
+  margin-left: 0 !important;
 }
 
-/* Better responsive typography */
+/* Markdown specific fixes */
+[class*="EditorContainer"] {
+  border: 1px solid var(--border-base) !important;
+  border-radius: var(--radius-sharp) !important;
+  background: var(--bg-darker) !important;
+}
+
+/* Tooltips & Modals */
+[class*="Modal"],
+[class*="Dialog"] {
+  background: var(--bg-darker) !important;
+  border: 1px solid var(--border-base) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Add some character to titles */
 h1,
-h2 {
-  letter-spacing: -0.025em;
+h2,
+h3 {
+  font-weight: 700 !important;
+  color: var(--text-pure) !important;
 }
