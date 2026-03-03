@@ -1,18 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 export default function UploadPage() {
   const { data: session, status } = useSession();
+  const [cmsUser, setCmsUser] = useState<{ token: string; backendName: string } | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [url, setUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  const isAdmin = (session?.user as any)?.role === "ADMIN";
+  // Ищем токен от админки (Decap CMS) при загрузке страницы
+  useEffect(() => {
+    try {
+      const userStr = localStorage.getItem("decap-cms-user");
+      if (userStr) {
+        setCmsUser(JSON.parse(userStr));
+      }
+    } catch (e) {
+      console.error("Failed to parse CMS user", e);
+    }
+  }, []);
+
+  const isNextAuthAdmin = (session?.user as any)?.role === "ADMIN";
+  const isCmsAuth = !!cmsUser?.token;
+  const isAdmin = isNextAuthAdmin || isCmsAuth;
+  const isLoading = status === "loading";
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,9 +40,15 @@ export default function UploadPage() {
     const formData = new FormData();
     formData.append("file", file);
 
+    const headers: HeadersInit = {};
+    if (isCmsAuth && cmsUser?.token) {
+      headers["Authorization"] = `Bearer ${cmsUser.token}`;
+    }
+
     try {
       const res = await fetch("/api/upload", {
         method: "POST",
+        headers,
         body: formData,
       });
 
@@ -60,30 +82,21 @@ export default function UploadPage() {
           Загрузка видео
         </h1>
 
-        {status === "loading" ? (
+        {isLoading ? (
           <p className="text-xs text-gray-500 mb-6 font-mono">Проверка авторизации...</p>
-        ) : session ? (
+        ) : isAdmin ? (
           <div className="flex items-center gap-2 mb-6 p-2 px-3 bg-white/5 rounded-full border border-white/5 w-fit">
-            <div
-              className={`w-2 h-2 rounded-full ${isAdmin ? "bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]" : "bg-yellow-500"}`}
-            ></div>
+            <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
             <span className="text-xs font-medium text-gray-300">
-              {session.user?.email} ({isAdmin ? "ADMIN" : "USER"})
+              {isCmsAuth ? "Авторизован через CMS" : `${session?.user?.email} (ADMIN)`}
             </span>
           </div>
         ) : (
           <div className="mb-6 p-3 bg-red-500/10 border border-red-500/20 text-red-400 text-xs rounded-xl flex items-center gap-2">
-            <span>⚠️ Вы не вошли в систему</span>
+            <span>⚠️ Вы не вошли в систему (нужны права ADMIN или вход в CMS)</span>
             <button onClick={() => router.push("/login")} className="ml-auto underline font-bold">
               Войти
             </button>
-          </div>
-        )}
-
-        {!isAdmin && session && (
-          <div className="mb-6 p-3 bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 text-xs rounded-xl">
-            Для загрузки файлов требуется роль <strong>ADMIN</strong>. Обратитесь к администратору
-            или проверьте базу данных.
           </div>
         )}
 

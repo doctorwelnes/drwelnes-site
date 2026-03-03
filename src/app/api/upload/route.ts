@@ -15,14 +15,35 @@ function sanitizeFilename(filename: string) {
 export async function POST(request: NextRequest) {
   console.log("=== Upload API: Request received ===");
 
-  // 1. Проверяем сессию
+  // 1. Проверяем сессию NextAuth
   const session = (await getServerSession(authOptions)) as { role?: string } | null;
-  console.log(
-    "=== Upload API: Session status:",
-    session ? `Logged in as ${session.role}` : "No session",
-  );
+  let isAdmin = session?.role === "ADMIN";
 
-  if (!session || session.role !== "ADMIN") {
+  // 2. Если нет сессии NextAuth (или роль не админ), проверяем токен GitHub OAuth (от CMS)
+  if (!isAdmin) {
+    const authHeader = request.headers.get("Authorization");
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      const token = authHeader.split(" ")[1];
+      try {
+        const ghRes = await fetch("https://api.github.com/user", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/vnd.github.v3+json",
+          },
+        });
+        if (ghRes.ok) {
+          console.log("=== Upload API: Authenticated via Decap CMS GitHub Token ===");
+          isAdmin = true;
+        } else {
+          console.warn("=== Upload API: GitHub Token validation failed ===", ghRes.status);
+        }
+      } catch (e) {
+        console.error("=== Upload API: Error validating GitHub token ===", e);
+      }
+    }
+  }
+
+  if (!isAdmin) {
     console.warn("=== Upload API: Unauthorized access attempt ===");
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
