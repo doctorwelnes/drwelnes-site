@@ -1,4 +1,11 @@
-/* Dr.Welnes Modern SaaS (Variant 3) Design for Decap CMS */
+/* 
+  Dr.Welnes Modern SaaS (Variant 3) Design for Decap CMS 
+  ======================================================
+  PURE CSS IMPLEMENTATION
+  No JavaScript observers required. Uses attribute selectors to 
+  target Decap CMS React components directly, bypassing Emotion CSS obfuscation.
+*/
+
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
 
 :root {
@@ -13,7 +20,6 @@
   --drw-accent-hover: #d97706;
 
   --drw-danger: #ef4444;
-  --drw-danger-glow: rgba(239, 68, 68, 0.15);
 
   --drw-fg: #0f172a;
   --drw-fg-muted: #64748b;
@@ -26,14 +32,11 @@
   --drw-shadow-btn: 0 8px 16px -4px rgba(245, 158, 11, 0.4);
 }
 
-/* Base resets */
-*,
-*::before,
-*::after {
-  font-family: var(--drw-font) !important;
-}
-
-body {
+/* =========================================================
+   BASE RESETS & GLOBAL
+   ========================================================= */
+body,
+#nc-root {
   background-color: var(--drw-bg) !important;
   color: var(--drw-fg) !important;
   font-family: var(--drw-font) !important;
@@ -41,263 +44,28 @@ body {
   margin: 0;
 }
 
-/* Hide Decap's default active border on sidebar */
-body #nc-root aside a {
-  border-left: none !important;
+#nc-root *,
+#nc-root *::before,
+#nc-root *::after {
+  font-family: var(--drw-font) !important;
+}
+
+/* Typography Overrides */
+#nc-root h1,
+#nc-root h2,
+#nc-root h3,
+#nc-root h4,
+#nc-root h5,
+#nc-root h6 {
+  color: var(--drw-fg) !important;
+  letter-spacing: -0.02em !important;
+  font-weight: 700 !important;
 }
 
 /* =========================================================
-   UI COMPONENTS (Targeted via MutationObserver classes)
+   HEADER (AppHeader)
    ========================================================= */
-
-/* Typography */
-body #nc-root h1,
-body #nc-root h2,
-body #nc-root h3 {
-  color: var(--drw-fg) !important;
-  font-weight: 700 !important;
-  letter-spacing: -0.02em !important;
-}
-
-/* Sidebar */
-body #nc-root .drw-sidebar {
-  background-color: transparent !important;
-  border-right: 1px solid var(--drw-border) !important;
-}
-
-body #nc-root .drw-sidebar-link {
-  color: var(--drw-fg-muted) !important;
-  border-radius: 999px !important;
-  padding: 10px 20px !important;
-  margin: 4px 16px !important;
-  transition: all 0.2s ease !important;
-  font-weight: 600 !important;
-  background-color: transparent !important;
-  display: block !important;
-}
-
-body #nc-root .drw-sidebar-link:hover {
-  background-color: #ffffff !important;
-  box-shadow: var(--drw-shadow-sm) !important;
-  color: var(--drw-fg) !important;
-}
-
-body #nc-root .drw-active-link {
-  background-color: var(--drw-accent) !important;
-  color: #fff !important;
-  box-shadow: var(--drw-shadow-md) !important;
-}
-
-body #nc-root .drw-active-link:hover {
-  background-color: var(--drw-accent) !important;
-  color: #fff !important;
-}
-
-/* Dashboard Cards (Collections) */
-body #nc-root .drw-card {
-  background-color: var(--drw-bg-card) !important;
-  border: 1px solid var(--drw-border) !important;
-  border-radius: 16px !important;
-  padding: 20px !important;
-  margin-bottom: 16px !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  box-shadow: var(--drw-shadow-sm) !important;
-  overflow: hidden !important;
-  display: block !important;
-}
-
-body #nc-root .drw-card:hover {
-  border-color: var(--drw-accent) !important;
-  box-shadow: var(--drw-shadow-lg) !important;
-  transform: translateY(-4px) !important;
-}
-
-/* Force inner Decap card elements to drop their default borders/backgrounds */
-body #nc-root .drw-card > div,
-body #nc-root .drw-card [class*="Card"] {
-  background-color: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-  margin: 0 !important;
-}
-
-body #nc-root .drw-card h2 {
-  margin-top: 0 !important;
-  font-size: 16px !important;
-}
-
-/* Search Bar */
-body #nc-root .drw-search {
-  background-color: #ffffff !important;
-  border: 1px solid var(--drw-border) !important;
-  color: var(--drw-fg) !important;
-  border-radius: 999px !important;
-  padding: 12px 24px !important;
-  box-shadow: var(--drw-shadow-sm) !important;
-  transition: all 0.3s ease !important;
-  font-size: 15px !important;
-}
-
-body #nc-root .drw-search:focus {
-  border-color: var(--drw-accent) !important;
-  outline: none !important;
-  box-shadow: 0 0 0 4px var(--drw-accent-glow) !important;
-  transform: translateY(-1px) !important;
-}
-
-/* Buttons */
-body #nc-root .drw-btn {
-  border-radius: 999px !important;
-  font-weight: 600 !important;
-  padding: 10px 24px !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  font-family: var(--drw-font) !important;
-  letter-spacing: 0.02em !important;
-  cursor: pointer !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 8px !important;
-}
-
-body #nc-root .drw-btn svg {
-  width: 18px !important;
-  height: 18px !important;
-  fill: currentColor !important;
-}
-
-body #nc-root .drw-btn-primary {
-  background-color: var(--drw-accent) !important;
-  color: #ffffff !important;
-  border: none !important;
-  box-shadow: var(--drw-shadow-btn) !important;
-}
-body #nc-root .drw-btn-primary:hover {
-  background-color: var(--drw-accent-hover) !important;
-  transform: translateY(-2px) !important;
-  box-shadow: 0 12px 20px -4px rgba(245, 158, 11, 0.5) !important;
-}
-
-body #nc-root .drw-btn-danger {
-  background-color: var(--drw-bg-card) !important;
-  color: var(--drw-danger) !important;
-  border: 1px solid var(--drw-danger) !important;
-  box-shadow: var(--drw-shadow-sm) !important;
-}
-body #nc-root .drw-btn-danger:hover {
-  background-color: var(--drw-danger) !important;
-  color: #fff !important;
-  border-color: var(--drw-danger) !important;
-  box-shadow: 0 12px 20px -4px rgba(239, 68, 68, 0.4) !important;
-  transform: translateY(-2px) !important;
-}
-
-/* Default buttons (like the Quick Add button "Quick New" without primary text) */
-body #nc-root .drw-btn-default {
-  background-color: #ffffff !important;
-  color: var(--drw-fg) !important;
-  border: 1px solid var(--drw-border) !important;
-  box-shadow: var(--drw-shadow-sm) !important;
-}
-body #nc-root .drw-btn-default:hover {
-  color: var(--drw-accent) !important;
-  border-color: var(--drw-border-hover) !important;
-  background-color: var(--drw-bg) !important;
-  transform: translateY(-1px) !important;
-}
-
-/* Dropdown Menus (Rendered outside nc-root sometimes) */
-.drw-dropdown {
-  background-color: #ffffff !important;
-  border: 1px solid var(--drw-border) !important;
-  border-radius: 12px !important;
-  padding: 8px !important;
-  box-shadow: var(--drw-shadow-lg) !important;
-  font-family: var(--drw-font) !important;
-  min-width: 180px !important;
-}
-
-.drw-dropdown-item {
-  color: var(--drw-fg) !important;
-  padding: 10px 16px !important;
-  border-radius: 6px !important;
-  cursor: pointer !important;
-  font-size: 14px !important;
-  font-weight: 500 !important;
-  transition: all 0.2s ease !important;
-  background-color: transparent !important;
-  border: none !important;
-  display: block !important;
-  text-align: left !important;
-  text-decoration: none !important;
-}
-
-.drw-dropdown-item:hover,
-.drw-dropdown-item[data-selected] {
-  background-color: var(--drw-bg) !important;
-  color: var(--drw-accent) !important;
-}
-
-/* Editor Form (Un-bulked, pure SaaS look) */
-body #nc-root .drw-editor-form {
-  max-width: 800px !important;
-  margin: 0 auto !important;
-  padding: 24px 0 !important;
-}
-
-body #nc-root .drw-field {
-  background-color: transparent !important;
-  border: none !important;
-  padding: 0 !important;
-  margin-bottom: 20px !important;
-  box-shadow: none !important;
-}
-
-body #nc-root .drw-field > label {
-  color: var(--drw-fg) !important;
-  font-size: 13px !important;
-  font-weight: 600 !important;
-  text-transform: none !important;
-  letter-spacing: 0 !important;
-  margin-bottom: 8px !important;
-  display: block !important;
-}
-
-/* Inputs / Selects / Textareas */
-body #nc-root .drw-input {
-  background-color: #ffffff !important;
-  border: 1px solid var(--drw-border) !important;
-  border-radius: 8px !important;
-  color: var(--drw-fg) !important;
-  padding: 10px 14px !important;
-  font-size: 14px !important;
-  width: 100% !important;
-  transition: all 0.2s ease !important;
-  box-shadow: var(--drw-shadow-sm) !important;
-}
-
-body #nc-root .drw-input:focus {
-  border-color: var(--drw-accent) !important;
-  box-shadow: 0 0 0 3px var(--drw-accent-glow) !important;
-  outline: none !important;
-}
-
-/* Nested lists in editor remain clean */
-body #nc-root .drw-field [class*="ListItemContainer"] {
-  border-radius: 8px !important;
-  border: 1px solid var(--drw-border) !important;
-  background-color: var(--drw-bg) !important;
-  padding: 12px !important;
-  margin-top: 8px !important;
-}
-body #nc-root .drw-field [class*="ListItemContainer"]:hover {
-  border-color: var(--drw-border-hover) !important;
-}
-
-/* Header */
-body #nc-root header,
-body #nc-root [class*="AppHeader"] {
+#nc-root [class*="AppHeader-"] {
   background-color: rgba(255, 255, 255, 0.8) !important;
   backdrop-filter: blur(12px) !important;
   -webkit-backdrop-filter: blur(12px) !important;
@@ -305,19 +73,322 @@ body #nc-root [class*="AppHeader"] {
   box-shadow: var(--drw-shadow-sm) !important;
 }
 
-/* Custom "Upload" link fixed in index.html */
+/* Quick Add Button in Header (usually looks like a plain button with plus icon) */
+#nc-root [class*="AppHeader-"] button {
+  background-color: #ffffff !important;
+  border: 1px solid var(--drw-border) !important;
+  border-radius: 999px !important;
+  box-shadow: var(--drw-shadow-sm) !important;
+  color: var(--drw-fg) !important;
+  transition: all 0.2s ease !important;
+}
+#nc-root [class*="AppHeader-"] button:hover {
+  border-color: var(--drw-accent) !important;
+  color: var(--drw-accent) !important;
+  transform: translateY(-1px) !important;
+}
+#nc-root [class*="AppHeader-"] button svg {
+  fill: currentColor !important;
+}
+
+/* =========================================================
+   SIDEBAR (Sidebar, Collection navigation)
+   ========================================================= */
+#nc-root aside,
+#nc-root [class*="SidebarContainer"] {
+  background-color: transparent !important;
+  border-right: 1px solid var(--drw-border) !important;
+}
+
+#nc-root aside a,
+#nc-root [class*="SidebarLink"] {
+  color: var(--drw-fg-muted) !important;
+  border-radius: 999px !important;
+  padding: 10px 20px !important;
+  margin: 4px 16px !important;
+  transition: all 0.2s ease !important;
+  font-weight: 600 !important;
+  background-color: transparent !important;
+  border-left: none !important; /* Remove Decap's default left border indicator */
+}
+
+#nc-root aside a:hover,
+#nc-root [class*="SidebarLink"]:hover {
+  background-color: #ffffff !important;
+  box-shadow: var(--drw-shadow-sm) !important;
+  color: var(--drw-fg) !important;
+}
+
+/* Active sidebar link (Decap sometimes uses inline borders or specific classes) */
+#nc-root aside a[class*="Active"],
+#nc-root [class*="SidebarLinkActive"] {
+  background-color: var(--drw-accent) !important;
+  color: #fff !important;
+  box-shadow: var(--drw-shadow-md) !important;
+}
+
+/* =========================================================
+   MAIN CONTENT AREA
+   ========================================================= */
+
+/* Search Bar Input */
+#nc-root input[placeholder*="Искать"],
+#nc-root input[placeholder*="Search"] {
+  background-color: #ffffff !important;
+  border: 1px solid var(--drw-border) !important;
+  color: var(--drw-fg) !important;
+  border-radius: 999px !important; /* Pill shape */
+  padding: 12px 24px !important;
+  box-shadow: var(--drw-shadow-sm) !important;
+  transition: all 0.3s ease !important;
+  font-size: 15px !important;
+}
+#nc-root input[placeholder*="Искать"]:focus,
+#nc-root input[placeholder*="Search"]:focus {
+  border-color: var(--drw-accent) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 4px var(--drw-accent-glow) !important;
+}
+
+/* Container for Collection Lists */
+#nc-root [class*="CollectionContainer"],
+#nc-root [class*="CardsContainer"] {
+  padding: 24px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important; /* Space between cards */
+}
+
+/* Recipe / Post Cards (List items) */
+#nc-root a[class*="Card-"],
+#nc-root [class*="CardContainer-"] {
+  background-color: var(--drw-bg-card) !important;
+  border: 1px solid var(--drw-border) !important;
+  border-radius: 16px !important;
+  padding: 20px 24px !important;
+  margin: 0 !important; /* Override decap margins, use gap on parent */
+  width: 100% !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: var(--drw-shadow-sm) !important;
+  display: flex !important;
+  align-items: center !important;
+  text-decoration: none !important;
+}
+
+#nc-root a[class*="Card-"]:hover,
+#nc-root [class*="CardContainer-"]:hover {
+  border-color: var(--drw-accent) !important;
+  box-shadow: var(--drw-shadow-lg) !important;
+  transform: translateY(-4px) !important;
+}
+
+/* Strip inner Decap wrappers of their borders so we don't get double borders */
+#nc-root a[class*="Card-"] > div {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+#nc-root a[class*="Card-"] h2 {
+  font-size: 16px !important;
+  margin: 0 !important;
+  font-weight: 600 !important;
+}
+
+/* =========================================================
+   EDITOR PAGE (Edit / Create Entry)
+   ========================================================= */
+
+/* Top Toolbar in Editor */
+#nc-root [class*="EditorToolbar-"] {
+  background-color: #ffffff !important;
+  border-bottom: 1px solid var(--drw-border) !important;
+  box-shadow: var(--drw-shadow-sm) !important;
+}
+
+/* Form Container - Compact and centered */
+#nc-root [class*="EditorControlPane-"],
+#nc-root form {
+  max-width: 800px !important;
+  margin: 0 auto !important;
+  padding: 24px 0 !important;
+  background: transparent !important;
+}
+
+/* Field Container */
+#nc-root [class*="ControlPaneContainer-"] > div,
+#nc-root [class*="FieldContainer-"] {
+  background-color: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin-bottom: 24px !important;
+  box-shadow: none !important;
+}
+
+/* Labels */
+#nc-root label {
+  color: var(--drw-fg) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  text-transform: none !important; /* Remove decap uppercase */
+  letter-spacing: 0 !important;
+  margin-bottom: 8px !important;
+  display: block !important;
+}
+
+/* Inputs, Textareas, Selects */
+#nc-root input[type="text"],
+#nc-root input[type="number"],
+#nc-root textarea,
+#nc-root select,
+#nc-root [class*="Input-"] {
+  background-color: #ffffff !important;
+  border: 1px solid var(--drw-border) !important;
+  border-radius: 8px !important;
+  color: var(--drw-fg) !important;
+  padding: 12px 16px !important;
+  font-size: 14px !important;
+  width: 100% !important;
+  transition: all 0.2s ease !important;
+  box-shadow: var(--drw-shadow-sm) !important;
+}
+
+#nc-root input:focus,
+#nc-root textarea:focus,
+#nc-root select:focus,
+#nc-root [class*="Input-"]:focus {
+  border-color: var(--drw-accent) !important;
+  box-shadow: 0 0 0 3px var(--drw-accent-glow) !important;
+  outline: none !important;
+}
+
+/* Markdown Editor specific fixes */
+#nc-root [class*="MarkdownControl-"] {
+  border: 1px solid var(--drw-border) !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+}
+
+/* Nested List Items (List Widget) */
+#nc-root [class*="ListItemContainer-"] {
+  border-radius: 8px !important;
+  border: 1px solid var(--drw-border) !important;
+  background-color: var(--drw-bg) !important;
+  padding: 16px !important;
+  margin-top: 12px !important;
+  transition: border-color 0.2s ease !important;
+}
+#nc-root [class*="ListItemContainer-"]:hover {
+  border-color: var(--drw-border-hover) !important;
+}
+
+/* =========================================================
+   BUTTONS (Save, Publish, Add new item)
+   ========================================================= */
+
+/* Use attribute selectors targeting typical Decap button classes */
+#nc-root button,
+#nc-root [class*="Button-button"] {
+  border-radius: 999px !important; /* Pill shape everywhere */
+  font-weight: 600 !important;
+  padding: 8px 20px !important;
+  font-family: var(--drw-font) !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  cursor: pointer !important;
+  gap: 8px !important;
+  font-size: 14px !important;
+}
+
+/* Add Item Button (usually inside lists) */
+#nc-root button[class*="AddButton-"],
+#nc-root button:contains("Add"),
+#nc-root button:contains("Добавить") {
+  background-color: #ffffff !important;
+  color: var(--drw-fg) !important;
+  border: 1px solid var(--drw-border) !important;
+  box-shadow: var(--drw-shadow-sm) !important;
+}
+#nc-root button[class*="AddButton-"]:hover {
+  color: var(--drw-accent) !important;
+  border-color: var(--drw-border-hover) !important;
+  background-color: var(--drw-bg) !important;
+}
+
+/* Generic Save / Publish / Primary Button Action */
+#nc-root [class*="Button-button-default-success"], /* often used for publish */
+#nc-root button[class*="PrimaryButton"] {
+  background-color: var(--drw-accent) !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: var(--drw-shadow-btn) !important;
+}
+#nc-root [class*="Button-button-default-success"]:hover {
+  background-color: var(--drw-accent-hover) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 12px 20px -4px rgba(245, 158, 11, 0.5) !important;
+}
+
+/* Danger / Delete button */
+#nc-root button[class*="Button-button-default-danger"] {
+  background-color: var(--drw-bg-card) !important;
+  color: var(--drw-danger) !important;
+  border: 1px solid var(--drw-danger) !important;
+  box-shadow: var(--drw-shadow-sm) !important;
+}
+#nc-root button[class*="Button-button-default-danger"]:hover {
+  background-color: var(--drw-danger) !important;
+  color: #fff !important;
+  border-color: var(--drw-danger) !important;
+  box-shadow: 0 12px 20px -4px rgba(239, 68, 68, 0.4) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* =========================================================
+   DROPDOWN MENUS (Often rendered outside nc-root)
+   ========================================================= */
+/* Target elements with role="menu", which Decap uses for dropdowns */
+div[role="menu"] {
+  background-color: #ffffff !important;
+  border: 1px solid var(--drw-border) !important;
+  border-radius: 12px !important;
+  padding: 6px !important;
+  box-shadow: var(--drw-shadow-lg) !important;
+  font-family: var(--drw-font) !important;
+  min-width: 160px !important;
+}
+
+div[role="menuitem"] {
+  color: var(--drw-fg) !important;
+  padding: 8px 14px !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+  background-color: transparent !important;
+}
+
+div[role="menuitem"]:hover,
+div[role="menuitem"][data-selected="true"] {
+  background-color: var(--drw-bg) !important;
+  color: var(--drw-accent) !important;
+}
+
+/* =========================================================
+   CUSTOM "UPLOAD" LINK (Injected via index.html)
+   ========================================================= */
 a[style*="position: fixed"] {
   background-color: #ffffff !important;
   color: var(--drw-fg) !important;
   font-weight: 700 !important;
   border: 1px solid var(--drw-border) !important;
   border-radius: 999px !important;
-  padding: 14px 28px !important;
+  padding: 12px 24px !important;
   box-shadow: var(--drw-shadow-lg) !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
   font-size: 14px !important;
 }
-
 a[style*="position: fixed"]:hover {
   transform: translateY(-4px) !important;
   box-shadow:
@@ -327,7 +398,10 @@ a[style*="position: fixed"]:hover {
   border-color: var(--drw-accent-glow) !important;
 }
 
-/* Preview Pane */
+/* =========================================================
+   PREVIEW PANE (Right side in editor)
+   ========================================================= */
+/* Ensure iframe body inherits correct bg */
 html,
 body {
   background-color: var(--drw-bg) !important;
@@ -337,7 +411,7 @@ body {
 div[class*="PreviewPane"] {
   font-family: var(--drw-font) !important;
   color: var(--drw-fg) !important;
-  padding: 40px !important;
+  padding: 32px 40px !important;
   background-color: #ffffff !important;
   border-radius: 16px !important;
   box-shadow: var(--drw-shadow-lg) !important;
@@ -346,28 +420,30 @@ div[class*="PreviewPane"] {
   border: 1px solid var(--drw-border) !important;
 }
 
-.nc-previewPane h1,
-div[class*="PreviewPane"] h1 {
+.nc-previewPane h1 {
   margin-top: 0 !important;
   font-size: 28px !important;
   font-weight: 800 !important;
   color: var(--drw-fg) !important;
   letter-spacing: -0.02em !important;
 }
-.nc-previewPane h2,
-div[class*="PreviewPane"] h2 {
+
+.nc-previewPane h2 {
   font-size: 20px !important;
   margin-top: 2rem !important;
   color: var(--drw-fg) !important;
 }
+
 .nc-previewPane p,
 .nc-previewPane li {
   font-size: 15px !important;
   line-height: 1.6 !important;
   color: var(--drw-fg-muted) !important;
 }
+
 .nc-previewPane img,
 .nc-previewPane video {
   border-radius: 12px !important;
   box-shadow: var(--drw-shadow-sm) !important;
+  max-width: 100% !important;
 }
