@@ -33,6 +33,12 @@
 /* ==============================================================
    1. GLOBAL OVERRIDES (Font & Base Colors)
    ============================================================== */
+*,
+*::before,
+*::after {
+  font-family: var(--drw-font-family) !important;
+}
+
 body.drw-light-theme,
 body.drw-light-theme .drw-app-root {
   font-family: var(--drw-font-family) !important;
@@ -299,44 +305,65 @@ body.drw-light-theme a[style*="position: fixed"]:hover {
 }
 
 /* ==============================================================
-   4. PREVIEW PANE (The right side)
+   4. PREVIEW PANE (The right side AND IFRAME CONTENTS)
    ============================================================== */
+
+/* Apply base styling to the iframe body itself */
+body {
+  font-family: var(--drw-font-family);
+  color: var(--drw-fg);
+  background-color: var(--drw-bg);
+}
+
+/* Container for Pane2 in the main document */
 body.drw-light-theme .SplitPane .Pane2 {
   background-color: #ffffff !important;
   color: var(--drw-fg) !important;
   border-left: 1px solid var(--drw-border) !important;
-  font-family: var(--drw-font-family) !important;
-  padding: 32px !important;
 }
 
-/* Preview Content Styling */
-body.drw-light-theme .SplitPane .Pane2 div[class*="PreviewPane"] {
+/* Universal Preview Content Styling (works inside iframe) */
+.nc-previewPane,
+div[class*="PreviewPane"] {
   font-family: var(--drw-font-family) !important;
   color: var(--drw-fg) !important;
   max-width: 800px !important;
   margin: 0 auto !important;
+  padding: 32px !important;
+  background-color: #ffffff !important;
 }
 
-body.drw-light-theme .SplitPane .Pane2 h1 {
+.nc-previewPane h1,
+div[class*="PreviewPane"] h1 {
+  font-family: var(--drw-font-family) !important;
   font-size: 28px !important;
   font-weight: 700 !important;
   line-height: 1.2 !important;
   margin-bottom: 24px !important;
   color: var(--drw-fg) !important;
+  margin-top: 0 !important;
 }
 
-body.drw-light-theme .SplitPane .Pane2 h2 {
+.nc-previewPane h2,
+div[class*="PreviewPane"] h2 {
+  font-family: var(--drw-font-family) !important;
   font-size: 20px !important;
   font-weight: 600 !important;
   margin-top: 32px !important;
   margin-bottom: 16px !important;
+  color: var(--drw-fg) !important;
 }
 
-body.drw-light-theme .SplitPane .Pane2 p,
-body.drw-light-theme .SplitPane .Pane2 div,
-body.drw-light-theme .SplitPane .Pane2 span,
-body.drw-light-theme .SplitPane .Pane2 ul,
-body.drw-light-theme .SplitPane .Pane2 ol {
+.nc-previewPane p,
+.nc-previewPane div,
+.nc-previewPane span,
+.nc-previewPane ul,
+.nc-previewPane ol,
+div[class*="PreviewPane"] p,
+div[class*="PreviewPane"] div,
+div[class*="PreviewPane"] span,
+div[class*="PreviewPane"] ul,
+div[class*="PreviewPane"] ol {
   font-family: var(--drw-font-family) !important;
   font-size: 15px !important;
   line-height: 1.6 !important;
@@ -344,21 +371,24 @@ body.drw-light-theme .SplitPane .Pane2 ol {
 }
 
 /* Decap CMS injects raw key-value pairs sometimes in preview */
-body.drw-light-theme .SplitPane .Pane2 strong {
+.nc-previewPane strong,
+div[class*="PreviewPane"] strong {
   color: var(--drw-fg) !important;
   font-weight: 600 !important;
 }
 
 /* Preview Image / Video styling */
-body.drw-light-theme .SplitPane .Pane2 img,
-body.drw-light-theme .SplitPane .Pane2 video {
+.nc-previewPane img,
+.nc-previewPane video,
+div[class*="PreviewPane"] img,
+div[class*="PreviewPane"] video {
   max-width: 100% !important;
   border-radius: var(--drw-radius) !important;
   margin: 16px 0 !important;
   box-shadow: var(--drw-shadow-sm) !important;
 }
 
-/* Make preview toggle buttons fit the theme */
+/* Make preview toggle buttons fit the theme (in main doc) */
 body.drw-light-theme [class*="PreviewPaneContainer"] > div:first-child > button {
   background-color: #ffffff !important;
   border: 1px solid var(--drw-border) !important;
