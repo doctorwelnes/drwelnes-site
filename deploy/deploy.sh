@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Auto-deployment script triggered by GitHub Action
 set -euo pipefail
 
 PROJECT_DIR="/var/www/dr-welnes"
