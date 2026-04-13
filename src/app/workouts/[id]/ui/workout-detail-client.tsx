@@ -68,7 +68,7 @@ function humanizeError(code: string) {
 
 export default function WorkoutDetailClient() {
   const params = useParams();
-  const workoutId = String((params as any).id || "");
+  const workoutId = String((params as { id?: string }).id || "");
 
   const [workout, setWorkout] = useState<WorkoutDto | null>(null);
   const [loading, setLoading] = useState(false);

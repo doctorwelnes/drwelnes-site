@@ -1,12 +1,65 @@
-import type { Metadata } from "next";
-import Image from "next/image";
+import type { Metadata, Viewport } from "next";
+import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
-import TopNavClient from "./ui/top-nav-client";
+import MainLayoutWrapper from "@/components/MainLayoutWrapper";
+
+const interFont = Inter({
+  subsets: ["latin", "cyrillic"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const outfitFont = Outfit({
+  subsets: ["latin"],
+  variable: "--font-outfit",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
-  title: "Dr.Welnes",
-  description: "Fitness app",
+  title: {
+    default: "Dr.Welnes — Твой гид по здоровью и фитнесу",
+    template: "%s | Dr.Welnes",
+  },
+  description:
+    "Рецепты, тренировки и полезные статьи для твоего прогресса. Твой личный помощник в мире здорового образа жизни.",
+  metadataBase: new URL("https://dr-welnes.ru"),
+  alternates: {
+    canonical: "/",
+  },
+  manifest: "/manifest.json",
+  openGraph: {
+    title: "Dr.Welnes",
+    description: "Твой гид по здоровью и фитнесу",
+    url: "https://dr-welnes.ru",
+    siteName: "Dr.Welnes",
+    images: [
+      {
+        url: "/logo.png",
+        width: 800,
+        height: 600,
+      },
+    ],
+    locale: "ru_RU",
+    type: "website",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  icons: {
+    icon: "/logo-new.png",
+    apple: "/logo-new.png",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0d0d0d",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -15,29 +68,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ru">
-      <body
-        className="antialiased"
-      >
+    <html lang="ru" className={`${interFont.variable} ${outfitFont.variable}`}>
+      <body className="antialiased font-sans">
         <Providers>
-          <div className="min-h-screen bg-[radial-gradient(1200px_600px_at_20%_-10%,#dbeafe_0%,rgba(219,234,254,0)_55%),radial-gradient(900px_520px_at_90%_0%,#fce7f3_0%,rgba(252,231,243,0)_55%),#ffffff] text-zinc-900">
-            <header className="sticky top-0 z-40 border-b border-zinc-200/70 bg-white/72 backdrop-blur-md">
-              <div className="mx-auto flex max-w-[980px] items-center justify-between gap-4 px-5 py-3">
-                <div className="flex items-center gap-2.5">
-                  <Image src="/logo.png" alt="Dr.Welnes" width={34} height={34} className="h-[34px] w-[34px] rounded-linear object-cover shadow-sm" style={{ borderRadius: '10px' }} />
-                  <div className="text-[17px] font-bold tracking-tight">Dr.Welnes</div>
-                </div>
-                <div className="hidden sm:block">
-                  <TopNavClient />
-                </div>
-                <button type="button" className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 bg-white/90 text-xl shadow-sm sm:hidden">
-                  ☰
-                </button>
-              </div>
-            </header>
-
-            <div className="mx-auto max-w-[980px] px-5 py-7">{children}</div>
-          </div>
+          <MainLayoutWrapper>{children}</MainLayoutWrapper>
         </Providers>
       </body>
     </html>

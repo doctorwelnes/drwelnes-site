@@ -32,7 +32,6 @@ export async function GET(request: Request) {
     const data = await response.json();
 
     if (data.error) {
-      console.error("GitHub OAuth Error:", data);
       return NextResponse.json(data, { status: 400 });
     }
 
@@ -82,7 +81,7 @@ export async function GET(request: Request) {
                 try {
                   window.opener.location.reload();
                 } catch(err) {
-                  console.error(err);
+                  // Silent fail for reload
                 }
               }
               window.close();
@@ -111,6 +110,6 @@ export async function GET(request: Request) {
 
     return htmlResponse;
   } catch (error) {
-    return NextResponse.json({ error: "Failed to exchange token" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to delete file" }, { status: 500 });
   }
 }

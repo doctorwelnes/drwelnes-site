@@ -21,6 +21,9 @@ model User {
   id           String     @id @default(cuid())
   name         String?
   email        String?    @unique
+  phone        String?
+  telegram     String?
+  image        String?
   passwordHash String?
   role         Role       @default(CLIENT)
   createdAt    DateTime   @default(now())
@@ -38,6 +41,11 @@ model User {
   nutritionEntries  NutritionEntry[]
   progressPhotos    ProgressPhoto[]
   coachNotes        CoachNote[]
+  calculations      Calculation[]
+  favoriteRecipes   FavoriteRecipe[]
+  favoriteExercises FavoriteExercise[]
+  workoutBookings   WorkoutBooking[]
+  waitlistEntries   Waitlist[]
 }
 
 model Account {
@@ -112,6 +120,96 @@ model WorkoutSession {
   exercises ExerciseLog[]
 
   @@index([userId, startedAt])
+}
+
+model WorkoutSlot {
+  id        String   @id @default(cuid())
+  trainerId String?
+  date      DateTime
+  startTime String // Format: "14:00"
+  endTime   String // Format: "15:00"
+  maxParticipants Int @default(1)
+  currentParticipants Int @default(0)
+  status SlotStatus @default(AVAILABLE)
+  workoutType String? // "strength", "cardio", "hiit", etc.
+  location String? // "gym", "online", "outdoor"
+  price Decimal? @default(0)
+  notes String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  bookings WorkoutBooking[]
+  waitlistEntries Waitlist[]
+
+  @@map("workout_slots")
+  @@index([date, startTime])
+  @@index([status])
+}
+
+model WorkoutBooking {
+  id        String   @id @default(cuid())
+  slotId    String
+  userId    String
+  status BookingStatus @default(PENDING)
+  notes String?
+  paymentStatus PaymentStatus @default(PENDING)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  slot WorkoutSlot @relation(fields: [slotId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("workout_bookings")
+  @@index([slotId, status])
+  @@index([userId])
+}
+
+model Waitlist {
+  id        String   @id @default(cuid())
+  slotId    String
+  userId    String
+  position  Int
+  status    WaitlistStatus @default(WAITING)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  notifiedAt DateTime?
+
+  slot WorkoutSlot @relation(fields: [slotId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("waitlist")
+  @@index([slotId, status])
+  @@index([userId, status])
+  @@unique([slotId, userId]) // Один пользователь - одно место в очереди на слот
+}
+
+enum SlotStatus {
+  AVAILABLE
+  FULL
+  CANCELLED
+  COMPLETED
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+}
+
+enum WaitlistStatus {
+  WAITING
+  NOTIFIED
+  ACCEPTED
+  EXPIRED
+  DECLINED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  REFUNDED
 }
 
 model WorkoutTemplate {
@@ -223,4 +321,50 @@ model CoachNote {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, date])
+}
+
+enum CalculatorType {
+  BMI
+  CALORIES
+  BJU
+  WATER
+  IDEAL_WEIGHT
+}
+
+model Calculation {
+  id           String         @id @default(cuid())
+  userId       String
+  type         CalculatorType
+  name         String
+  inputData    Json
+  result       Json
+  createdAt    DateTime       @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, type, createdAt])
+}
+
+model FavoriteRecipe {
+  id        String   @id @default(cuid())
+  userId    String
+  recipeId  String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, recipeId])
+  @@index([userId, createdAt])
+}
+
+model FavoriteExercise {
+  id         String   @id @default(cuid())
+  userId     String
+  exerciseId String
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, exerciseId])
+  @@index([userId, createdAt])
 }

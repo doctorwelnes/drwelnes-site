@@ -17,9 +17,9 @@ export async function middleware(req: NextRequest) {
 
   if (isAuthRoute) {
     if (token) {
-      const role = (token as any).role;
+      const role = token?.role;
       const url = req.nextUrl.clone();
-      url.pathname = role === "ADMIN" ? "/dashboard" : "/dashboard"; // Updated to redirect to dashboard
+      url.pathname = role === "ADMIN" ? "/admin" : "/dashboard";
       return NextResponse.redirect(url);
     }
     return NextResponse.next();

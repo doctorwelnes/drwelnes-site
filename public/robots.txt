@@ -1,0 +1,20 @@
+User-agent: *
+Allow: /
+
+# Disallow admin routes
+Disallow: /admin/
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /login
+Disallow: /register
+
+# Allow public calculators
+Allow: /calculators/
+Allow: /recipes/
+Allow: /exercises/
+
+# Sitemap location
+Sitemap: https://drwelnes.ru/sitemap.xml
+
+# Crawl rate
+Crawl-delay: 1

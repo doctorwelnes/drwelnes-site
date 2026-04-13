@@ -222,7 +222,7 @@ body,
   background-color: transparent !important;
   border: none !important;
   padding: 0 !important;
-  margin-bottom: 24px !important;
+  margin-bottom: 16px !important; /* Compact */
   box-shadow: none !important;
 }
 
@@ -233,7 +233,7 @@ body,
   font-weight: 600 !important;
   text-transform: none !important; /* Remove decap uppercase */
   letter-spacing: 0 !important;
-  margin-bottom: 8px !important;
+  margin-bottom: 6px !important;
   display: block !important;
 }
 
@@ -247,7 +247,7 @@ body,
   border: 1px solid var(--drw-border) !important;
   border-radius: 8px !important;
   color: var(--drw-fg) !important;
-  padding: 12px 16px !important;
+  padding: 10px 14px !important; /* Compact */
   font-size: 14px !important;
   width: 100% !important;
   transition: all 0.2s ease !important;
@@ -270,14 +270,31 @@ body,
   overflow: hidden !important;
 }
 
+#nc-root [class*="ToolbarContainer-"] {
+  background-color: var(--drw-bg) !important;
+  border-bottom: 1px solid var(--drw-border) !important;
+  padding: 4px 8px !important;
+}
+
+/* Nested Object/Array Top Bars */
+#nc-root [class*="ObjectWidgetTopBar-"],
+#nc-root [class*="ArrayTopBar-"],
+#nc-root [class*="TopBar-"] {
+  background-color: var(--drw-bg) !important;
+  border-radius: 8px 8px 0 0 !important;
+  padding: 6px 12px !important;
+  border-bottom: 1px solid var(--drw-border) !important;
+}
+
 /* Nested List Items (List Widget) */
 #nc-root [class*="ListItemContainer-"] {
   border-radius: 8px !important;
   border: 1px solid var(--drw-border) !important;
-  background-color: var(--drw-bg) !important;
-  padding: 16px !important;
-  margin-top: 12px !important;
+  background-color: #ffffff !important; /* White inner forms */
+  padding: 12px !important; /* Compact padding */
+  margin-top: 8px !important;
   transition: border-color 0.2s ease !important;
+  box-shadow: var(--drw-shadow-sm) !important;
 }
 #nc-root [class*="ListItemContainer-"]:hover {
   border-color: var(--drw-border-hover) !important;
