@@ -216,4 +216,12 @@ collections:
       - { name: "description", label: "Описание", widget: "string", required: false }
       - { name: "tags", label: "Теги", widget: "list", required: false }
       - { name: "publishedAt", label: "Дата публикации", widget: "datetime", required: false }
+      - { name: "cardImage", label: "Изображение карточки", widget: "image", required: false }
+      - {
+          name: "articleImages",
+          label: "Изображения статьи",
+          widget: "list",
+          required: false,
+          field: { widget: "image" },
+        }
       - { name: "body", label: "Текст", widget: "markdown" }

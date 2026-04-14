@@ -72,6 +72,7 @@ export default function TdeePage() {
     try {
       const response = await fetch("/api/calculations", {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           type: "CALORIES",
@@ -88,11 +89,19 @@ export default function TdeePage() {
         // Refresh history immediately
         loadHistory();
       } else {
-        throw new Error("Failed to save");
+        let errorMessage = "Не удалось сохранить расчет";
+        try {
+          const data = await response.json();
+          errorMessage = data?.error || data?.details || errorMessage;
+        } catch {
+          // Ignore JSON parse errors and keep the fallback message
+        }
+        throw new Error(errorMessage);
       }
     } catch (error) {
+      const description = error instanceof Error ? error.message : "Не удалось сохранить расчет";
       toast.error("Ошибка сохранения", {
-        description: "Не удалось сохранить расчет",
+        description,
       });
     } finally {
       setIsSaving(false);
@@ -102,12 +111,14 @@ export default function TdeePage() {
   const loadHistory = async () => {
     setIsLoadingHistory(true);
     try {
-      const response = await fetch("/api/calculations?type=CALORIES");
+      const response = await fetch("/api/calculations?type=CALORIES", {
+        credentials: "include",
+      });
       if (response.ok) {
         const data = await response.json();
         setSavedCalculations(data.calculations || []);
       }
-    } catch (error) {
+    } catch {
       // Silent fail for loading history
     } finally {
       setIsLoadingHistory(false);
