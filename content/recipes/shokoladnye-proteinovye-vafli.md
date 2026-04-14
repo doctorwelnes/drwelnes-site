@@ -65,6 +65,8 @@ tags:
   - Быстро
   - Белковое
   - Десерт
+cookTimeMinutes: 20
+prepTimeMinutes: 5
 ---
 # Шоколадные протеиновые  вафли
 
