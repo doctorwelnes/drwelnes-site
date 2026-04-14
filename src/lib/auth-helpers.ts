@@ -28,15 +28,35 @@ type AuthResult = AuthSuccess | AuthFailure;
 export async function getAuthenticatedUser(): Promise<AuthResult> {
   const session = await getServerSession(authOptions);
 
-  if (!session?.user?.email) {
+  const sessionUserId = session?.user?.id;
+  const sessionUserEmail = session?.user?.email;
+  const sessionUserTelegram = session?.user?.telegram;
+  const sessionUserPhone = session?.user?.phone;
+
+  if (!sessionUserId && !sessionUserEmail && !sessionUserTelegram && !sessionUserPhone) {
     return {
       error: NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
     };
   }
 
   const prisma = getPrismaClient();
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
+  const user = await prisma.user.findFirst({
+    where: {
+      OR: [
+        ...(sessionUserId ? [{ id: sessionUserId }] : []),
+        ...(sessionUserEmail ? [{ email: sessionUserEmail }] : []),
+        ...(sessionUserTelegram
+          ? [
+              { telegram: sessionUserTelegram },
+              { telegram: sessionUserTelegram.replace(/^@/, "") },
+              { telegram: `@${sessionUserTelegram.replace(/^@/, "")}` },
+            ]
+          : []),
+        ...(sessionUserPhone
+          ? [{ phone: sessionUserPhone }, { phone: sessionUserPhone.replace(/[\s\-()]+/g, "") }]
+          : []),
+      ],
+    },
   });
 
   if (!user) {

@@ -70,7 +70,7 @@ export const HomeHero = ({ onBookingClick }: HomeHeroProps) => {
       </div>
 
       <div className="flex flex-col lg:max-w-2xl">
-        <h1 className="font-black italic tracking-[-0.04em] uppercase leading-[0.85] flex flex-col animate-in fade-in zoom-in-95 duration-1000">
+        <h1 className="font-black italic tracking-tighter uppercase leading-[1.15] flex flex-col animate-in fade-in zoom-in-95 duration-1000">
           <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-4">
             <span className="text-white drop-shadow-2xl whitespace-nowrap text-[22px] md:text-[32px] sm:text-[45px] lg:text-[60px]">
               Здоровье
