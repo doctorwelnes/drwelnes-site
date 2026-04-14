@@ -70,9 +70,23 @@ export default function LoginPage() {
     }
 
     const next = new URLSearchParams(window.location.search).get("next");
-    const sessionRes = await fetch("/api/auth/session", { cache: "no-store" });
-    const sessionJson = await sessionRes.json().catch(() => null);
-    const role = sessionJson?.role;
+    let sessionJson: { user?: { role?: string } } | null = null;
+
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      try {
+        const sessionRes = await fetch("/api/auth/session", { cache: "no-store" });
+        sessionJson = await sessionRes.json().catch(() => null);
+        if (sessionJson?.user?.role) break;
+      } catch {
+        // Retry after a short pause so cookies can settle on slower mobile browsers.
+      }
+
+      if (attempt < 2) {
+        await new Promise((resolve) => setTimeout(resolve, 250));
+      }
+    }
+
+    const role = sessionJson?.user?.role;
 
     if (role === "ADMIN") {
       window.location.href = "/admin";
