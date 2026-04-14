@@ -1,5 +1,5 @@
 ---
-title: Шоколадные вайли
+title: Шоколадные вайли 1111
 slug: zavtrak
 published: false
 date: '2026-03-28T14:31:31.399Z'
