@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useSyncExternalStore } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Play, Heart } from "lucide-react";
@@ -9,35 +9,9 @@ interface HomeHeroProps {
   onBookingClick: () => void;
 }
 
-let onlineUsersCount = 2;
-
-const subscribeToOnlineUsers = (listener: () => void) => {
-  const update = () => {
-    onlineUsersCount = 1 + Math.floor(Math.random() * 3);
-    listener();
-  };
-
-  update();
-
-  const intervalId = window.setInterval(() => {
-    update();
-  }, 5000);
-
-  return () => {
-    window.clearInterval(intervalId);
-  };
-};
-
-const getOnlineUsersSnapshot = () => onlineUsersCount;
-const getOnlineUsersServerSnapshot = () => 2;
-
 export const HomeHero = ({ onBookingClick }: HomeHeroProps) => {
   const [bpm, setBpm] = useState(65);
-  const userCount = useSyncExternalStore(
-    subscribeToOnlineUsers,
-    getOnlineUsersSnapshot,
-    getOnlineUsersServerSnapshot,
-  );
+  const [userCount, setUserCount] = useState(2);
 
   useEffect(() => {
     // BPM Live simulation
@@ -51,6 +25,20 @@ export const HomeHero = ({ onBookingClick }: HomeHeroProps) => {
 
     return () => {
       clearInterval(bpmInterval);
+    };
+  }, []);
+
+  useEffect(() => {
+    const updateUserCount = () => {
+      setUserCount(1 + Math.floor(Math.random() * 3));
+    };
+
+    updateUserCount();
+
+    const userCountInterval = setInterval(updateUserCount, 5000);
+
+    return () => {
+      clearInterval(userCountInterval);
     };
   }, []);
 
