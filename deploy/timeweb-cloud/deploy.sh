@@ -45,6 +45,9 @@ npx prisma generate
 log "Applying Prisma migrations"
 npx prisma migrate deploy
 
+log "Clearing previous build artifacts"
+rm -rf "$ROOT_DIR/.next"
+
 log "Building the application"
 npm run build
 
