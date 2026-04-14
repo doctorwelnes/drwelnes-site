@@ -49,7 +49,7 @@ export default function LoginPage() {
         setCopiedField(field);
         setTimeout(() => setCopiedField(null), 2000);
       }
-    } catch (err) {
+    } catch {
       // Silent fail for clipboard error
     }
   };
@@ -59,7 +59,7 @@ export default function LoginPage() {
     setError(null);
     setLoading(true);
     const res = await signIn("credentials", {
-      email,
+      identifier: email,
       password,
       redirect: false,
     });
@@ -121,16 +121,16 @@ export default function LoginPage() {
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 ml-4">
-                  Email
+                  Email / Телега / Телефон
                 </label>
                 <div className="relative group">
                   <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600 group-focus-within:text-orange-500 transition-colors" />
                   <input
-                    type="email"
+                    type="text"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    placeholder="example@mail.com"
+                    placeholder="example@mail.com, @username или +7 999 123-45-67"
                     className="w-full bg-[#0c0d10]/50 border border-white/5 rounded-[24px] py-4 pl-14 pr-6 text-sm font-bold text-white placeholder:text-zinc-800 outline-none focus:border-orange-500/30 focus:ring-4 focus:ring-orange-500/5 transition-all shadow-inner"
                   />
                 </div>
@@ -188,60 +188,60 @@ export default function LoginPage() {
             <div className="pt-6 border-t border-white/5 text-center space-y-4">
               {/* Test Account Info — only visible in development */}
               {process.env.NODE_ENV !== "production" && (
-              <div className="p-4 rounded-2xl bg-orange-500/5 border border-orange-500/20">
-                <p className="text-[10px] font-black uppercase tracking-widest text-orange-500 mb-3">
-                  Тестовый аккаунт
-                </p>
-                <div className="space-y-2">
-                  {/* Email row */}
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2 text-[11px] text-zinc-400 font-mono">
-                      <Mail className="w-3 h-3 text-zinc-600" />
-                      <span>test@test.com</span>
+                <div className="p-4 rounded-2xl bg-orange-500/5 border border-orange-500/20">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-orange-500 mb-3">
+                    Тестовый аккаунт
+                  </p>
+                  <div className="space-y-2">
+                    {/* Email row */}
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2 text-[11px] text-zinc-400 font-mono">
+                        <Mail className="w-3 h-3 text-zinc-600" />
+                        <span>test@test.com</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleCopy("test@test.com", "email")}
+                        className="p-1.5 rounded-lg bg-white/5 hover:bg-orange-500/20 text-zinc-500 hover:text-orange-500 transition-all"
+                        title="Копировать email"
+                      >
+                        {copiedField === "email" ? (
+                          <Check className="w-3 h-3 text-green-500" />
+                        ) : (
+                          <Copy className="w-3 h-3" />
+                        )}
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => handleCopy("test@test.com", "email")}
-                      className="p-1.5 rounded-lg bg-white/5 hover:bg-orange-500/20 text-zinc-500 hover:text-orange-500 transition-all"
-                      title="Копировать email"
-                    >
-                      {copiedField === "email" ? (
-                        <Check className="w-3 h-3 text-green-500" />
-                      ) : (
-                        <Copy className="w-3 h-3" />
-                      )}
-                    </button>
-                  </div>
-                  {/* Password row */}
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2 text-[11px] text-zinc-400 font-mono">
-                      <Lock className="w-3 h-3 text-zinc-600" />
-                      <span>test123</span>
+                    {/* Password row */}
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2 text-[11px] text-zinc-400 font-mono">
+                        <Lock className="w-3 h-3 text-zinc-600" />
+                        <span>test123</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleCopy("test123", "password")}
+                        className="p-1.5 rounded-lg bg-white/5 hover:bg-orange-500/20 text-zinc-500 hover:text-orange-500 transition-all"
+                        title="Копировать пароль"
+                      >
+                        {copiedField === "password" ? (
+                          <Check className="w-3 h-3 text-green-500" />
+                        ) : (
+                          <Copy className="w-3 h-3" />
+                        )}
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => handleCopy("test123", "password")}
-                      className="p-1.5 rounded-lg bg-white/5 hover:bg-orange-500/20 text-zinc-500 hover:text-orange-500 transition-all"
-                      title="Копировать пароль"
-                    >
-                      {copiedField === "password" ? (
-                        <Check className="w-3 h-3 text-green-500" />
-                      ) : (
-                        <Copy className="w-3 h-3" />
-                      )}
-                    </button>
                   </div>
                 </div>
-              </div>
               )}
 
               <p className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">
                 Нет аккаунта?{" "}
                 <Link
-                  href="/invite"
+                  href="/register"
                   className="text-orange-500 hover:text-orange-400 underline underline-offset-4 transition-colors"
                 >
-                  Регистрация по инвайту
+                  Регистрация
                 </Link>
               </p>
 

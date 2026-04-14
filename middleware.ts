@@ -9,7 +9,10 @@ export async function middleware(req: NextRequest) {
     secret: process.env.NEXTAUTH_SECRET,
   });
 
-  const isAuthRoute = pathname.startsWith("/login") || pathname.startsWith("/invite");
+  const isAuthRoute =
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/register") ||
+    pathname.startsWith("/invite");
   const isProtectedClientRoute =
     pathname.startsWith("/dashboard") ||
     pathname.startsWith("/workouts") ||
@@ -38,5 +41,12 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/workouts/:path*", "/measurements/:path*", "/login", "/invite"],
+  matcher: [
+    "/dashboard/:path*",
+    "/workouts/:path*",
+    "/measurements/:path*",
+    "/login",
+    "/register",
+    "/invite",
+  ],
 };

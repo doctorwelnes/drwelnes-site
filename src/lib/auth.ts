@@ -13,19 +13,34 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "email" },
+        identifier: { label: "Email / Telegram / phone", type: "text" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        const email = credentials?.email?.trim().toLowerCase();
+        const rawIdentifier = credentials?.identifier?.trim();
         const password = credentials?.password;
 
-        if (!email || !password) {
+        if (!rawIdentifier || !password) {
           return null;
         }
 
         const prisma = getPrismaClient();
-        const user = await prisma.user.findUnique({ where: { email } });
+
+        const normalizedEmail = rawIdentifier.toLowerCase();
+        const normalizedTelegram = rawIdentifier.replace(/^@/, "").toLowerCase();
+        const normalizedPhone = rawIdentifier.replace(/[\s\-()]+/g, "");
+
+        const user = await prisma.user.findFirst({
+          where: {
+            OR: [
+              { email: normalizedEmail },
+              { telegram: normalizedTelegram },
+              { telegram: `@${normalizedTelegram}` },
+              { phone: normalizedPhone },
+              { phone: rawIdentifier },
+            ],
+          },
+        });
 
         if (!user) {
           throw new Error("Неверный логин");
