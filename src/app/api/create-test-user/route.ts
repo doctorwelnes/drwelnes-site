@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import bcrypt from "bcryptjs";
 import { getPrismaClient } from "@/lib/prisma";
 
@@ -7,8 +7,11 @@ const TEST_EMAIL = "test@test.com";
 const TEST_PASSWORD = "test123";
 const TEST_NAME = "Тестовый Пользователь";
 
-export async function POST() {
+export async function POST(req: NextRequest) {
   try {
+    const body = await req.json().catch(() => ({}));
+    const role = body.role === "ADMIN" ? "ADMIN" : "CLIENT";
+
     const prisma = getPrismaClient();
 
     // Check if test user already exists
@@ -35,7 +38,7 @@ export async function POST() {
         email: TEST_EMAIL,
         name: TEST_NAME,
         passwordHash,
-        role: "CLIENT",
+        role,
       },
     });
 
