@@ -5,6 +5,8 @@ const envSchema = z.object({
   DIRECT_URL: z.string().url().optional(),
   NEXTAUTH_SECRET: z.string().min(1),
   NEXTAUTH_URL: z.string().url().optional(),
+  GITHUB_CMS_CLIENT_ID: z.string().min(1).optional(),
+  GITHUB_CMS_CLIENT_SECRET: z.string().min(1).optional(),
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
 });
 
@@ -14,4 +16,10 @@ if (!envBuffer.success) {
   throw new Error("Invalid environment variables");
 }
 
-export const env = envBuffer.data;
+const env = envBuffer.data;
+
+if (env.NODE_ENV === "production" && !env.DATABASE_URL) {
+  throw new Error("DATABASE_URL must be set in production");
+}
+
+export { env };

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { env } from "@/lib/env";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -8,11 +9,11 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "No code provided" }, { status: 400 });
   }
 
-  const client_id = process.env.GITHUB_CMS_CLIENT_ID;
-  const client_secret = process.env.GITHUB_CMS_CLIENT_SECRET;
+  const client_id = env.GITHUB_CMS_CLIENT_ID;
+  const client_secret = env.GITHUB_CMS_CLIENT_SECRET;
 
   try {
-    const baseUrl = process.env.NEXTAUTH_URL?.replace(/\/$/, "") || "https://drwelnes.ru";
+    const baseUrl = env.NEXTAUTH_URL?.replace(/\/$/, "") || "https://drwelnes.ru";
     const redirect_uri = `${baseUrl}/api/cms-callback`;
 
     const response = await fetch("https://github.com/login/oauth/access_token", {
@@ -109,7 +110,7 @@ export async function GET(request: Request) {
     });
 
     return htmlResponse;
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to delete file" }, { status: 500 });
   }
 }

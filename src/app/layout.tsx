@@ -3,6 +3,7 @@ import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import MainLayoutWrapper from "@/components/MainLayoutWrapper";
+import "@/lib/env";
 
 const interFont = Inter({
   subsets: ["latin", "cyrillic"],
