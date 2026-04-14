@@ -33,6 +33,7 @@ references:
     url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC6355121/'
 articleImages:
   - /uploads/Изображения/пульсовые зоны.webp
+cardImage: /uploads/Изображения/пульсовые зоны-1.webp
 ---
 # Пульсовые зоны
 
