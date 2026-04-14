@@ -3,7 +3,7 @@ title: Лимонный пирог с кремом
 slug: limonnyy-pirog-s-kremom
 published: false
 date: '2026-04-14T09:03:48.789Z'
-image: ''
+image: /uploads/кадры-видео/poster-1776158262459.jpg
 category: Десерт
 kcal: 0
 time: 0
@@ -79,6 +79,8 @@ tags:
   - ПП
   - Быстро
   - Десерт
+videoFile: /uploads/Видео/лимонный пирог с кремом.mp4
+videoPoster: /uploads/кадры-видео/poster-1776158262459.jpg
 ---
 # Лимонный пирог с кремом
 
