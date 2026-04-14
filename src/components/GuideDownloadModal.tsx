@@ -1,6 +1,6 @@
 "use client";
 
-import { X, Download, Send, MessageCircle, CheckCircle2 } from "lucide-react";
+import { X, Download, Send, CheckCircle2 } from "lucide-react";
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { toast } from "sonner";
@@ -44,24 +44,6 @@ export default function GuideDownloadModal({ isOpen, onClose, fileName }: GuideD
     const text = encodeURIComponent("Лови секретный Premium гайд от Dr. Welnes!");
     const url = `https://t.me/share/url?url=${encodeURIComponent(fileUrl)}&text=${text}`;
     window.open(url, "_blank");
-    handleClose();
-  };
-
-  const handleShareMax = () => {
-    const baseUrl = window.location.origin;
-    const fileUrl = `${baseUrl}/${fileName}`;
-
-    // Используем универсальную ссылку vk.me, которая корректно работает на iOS
-    // и открывает мессенджер (VK или Max), если он установлен.
-    const url = `https://vk.com/share.php?url=${encodeURIComponent(fileUrl)}`;
-    const messengerUrl = `https://vk.me/share?url=${encodeURIComponent(fileUrl)}`;
-
-    if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-      // На iOS vk.me надежнее, чем кастомные протоколы vkm://
-      window.open(messengerUrl, "_blank");
-    } else {
-      window.open(url, "_blank");
-    }
     handleClose();
   };
 
@@ -129,8 +111,8 @@ export default function GuideDownloadModal({ isOpen, onClose, fileName }: GuideD
                   </div>
                 </button>
 
-                {/* Max (VK) */}
-                <button
+                {/* Max (VK) - временно скрыто */}
+                {/* <button
                   onClick={handleShareMax}
                   className="w-full group flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-[#0077ff]/50 hover:bg-[#0077ff]/5 transition-all text-left"
                 >
@@ -141,7 +123,7 @@ export default function GuideDownloadModal({ isOpen, onClose, fileName }: GuideD
                     <div className="text-white font-bold text-sm">Отправить в Max</div>
                     <div className="text-zinc-500 text-[11px]">Через мессенджер VK</div>
                   </div>
-                </button>
+                </button> */}
               </div>
             </div>
           ) : (

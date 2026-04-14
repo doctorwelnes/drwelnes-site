@@ -17,6 +17,20 @@ export function IngredientsList({ ingredients, onChange, moveItem }: Ingredients
   const [showSuggestions, setShowSuggestions] = React.useState(false);
   const [focusedIndex, setFocusedIndex] = React.useState<number | null>(null);
 
+  const getWeightValue = (weight: string) => weight.replace(/[^\d.,]/g, "");
+
+  const getWeightUnit = (weight: string) => {
+    if (/мл/i.test(weight)) return "мл";
+    if (/мг/i.test(weight) || /г/i.test(weight)) return "г";
+    return "";
+  };
+
+  const serializeWeight = (value: string, unit: "г" | "мл" | "") => {
+    const normalizedValue = value.replace(/[^0-9.,]/g, "");
+    if (!normalizedValue) return "";
+    return unit ? `${normalizedValue}${unit}` : normalizedValue;
+  };
+
   React.useEffect(() => {
     fetch("/api/ingredients")
       .then((res) => res.json())
@@ -226,27 +240,33 @@ export function IngredientsList({ ingredients, onChange, moveItem }: Ingredients
                 <div className="flex-1 flex items-center bg-[#0d0d0d] border border-neutral-800 rounded-xl focus-within:border-amber-500/30 transition-all shadow-inner overflow-hidden min-w-[120px]">
                   <input
                     placeholder="30, 50..."
-                    value={(ing.weight || "").replace(/[^\d.,]/g, "")}
+                    value={getWeightValue(ing.weight || "")}
                     onChange={(e) => {
                       const val = e.target.value.replace(/[^0-9.,]/g, "");
-                      const unit = (ing.weight || "").includes("мл") ? "мл" : "мг";
-                      updateIngredient(i, "weight", val + unit);
+                      updateIngredient(
+                        i,
+                        "weight",
+                        serializeWeight(val, getWeightUnit(ing.weight || "") as "г" | "мл" | ""),
+                      );
                     }}
                     onFocus={() => setActiveIdx(i)}
                     className="flex-1 bg-transparent p-3 text-amber-500/80 text-[11px] outline-none font-mono font-black w-full"
                   />
                   <div className="flex bg-neutral-900/50 p-1 m-1 rounded-lg border border-white/5 shrink-0">
-                    {["мг", "мл"].map((u) => {
-                      const isSelected =
-                        (ing.weight || "").includes(u) ||
-                        (!ing.weight?.includes("мл") && u === "г");
+                    {["г", "мл"].map((u) => {
+                      const currentUnit = getWeightUnit(ing.weight || "");
+                      const isSelected = currentUnit === u;
                       return (
                         <button
                           key={u}
                           type="button"
                           onClick={() => {
-                            const val = (ing.weight || "").replace(/[^\d.,]/g, "");
-                            updateIngredient(i, "weight", val + u);
+                            const val = getWeightValue(ing.weight || "");
+                            updateIngredient(
+                              i,
+                              "weight",
+                              isSelected ? val : serializeWeight(val, u as "г" | "мл"),
+                            );
                           }}
                           className={`px-2 py-1 rounded-md text-[8px] font-black uppercase transition-all ${
                             isSelected
@@ -279,7 +299,7 @@ export function IngredientsList({ ingredients, onChange, moveItem }: Ingredients
             <span className="text-[10px] font-black text-neutral-500 uppercase tracking-widest">
               Итого вес:
             </span>
-            <span className="text-sm font-black text-amber-500">{totalWeight} мг</span>
+            <span className="text-sm font-black text-amber-500">{totalWeight} г</span>
           </div>
         </div>
       )}

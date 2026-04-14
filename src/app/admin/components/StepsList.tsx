@@ -10,6 +10,8 @@ interface StepsListProps {
 }
 
 export function StepsList({ steps, onChange, moveItem }: StepsListProps) {
+  const textareaRefs = React.useRef<(HTMLTextAreaElement | null)[]>([]);
+
   const addStep = () => {
     onChange([...steps, { text: "" }]);
   };
@@ -22,6 +24,10 @@ export function StepsList({ steps, onChange, moveItem }: StepsListProps) {
 
   const removeStep = (index: number) => {
     onChange(steps.filter((_, i) => i !== index));
+  };
+
+  const focusStep = (index: number) => {
+    textareaRefs.current[index]?.focus();
   };
 
   return (
@@ -67,6 +73,18 @@ export function StepsList({ steps, onChange, moveItem }: StepsListProps) {
               placeholder="Нарежьте овощи соломкой..."
               value={step.text || ""}
               onChange={(e) => updateStep(i, e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key !== "Tab") return;
+
+                const nextIndex = e.shiftKey ? i - 1 : i + 1;
+                if (nextIndex < 0 || nextIndex >= steps.length) return;
+
+                e.preventDefault();
+                focusStep(nextIndex);
+              }}
+              ref={(el) => {
+                textareaRefs.current[i] = el;
+              }}
               className="bg-[#0c0c0c] border border-neutral-800 p-3 text-[12px] flex-1 rounded-xl text-neutral-200 outline-none focus:border-amber-500/30 resize-none h-20 shadow-inner leading-relaxed"
             />
 

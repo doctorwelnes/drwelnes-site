@@ -457,6 +457,8 @@ export default function RecipeDetailClient({ recipe }: { recipe: Recipe }) {
           // Auto-append 'г' only if it's just a number (backwards compatibility)
           if (/^\d+(?:[.,]\d+)?$/.test(w)) {
             w += " г";
+          } else if (/мг/i.test(w)) {
+            w = w.replace(/(\d+(?:[.,]\d+)?)(?:\s*)мг/i, "$1 г");
           } else {
             // If it already has a unit, ensure space before unit (e.g., "100г" -> "100 г")
             w = w.replace(/(\d+)([гмл]+)/i, "$1 $2");
@@ -760,6 +762,9 @@ export default function RecipeDetailClient({ recipe }: { recipe: Recipe }) {
                               const w = ing.weight;
                               if (/^\d+(?:[.,]\d+)?$/.test(w)) {
                                 return w + " г";
+                              }
+                              if (/мг/i.test(w)) {
+                                return w.replace(/(\d+(?:[.,]\d+)?)(?:\s*)мг/i, "$1 г");
                               }
                               return w.replace(/(\d+)([гмлкг]+)/i, "$1 $2");
                             })()}
