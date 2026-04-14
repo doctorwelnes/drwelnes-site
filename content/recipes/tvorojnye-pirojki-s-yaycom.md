@@ -69,6 +69,7 @@ tags:
   - Белковое
 videoFile: /uploads/Видео/творожные пирожки с яйцом.mp4
 videoPoster: /uploads/кадры-видео/poster-1776159158509.jpg
+imagePositionY: 67
 ---
 # Творожные пирожки с яйцом
 
