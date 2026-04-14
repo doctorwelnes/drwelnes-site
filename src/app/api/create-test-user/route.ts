@@ -2,56 +2,54 @@ import { NextResponse, NextRequest } from "next/server";
 import bcrypt from "bcryptjs";
 import { getPrismaClient } from "@/lib/prisma";
 
-// Test account credentials - simple and easy to remember
-const TEST_EMAIL = "test@test.com";
-const TEST_PASSWORD = "test123";
-const TEST_NAME = "Тестовый Пользователь";
-
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => ({}));
-    const role = body.role === "ADMIN" ? "ADMIN" : "CLIENT";
+    const { email, password, name, role } = body;
+
+    if (!email || !password || !name) {
+      return NextResponse.json(
+        { error: "Email, password, and name are required" },
+        { status: 400 },
+      );
+    }
+
+    const userRole = role === "ADMIN" ? "ADMIN" : "CLIENT";
 
     const prisma = getPrismaClient();
 
-    // Check if test user already exists
+    // Check if user already exists
     const existingUser = await prisma.user.findUnique({
-      where: { email: TEST_EMAIL },
+      where: { email },
     });
 
     if (existingUser) {
       return NextResponse.json({
-        success: true,
-        message: "Тестовый аккаунт уже существует",
-        credentials: {
-          email: TEST_EMAIL,
-          password: TEST_PASSWORD,
-        },
+        success: false,
+        message: "Пользователь с таким email уже существует",
       });
     }
 
-    // Create test user
-    const passwordHash = await bcrypt.hash(TEST_PASSWORD, 10);
+    // Create user
+    const passwordHash = await bcrypt.hash(password, 10);
 
     const user = await prisma.user.create({
       data: {
-        email: TEST_EMAIL,
-        name: TEST_NAME,
+        email,
+        name,
         passwordHash,
-        role,
+        role: userRole,
       },
     });
 
     return NextResponse.json({
       success: true,
-      message: "Тестовый аккаунт успешно создан",
-      credentials: {
-        email: TEST_EMAIL,
-        password: TEST_PASSWORD,
-      },
+      message: "Пользователь успешно создан",
       user: {
         id: user.id,
         email: user.email,
+        name: user.name,
+        role: user.role,
       },
     });
   } catch (error: unknown) {
