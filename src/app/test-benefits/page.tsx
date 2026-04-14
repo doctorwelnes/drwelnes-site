@@ -48,7 +48,7 @@ export default function TestBenefitsPage() {
         <div className="relative">
           {/* Animated background glow for showcase */}
           <div className="absolute -inset-20 bg-[#f95700]/5 blur-[100px] rounded-full animate-pulse" />
-          <BenefitSummaryCard />
+          <BenefitSummaryCard onBookingClick={() => {}} />
         </div>
 
         <div className="max-w-md w-full px-6 space-y-6">

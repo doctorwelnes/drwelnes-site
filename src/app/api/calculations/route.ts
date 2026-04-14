@@ -1,16 +1,55 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { getPrismaClient } from "@/lib/prisma";
 import { saveCalculationSchema } from "@/lib/validation";
 import { validateRequest } from "@/lib/validate-request";
 import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { writeLimiter, applyRateLimit } from "@/lib/rate-limiter";
-import type { Prisma } from "@prisma/client";
+import type { Prisma, PrismaClient } from "@prisma/client";
 
 type CalculatorType = "BMI" | "CALORIES" | "BJU" | "WATER" | "IDEAL_WEIGHT";
 
 const VALID_TYPES: CalculatorType[] = ["BMI", "CALORIES", "BJU", "WATER", "IDEAL_WEIGHT"];
+
+type CalculationDelegate = {
+  findMany(args: {
+    where: {
+      userId: string;
+      type?: CalculatorType;
+    };
+    orderBy: { createdAt: "desc" };
+    take: number;
+  }): Promise<
+    Array<{
+      id: string;
+      userId: string;
+      type: CalculatorType;
+      name: string;
+      inputData: Prisma.JsonValue;
+      result: Prisma.JsonValue;
+      createdAt: Date;
+    }>
+  >;
+  create(args: {
+    data: {
+      userId: string;
+      type: CalculatorType;
+      name: string;
+      inputData: Prisma.InputJsonValue;
+      result: Prisma.InputJsonValue;
+    };
+  }): Promise<unknown>;
+  findFirst(args: {
+    where: {
+      id: string;
+      userId: string;
+    };
+  }): Promise<{ id: string; userId: string } | null>;
+  delete(args: {
+    where: {
+      id: string;
+    };
+  }): Promise<unknown>;
+};
 
 function isValidCalculatorType(type: string): type is CalculatorType {
   return VALID_TYPES.includes(type as CalculatorType);
@@ -23,7 +62,9 @@ export async function GET(req: NextRequest) {
     if ("error" in auth) return auth.error;
     const { user } = auth;
 
-    const prisma = getPrismaClient();
+    const prisma = getPrismaClient() as PrismaClient & {
+      calculation: CalculationDelegate;
+    };
 
     const { searchParams } = new URL(req.url);
     const type = searchParams.get("type") as CalculatorType | null;

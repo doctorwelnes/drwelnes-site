@@ -32,7 +32,7 @@ fi
 cd "$ROOT_DIR"
 
 log "Installing dependencies"
-npm ci --include=dev
+npm ci --include=dev --legacy-peer-deps
 
 log "Loading environment variables"
 set -a
