@@ -1,5 +1,5 @@
 ---
-title: завтрак
+title: Шоколадные вайли
 slug: zavtrak
 published: false
 date: '2026-03-28T14:31:31.399Z'
@@ -44,7 +44,7 @@ steps:
   - нарезаем
   - смешиваем
   - готовим
-prepTimeMinutes: 10
+prepTimeMinutes: 20
 cookTimeMinutes: 20
 kbru:
   calories: 125
