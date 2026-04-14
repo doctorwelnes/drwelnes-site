@@ -3,6 +3,22 @@ import { getServerSession } from "next-auth";
 import { getPrismaClient } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 
+const escapeTelegramHtml = (value: string) =>
+  value.replace(/[&<>"]/g, (char) => {
+    switch (char) {
+      case "&":
+        return "&amp;";
+      case "<":
+        return "&lt;";
+      case ">":
+        return "&gt;";
+      case '"':
+        return "&quot;";
+      default:
+        return char;
+    }
+  });
+
 async function notifyTelegramBooking(payload: {
   userName: string;
   userPhone: string | null;
@@ -17,19 +33,21 @@ async function notifyTelegramBooking(payload: {
 
   if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) return;
 
-  const text = `*Новая запись на тренировку!*
+  const text = `<b>Новая запись на тренировку!</b>
 
-*Имя:* ${payload.userName}
-*Телефон:* ${payload.userPhone || "не указан"}
-*Дата:* ${payload.slotDate.toLocaleDateString("ru-RU", {
-    timeZone: "Europe/Moscow",
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  })}
-*Время:* ${payload.startTime} - ${payload.endTime}
-*Тренировка:* ${payload.workoutType || "не указано"}
-*Локация:* ${payload.location || "не указана"}`;
+<b>Имя:</b> ${escapeTelegramHtml(payload.userName)}
+<b>Телефон:</b> ${escapeTelegramHtml(payload.userPhone || "не указан")}
+<b>Дата:</b> ${escapeTelegramHtml(
+    payload.slotDate.toLocaleDateString("ru-RU", {
+      timeZone: "Europe/Moscow",
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    }),
+  )}
+<b>Время:</b> ${escapeTelegramHtml(`${payload.startTime} - ${payload.endTime}`)}
+<b>Тренировка:</b> ${escapeTelegramHtml(payload.workoutType || "не указано")}
+<b>Локация:</b> ${escapeTelegramHtml(payload.location || "не указана")}`;
 
   try {
     const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
@@ -38,7 +56,7 @@ async function notifyTelegramBooking(payload: {
       body: JSON.stringify({
         chat_id: TELEGRAM_CHAT_ID,
         text,
-        parse_mode: "Markdown",
+        parse_mode: "HTML",
       }),
     });
 
@@ -64,19 +82,21 @@ async function notifyTelegramWorkoutCancellation(payload: {
 
   if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) return;
 
-  const text = `*Отмена записи на тренировку*
+  const text = `<b>Отмена записи на тренировку</b>
 
-*Имя:* ${payload.userName}
-*Телефон:* ${payload.userPhone || "не указан"}
-*Дата:* ${payload.slotDate.toLocaleDateString("ru-RU", {
-    timeZone: "Europe/Moscow",
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  })}
-*Время:* ${payload.startTime} - ${payload.endTime}
-*Тренировка:* ${payload.workoutType || "не указано"}
-*Локация:* ${payload.location || "не указана"}`;
+<b>Имя:</b> ${escapeTelegramHtml(payload.userName)}
+<b>Телефон:</b> ${escapeTelegramHtml(payload.userPhone || "не указан")}
+<b>Дата:</b> ${escapeTelegramHtml(
+    payload.slotDate.toLocaleDateString("ru-RU", {
+      timeZone: "Europe/Moscow",
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    }),
+  )}
+<b>Время:</b> ${escapeTelegramHtml(`${payload.startTime} - ${payload.endTime}`)}
+<b>Тренировка:</b> ${escapeTelegramHtml(payload.workoutType || "не указано")}
+<b>Локация:</b> ${escapeTelegramHtml(payload.location || "не указана")}`;
 
   try {
     const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
@@ -85,7 +105,7 @@ async function notifyTelegramWorkoutCancellation(payload: {
       body: JSON.stringify({
         chat_id: TELEGRAM_CHAT_ID,
         text,
-        parse_mode: "Markdown",
+        parse_mode: "HTML",
       }),
     });
 
