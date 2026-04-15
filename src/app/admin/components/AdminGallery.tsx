@@ -52,6 +52,36 @@ interface AdminGalleryProps {
   }) => void;
 }
 
+const VIDEO_EXT_RE = /\.(mp4|mov|webm|avi|mkv|m4v)(\?|#|$)/i;
+const IMAGE_EXT_RE = /\.(jpg|jpeg|png|gif|webp|avif|svg)(\?|#|$)/i;
+
+function getMediaKind(file: MediaFile): "image" | "video" | "other" | "directory" {
+  if (file.type === "directory") return "directory";
+
+  const source = `${file.url || ""} ${file.name || ""}`;
+  if (file.type === "image" || IMAGE_EXT_RE.test(source)) return "image";
+  if (file.type === "video" || VIDEO_EXT_RE.test(source)) return "video";
+  return "other";
+}
+
+function playPreviewVideo(video: HTMLVideoElement) {
+  try {
+    video.muted = true;
+    video.playsInline = true;
+    video.preload = "auto";
+    video.load();
+    void video.play().catch(() => {
+      // If the browser hasn't buffered enough yet, retry once on canplay.
+      const handleCanPlay = () => {
+        void video.play().catch(() => {});
+      };
+      video.addEventListener("canplay", handleCanPlay, { once: true });
+    });
+  } catch {
+    // Silent fallback: if preview can't be played, keep the tile visible.
+  }
+}
+
 export function AdminGallery({
   isOpen,
   onClose,
@@ -124,9 +154,11 @@ export function AdminGallery({
     // 3. Filter by type
     if (filterType !== "all") {
       if (filterType === "unused") {
-        items = items.filter((item) => !item.isUsed && item.type !== "directory");
+        items = items.filter((item) => !item.isUsed && getMediaKind(item) !== "directory");
       } else {
-        items = items.filter((item) => item.type === filterType || item.type === "directory");
+        items = items.filter(
+          (item) => getMediaKind(item) === filterType || getMediaKind(item) === "directory",
+        );
       }
     }
 
@@ -148,7 +180,9 @@ export function AdminGallery({
   };
 
   const selectAll = () => {
-    const allUrls = filteredGallery.filter((f) => f.type !== "directory").map((f) => f.url);
+    const allUrls = filteredGallery
+      .filter((f) => getMediaKind(f) !== "directory")
+      .map((f) => f.url);
     setSelectedUrls(allUrls);
     addToast(`Выбрано файлов: ${allUrls.length}`, "info");
   };
@@ -161,7 +195,7 @@ export function AdminGallery({
   const isAllSelected =
     filteredGallery.length > 0 &&
     filteredGallery
-      .filter((f) => f.type !== "directory")
+      .filter((f) => getMediaKind(f) !== "directory")
       .every((f) => selectedUrls.includes(f.url));
 
   const allFolders = React.useMemo(() => {
@@ -467,14 +501,15 @@ export function AdminGallery({
                   <div
                     className="w-full h-full cursor-pointer flex items-center justify-center"
                     onClick={() => {
-                      if (file.type === "directory") {
+                      const kind = getMediaKind(file);
+                      if (kind === "directory") {
                         setCurrentPath(file.url);
                       } else {
-                        insertMediaLink(file.url, file.type);
+                        insertMediaLink(file.url, kind);
                       }
                     }}
                   >
-                    {file.type === "image" ? (
+                    {getMediaKind(file) === "image" ? (
                       <Image
                         src={file.url}
                         alt={file.name || "Медиафайл"}
@@ -482,20 +517,20 @@ export function AdminGallery({
                         sizes="(max-width: 768px) 50vw, 33vw"
                         className="object-cover transition-transform duration-700 group-hover:scale-110"
                       />
-                    ) : file.type === "directory" ? (
+                    ) : getMediaKind(file) === "directory" ? (
                       <div className="flex flex-col items-center justify-center h-full gap-3 text-neutral-500 group-hover:text-amber-500 transition-colors">
                         <Folder className="w-12 h-12 fill-current opacity-20" />
                         <span className="text-[10px] font-black uppercase tracking-widest px-2 text-center">
                           {file.name}
                         </span>
                       </div>
-                    ) : file.type === "video" ? (
+                    ) : getMediaKind(file) === "video" ? (
                       <div
                         className="relative w-full h-full group/v"
                         onMouseEnter={(e) => {
                           const video = e.currentTarget.querySelector("video");
                           if (video) {
-                            void video.play().catch(() => {});
+                            playPreviewVideo(video);
                           }
                         }}
                         onMouseLeave={(e) => {
@@ -508,10 +543,17 @@ export function AdminGallery({
                       >
                         <video
                           src={file.url}
-                          preload="metadata"
+                          preload="auto"
                           muted
                           playsInline
                           className="w-full h-full object-cover"
+                          onCanPlay={(e) => {
+                            // Some browsers only start rendering after a canplay load.
+                            const video = e.currentTarget;
+                            if (video.autoplay) {
+                              void video.play().catch(() => {});
+                            }
+                          }}
                         />
                         <div className="pointer-events-none absolute inset-0 bg-black/20 group-hover/v:bg-transparent transition-colors" />
                         <div className="pointer-events-none absolute top-2 right-2 bg-black/60 backdrop-blur-md p-1.5 rounded-lg border border-white/10 group-hover/v:scale-0 transition-transform">
@@ -543,7 +585,7 @@ export function AdminGallery({
                   </div>
 
                   {/* Usage Indicator */}
-                  {file.isUsed && file.type !== "directory" && (
+                  {file.isUsed && getMediaKind(file) !== "directory" && (
                     <div
                       className="absolute top-2 left-9 z-10 w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"
                       title="Файл используется в контенте"
