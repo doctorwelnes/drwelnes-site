@@ -490,21 +490,31 @@ export function AdminGallery({
                         </span>
                       </div>
                     ) : file.type === "video" ? (
-                      <div className="relative w-full h-full group/v">
+                      <div
+                        className="relative w-full h-full group/v"
+                        onMouseEnter={(e) => {
+                          const video = e.currentTarget.querySelector("video");
+                          if (video) {
+                            void video.play().catch(() => {});
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          const video = e.currentTarget.querySelector("video");
+                          if (video) {
+                            video.pause();
+                            video.currentTime = 0;
+                          }
+                        }}
+                      >
                         <video
                           src={file.url}
                           preload="metadata"
                           muted
                           playsInline
                           className="w-full h-full object-cover"
-                          onMouseOver={(e) => e.currentTarget.play()}
-                          onMouseOut={(e) => {
-                            e.currentTarget.pause();
-                            e.currentTarget.currentTime = 0;
-                          }}
                         />
-                        <div className="absolute inset-0 bg-black/20 group-hover/v:bg-transparent transition-colors" />
-                        <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md p-1.5 rounded-lg border border-white/10 group-hover/v:scale-0 transition-transform">
+                        <div className="pointer-events-none absolute inset-0 bg-black/20 group-hover/v:bg-transparent transition-colors" />
+                        <div className="pointer-events-none absolute top-2 right-2 bg-black/60 backdrop-blur-md p-1.5 rounded-lg border border-white/10 group-hover/v:scale-0 transition-transform">
                           <Video className="w-3 h-3 text-white" />
                         </div>
                       </div>

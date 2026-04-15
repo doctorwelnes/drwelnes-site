@@ -16,6 +16,12 @@ const hasKbruTotal = hasValues(entry.data.kbruTotal as Record<string, unknown> |
 const hasKbruBasal = hasValues(entry.data.kbruBasal as Record<string, unknown> | undefined);
 const showKbruToggle = hasKbru && hasKbruTotal;
 const initialKbruView = hasKbru ? "100g" : hasKbruTotal ? "dish" : "100g";
+
+const capitalizeText = (value?: string) => {
+  const trimmed = value?.trim() ?? "";
+  if (!trimmed) return trimmed;
+  return `${trimmed.charAt(0).toUpperCase()}${trimmed.slice(1)}`;
+};
 ---
 
 <html lang="ru">
@@ -630,7 +636,7 @@ const initialKbruView = hasKbru ? "100g" : hasKbruTotal ? "dish" : "100g";
               <ul class="ingredients-list">
                 {entry.data.ingredients.map((it) => (
                   <li>
-                    <span class="ingredient-name" style="font-weight: 600;">{it.name}</span>
+                    <span class="ingredient-name" style="font-weight: 600;">{capitalizeText(it.name)}</span>
                     {it.amount ? <span class="ingredient-amount" style="color:#6b7280;"> — {it.amount}</span> : null}
                   </li>
                 ))}

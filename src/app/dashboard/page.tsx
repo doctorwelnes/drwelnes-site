@@ -222,6 +222,15 @@ export default function DashboardPage() {
           </div>
 
           <div className="flex gap-2 shrink-0">
+            {session?.user?.role === "ADMIN" && (
+              <Link
+                href="/admin"
+                className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 font-bold text-xs hover:bg-amber-500/20 transition-all whitespace-nowrap"
+              >
+                <Settings className="w-4 h-4" />
+                <span className="hidden sm:inline">Админка</span>
+              </Link>
+            )}
             <button
               onClick={async () => {
                 try {

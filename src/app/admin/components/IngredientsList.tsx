@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Trash2 } from "lucide-react";
+import { Trash2, Sparkles } from "lucide-react";
 
 interface IngredientsListProps {
   ingredients: { name: string; amount: string; weight: string; isGroup?: boolean }[];
@@ -16,6 +16,9 @@ export function IngredientsList({ ingredients, onChange, moveItem }: Ingredients
   const [suggestions, setSuggestions] = React.useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = React.useState(false);
   const [focusedIndex, setFocusedIndex] = React.useState<number | null>(null);
+  const [showPasteModal, setShowPasteModal] = React.useState(false);
+  const [pasteText, setPasteText] = React.useState("");
+  const [isParsing, setIsParsing] = React.useState(false);
 
   const getWeightValue = (weight: string) => weight.replace(/[^\d.,]/g, "");
 
@@ -98,6 +101,36 @@ export function IngredientsList({ ingredients, onChange, moveItem }: Ingredients
 
   const presets = ["1 ч.л.", "1 ст.л.", "1 шт.", "1 скуп", "по вкусу", "щепотка"];
 
+  const handleParseIngredients = async () => {
+    setIsParsing(true);
+    try {
+      const response = await fetch("/api/admin/parse-ingredients", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: pasteText }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const parsedIngredients = data.ingredients.map(
+          (ing: { name: string; amount?: string; weight?: string }) => ({
+            name: ing.name,
+            amount: ing.amount || "",
+            weight: ing.weight || "",
+            isGroup: false,
+          }),
+        );
+        onChange([...ingredients, ...parsedIngredients]);
+        setShowPasteModal(false);
+        setPasteText("");
+      }
+    } catch (error) {
+      console.error("Error parsing ingredients:", error);
+    } finally {
+      setIsParsing(false);
+    }
+  };
+
   return (
     <div className="space-y-6 bg-[#0d0d0d] p-8 rounded-3xl border border-white/5 shadow-2xl mt-8">
       <div className="flex items-center justify-between mb-2">
@@ -106,10 +139,17 @@ export function IngredientsList({ ingredients, onChange, moveItem }: Ingredients
         </h3>
         <div className="flex gap-2">
           <button
+            onClick={() => setShowPasteModal(true)}
+            className="flex items-center gap-1.5 text-[9px] font-black uppercase text-amber-500/50 hover:text-amber-500 transition-colors"
+          >
+            <Sparkles size={12} />
+            Вставить и распознать
+          </button>
+          <button
             onClick={() => addIngredient(true)}
             className="text-[9px] font-black uppercase text-amber-500/50 hover:text-amber-500 transition-colors"
           >
-            + Добавить Группу
+            + Группа
           </button>
           <button
             onClick={() => addIngredient(false)}
@@ -300,6 +340,56 @@ export function IngredientsList({ ingredients, onChange, moveItem }: Ingredients
               Итого вес:
             </span>
             <span className="text-sm font-black text-amber-500">{totalWeight} г</span>
+          </div>
+        </div>
+      )}
+
+      {/* Paste Modal */}
+      {showPasteModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-[#0d0d0d] border border-white/10 rounded-3xl p-8 max-w-2xl w-full shadow-2xl">
+            <h3 className="text-lg font-black text-white mb-4 flex items-center gap-2">
+              <Sparkles className="text-amber-500" size={20} />
+              Вставь ингредиенты
+            </h3>
+            <p className="text-neutral-400 text-sm mb-4">
+              Вставь текст с ингредиентами (например: &quot;200г муки, 2 яйца, 100 мл молока&quot;)
+              — они автоматически распределятся по полям.
+            </p>
+            <textarea
+              value={pasteText}
+              onChange={(e) => setPasteText(e.target.value)}
+              placeholder={`200г муки\n2 яйца\n100 мл молока\n1 ч.л. соли`}
+              className="w-full h-40 bg-[#0c0c0c] border border-neutral-800 rounded-xl p-4 text-neutral-200 text-sm resize-none focus:border-amber-500/30 outline-none"
+            />
+            <div className="flex gap-3 mt-6 justify-end">
+              <button
+                onClick={() => {
+                  setShowPasteModal(false);
+                  setPasteText("");
+                }}
+                className="px-6 py-2 rounded-xl border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-600 transition-colors text-sm font-black uppercase"
+              >
+                Отмена
+              </button>
+              <button
+                onClick={handleParseIngredients}
+                disabled={!pasteText.trim() || isParsing}
+                className="px-6 py-2 rounded-xl bg-amber-500 text-black hover:bg-amber-400 transition-colors text-sm font-black uppercase disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {isParsing ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin" />
+                    Распознаю...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles size={16} />
+                    Распознать
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}

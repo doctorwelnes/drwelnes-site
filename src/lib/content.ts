@@ -24,6 +24,23 @@ export type {
 
 const CONTENT_DIR = path.join(process.cwd(), "content");
 
+function capitalizeText(value: string): string {
+  const trimmed = value.trim();
+  if (!trimmed) return trimmed;
+  return `${trimmed.charAt(0).toUpperCase()}${trimmed.slice(1)}`;
+}
+
+function normalizeRecipeIngredients(
+  ingredients: RecipeIngredient[] | undefined,
+): RecipeIngredient[] | undefined {
+  if (!ingredients) return ingredients;
+
+  return ingredients.map((ingredient) => ({
+    ...ingredient,
+    name: capitalizeText(ingredient.name),
+  }));
+}
+
 // Calculate kbruTotal from ingredients and kbru per 100g
 function calculateKbruTotal(
   ingredients: RecipeIngredient[] | undefined,
@@ -100,7 +117,7 @@ export function getAllRecipes(): Recipe[] {
         kbru: data.kbru,
         kbruTotal,
         kbruBasal: data.kbruBasal,
-        ingredients: data.ingredients,
+        ingredients: normalizeRecipeIngredients(data.ingredients),
         steps: data.steps,
         categories,
         videoFile: data.videoFile,
