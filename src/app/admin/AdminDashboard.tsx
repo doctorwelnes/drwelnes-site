@@ -1017,7 +1017,7 @@ export default function AdminDashboard({ username = "Admin" }: { username?: stri
             {isExplorerVisible ? <PanelLeftClose size={20} /> : <PanelLeft size={20} />}
           </button>
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-[0_0_15px_rgba(245,158,11,0.3)]">
+            <div className="w-8 h-8 rounded-xl bg-linear-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-[0_0_15px_rgba(245,158,11,0.3)]">
               <Activity size={18} className="text-black" />
             </div>
             <span className="font-black text-[13px] uppercase tracking-[0.2em]">
@@ -1181,8 +1181,8 @@ export default function AdminDashboard({ username = "Admin" }: { username?: stri
       />
 
       {confirmDialog.isOpen && (
-        <div className="fixed inset-0 z-[2000] flex items-center justify-center p-6 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
-          <div className="w-full max-w-sm bg-[#141414] border border-white/10 rounded-[32px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
+        <div className="fixed inset-0 z-2000 flex items-center justify-center p-6 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="w-full max-w-sm bg-[#141414] border border-white/10 rounded-4xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
             <div className="p-8">
               <div className="flex items-center gap-4 mb-6 text-amber-500">
                 <AlertCircle size={32} />
@@ -1212,7 +1212,7 @@ export default function AdminDashboard({ username = "Admin" }: { username?: stri
         </div>
       )}
 
-      <div className="fixed bottom-8 right-8 z-[2100] flex flex-col gap-3 pointer-events-none">
+      <div className="fixed bottom-8 right-8 z-2100 flex flex-col gap-3 pointer-events-none">
         {toasts.map((toast) => (
           <div
             key={toast.id}
@@ -1248,7 +1248,7 @@ export default function AdminDashboard({ username = "Admin" }: { username?: stri
 
       {isHotkeysHelpOpen && (
         <div
-          className="fixed inset-0 z-[2200] flex items-center justify-center p-6 bg-black/80 backdrop-blur-xl animate-in fade-in duration-500"
+          className="fixed inset-0 z-2200 flex items-center justify-center p-6 bg-black/80 backdrop-blur-xl animate-in fade-in duration-500"
           onClick={() => setIsHotkeysHelpOpen(false)}
         >
           <div
@@ -1283,7 +1283,7 @@ export default function AdminDashboard({ username = "Admin" }: { username?: stri
                     {hk.keys.map((k, ki) => (
                       <kbd
                         key={ki}
-                        className={`px-3 py-1.5 bg-neutral-900 ${hk.color || "text-neutral-300"} rounded-xl text-[11px] font-black border border-white/10 shadow-lg min-w-[2.5rem] text-center`}
+                        className={`px-3 py-1.5 bg-neutral-900 ${hk.color || "text-neutral-300"} rounded-xl text-[11px] font-black border border-white/10 shadow-lg min-w-10 text-center`}
                       >
                         {k}
                       </kbd>
@@ -1300,7 +1300,7 @@ export default function AdminDashboard({ username = "Admin" }: { username?: stri
       )}
 
       {saveStatus === "saving" && (
-        <div className="fixed inset-0 z-[2300] bg-black/40 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-500">
+        <div className="fixed inset-0 z-2300 bg-black/40 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-500">
           <div className="flex flex-col items-center gap-4">
             <div className="w-12 h-12 border-4 border-amber-500/20 border-t-amber-500 rounded-full animate-spin" />
             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-amber-500 animate-pulse">

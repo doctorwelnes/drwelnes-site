@@ -258,7 +258,7 @@ export function AdminGallery({
 
   return (
     <div
-      className="fixed inset-0 bg-black/80 z-[500] flex items-center justify-center p-6 backdrop-blur-sm"
+      className="fixed inset-0 bg-black/80 z-500 flex items-center justify-center p-6 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
@@ -292,7 +292,7 @@ export function AdminGallery({
                 </button>
               ))}
             </div>
-            <div className="relative group flex-1 md:flex-none min-w-[120px]">
+            <div className="relative group flex-1 md:flex-none min-w-30">
               <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500 group-focus-within:text-amber-500 transition-colors" />
               <input
                 type="text"
@@ -406,7 +406,7 @@ export function AdminGallery({
         )}
 
         {/* Bulk Actions Bar */}
-        <div className="bg-neutral-900/50 border-b border-neutral-800 px-4 py-2 flex items-center justify-between min-h-[44px]">
+        <div className="bg-neutral-900/50 border-b border-neutral-800 px-4 py-2 flex items-center justify-between min-h-11">
           <div className="flex items-center gap-3">
             <button
               onClick={isAllSelected ? deselectAll : selectAll}
@@ -438,8 +438,8 @@ export function AdminGallery({
                 </button>
 
                 {isMovingFiles && (
-                  <div className="absolute right-0 top-full mt-2 w-64 bg-[#1a1a1a] border border-white/10 rounded-xl shadow-2xl z-[100] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                    <div className="p-3 border-b border-white/5 bg-white/[0.02]">
+                  <div className="absolute right-0 top-full mt-2 w-64 bg-[#1a1a1a] border border-white/10 rounded-xl shadow-2xl z-100 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                    <div className="p-3 border-b border-white/5 bg-white/2">
                       <span className="text-[9px] font-black uppercase tracking-widest text-neutral-500">
                         Выберите папку
                       </span>
@@ -485,7 +485,7 @@ export function AdminGallery({
               Loading...
             </div>
           ) : filteredGallery.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 text-neutral-700 bg-white/[0.02] border border-dashed border-white/5 rounded-[32px]">
+            <div className="flex flex-col items-center justify-center py-16 text-neutral-700 bg-white/2 border border-dashed border-white/5 rounded-4xl">
               <ImageIcon size={48} className="opacity-10 mb-4" />
               <p className="text-[11px] font-black uppercase tracking-widest">Пусто в этой папке</p>
             </div>
@@ -494,7 +494,7 @@ export function AdminGallery({
               {filteredGallery.map((file) => (
                 <div
                   key={file.url}
-                  className={`group relative aspect-square bg-neutral-900 rounded-[24px] overflow-hidden border transition-all duration-300
+                  className={`group relative aspect-square bg-neutral-900 rounded-3xl overflow-hidden border transition-all duration-300
                       ${selectedUrls.includes(file.url) ? "border-amber-500 ring-2 ring-amber-500/20" : "border-white/5 hover:border-white/20 hover:shadow-2xl"}`}
                 >
                   <div
@@ -614,7 +614,7 @@ export function AdminGallery({
                   </div>
 
                   {/* Инфо и Переименование */}
-                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-2">
+                  <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/80 via-black/40 to-transparent p-2">
                     {renamingMediaUrl === file.url ? (
                       <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
                         <input
