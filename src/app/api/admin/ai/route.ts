@@ -2,10 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { checkAdmin } from "@/lib/admin-auth";
 
 export async function POST(req: NextRequest) {
-  console.log(">>> AI ROUTE HIT:", req.url);
   try {
     if (!(await checkAdmin())) {
-      console.log(">>> AI ROUTE: UNAUTHORIZED");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -48,7 +46,6 @@ export async function POST(req: NextRequest) {
 
     if (!response.ok) {
       const errData = await response.json();
-      console.error(">>> AI ROUTE: GOOGLE API ERROR", errData);
       return NextResponse.json(
         { error: `Google API Error: ${JSON.stringify(errData)}` },
         { status: response.status },
@@ -57,7 +54,6 @@ export async function POST(req: NextRequest) {
 
     const data = await response.json();
     const resultText = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
-    console.log(">>> AI ROUTE RESULT:", resultText);
 
     if (command === "generate-tags") {
       try {

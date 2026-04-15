@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # Auto-deployment script triggered by GitHub Action
-# Test: verifying cron-based auto-deployment
 set -euo pipefail
 
 PROJECT_DIR="/var/www/dr-welnes"

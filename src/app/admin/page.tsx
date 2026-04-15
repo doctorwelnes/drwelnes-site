@@ -8,14 +8,11 @@ export const metadata = {
 };
 
 export default async function AdminPage() {
-  // ВРЕМЕННО ОТКЛЮЧЕНО ДЛЯ ТЕСТИРОВАНИЯ (Bypass mode)
-  /*
   const session = await getServerSession(authOptions);
 
   if (!session || session.user?.role !== "ADMIN") {
     redirect("/login");
   }
-  */
 
-  return <AdminDashboard username="Admin (Bypass Mode)" />;
+  return <AdminDashboard username={session.user?.name || "Admin"} />;
 }

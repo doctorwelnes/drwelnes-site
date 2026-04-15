@@ -8,7 +8,6 @@ import { mkdir } from "fs/promises";
 import path from "path";
 import { existsSync } from "fs";
 
-// Force reload - v2
 export async function GET() {
   return NextResponse.json({ message: "Avatar API is working" });
 }

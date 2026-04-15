@@ -310,7 +310,6 @@ export function AdminGallery({
                 onChange={(e) => {
                   const file = e.target.files?.[0];
                   if (file) {
-                    console.log("Gallery: Starting upload for", file.name, "type:", file.type);
                     handleUpload(file, activeContentTitle, currentPath);
                   }
                 }}

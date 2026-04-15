@@ -63,7 +63,6 @@ function sanitizeFilename(filename: string) {
     .replace(/^_|_$/g, "");
 }
 
-// ВРЕМЕННО ОТКЛЮЧЕНО (Bypass Mode) для соответствия остальным API админки
 async function checkAdmin(request: NextRequest) {
   // 1. Проверяем сессию NextAuth
   const session = await getServerSession(authOptions);
@@ -86,8 +85,6 @@ async function checkAdmin(request: NextRequest) {
     }
   }
 
-  // Bypass Mode: Разрешаем доступ, если в других файлах (например, api/admin/file) стоит return true
-  // В данном проекте на время разработки разрешаем загрузку всем авторизованным пользователям
   if (session) return true;
 
   return false;
