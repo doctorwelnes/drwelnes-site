@@ -5,6 +5,9 @@ import { mkdir } from "fs/promises";
 import path from "path";
 import { writeLimiter, applyRateLimit } from "@/lib/rate-limiter";
 
+const SUPPORTED_VIDEO_EXTENSIONS = [".mp4", ".webm", ".m4v"];
+const SUPPORTED_VIDEO_MIME_TYPES = ["video/mp4", "video/webm", "video/x-m4v"];
+
 // Функция для транслитерации кириллицы в латиницу
 function transliterate(text: string) {
   const map: Record<string, string> = {
@@ -77,7 +80,9 @@ async function checkAdmin(request: NextRequest) {
         },
       });
       if (ghRes.ok) return true;
-    } catch (e) {}
+    } catch {
+      // Ignore GitHub auth failures and fall back to session check.
+    }
   }
 
   // Bypass Mode: Разрешаем доступ, если в других файлах (например, api/admin/file) стоит return true
@@ -105,11 +110,22 @@ export async function POST(request: NextRequest) {
     }
 
     // Проверка типа (видео или изображения)
-    const isVideo = file.type.startsWith("video/") || file.name.endsWith(".mp4");
-    const isImage = file.type.startsWith("image/") || /\.(jpg|jpeg|png|webp|gif|svg)$/i.test(file.name);
+    const fileExt = path.extname(file.name).toLowerCase();
+    const isSupportedVideoExt = SUPPORTED_VIDEO_EXTENSIONS.includes(fileExt);
+    const isSupportedVideoMime = SUPPORTED_VIDEO_MIME_TYPES.includes(file.type.toLowerCase());
+    const isVideo =
+      (file.type.startsWith("video/") || isSupportedVideoMime || isSupportedVideoExt) &&
+      isSupportedVideoExt;
+    const isImage =
+      file.type.startsWith("image/") || /\.(jpg|jpeg|png|webp|gif|svg)$/i.test(file.name);
 
     if (!isVideo && !isImage) {
-      return NextResponse.json({ error: "Only images and video files are allowed" }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: "Only images and supported browser video formats (mp4, webm, m4v) are allowed",
+        },
+        { status: 400 },
+      );
     }
 
     // Папка для загрузки
@@ -158,9 +174,9 @@ export async function GET(request: NextRequest) {
   try {
     const videoDir = path.join(process.cwd(), "public", "uploads", "videos");
     const imageDir = path.join(process.cwd(), "public", "uploads", "images");
-    
+
     const dirs = [videoDir, imageDir];
-    let allFiles: any[] = [];
+    let allFiles: { name: string; url: string; size: number; mtime: Date }[] = [];
 
     for (const dir of dirs) {
       try {
@@ -190,7 +206,7 @@ export async function GET(request: NextRequest) {
     allFiles.sort((a, b) => b.mtime.getTime() - a.mtime.getTime());
 
     return NextResponse.json({ files: allFiles });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to read directory" }, { status: 500 });
   }
 }

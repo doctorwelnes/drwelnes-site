@@ -45,13 +45,21 @@ const testCases = [
     ],
   },
   {
+    name: "Count units are preserved in amount",
+    input: "1 шт яйца\n1 штука банана",
+    expected: [
+      { name: "Яйца", amount: "1 шт" },
+      { name: "Банана", amount: "1 шт" },
+    ],
+  },
+  {
     name: "Mixed format",
     input: "200г муки, 2 яйца, 100 мл молока, 1 ч.л. соли",
     expected: [
       { name: "Муки", amount: "200", weight: "г" },
       { name: "Яйца", amount: "2" },
       { name: "Молока", amount: "100", weight: "мл" },
-      { name: "Соли", amount: "1 ч.л." },
+      { name: "Соли", amount: "1 ч. л." },
     ],
   },
   {
@@ -59,7 +67,7 @@ const testCases = [
     input: "1/2 стакана сахара\n1 1/2 ч.л. соли",
     expected: [
       { name: "Сахара", amount: "1/2 стакана" },
-      { name: "Соли", amount: "1 1/2 ч.л." },
+      { name: "Соли", amount: "1 1/2 ч. л." },
     ],
   },
   {

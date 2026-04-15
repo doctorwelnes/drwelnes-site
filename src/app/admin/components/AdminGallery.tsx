@@ -314,7 +314,7 @@ export function AdminGallery({
                     handleUpload(file, activeContentTitle, currentPath);
                   }
                 }}
-                accept="image/*,video/*"
+                accept="image/*,.mp4,.webm,.m4v"
               />
               <button
                 onClick={() => fileInputRef.current?.click()}

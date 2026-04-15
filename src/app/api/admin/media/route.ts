@@ -7,6 +7,16 @@ import { writeLimiter, applyRateLimit } from "@/lib/rate-limiter";
 import { checkAdmin } from "@/lib/admin-auth";
 
 const UPLOADS_DIR = path.join(process.cwd(), "public", "uploads");
+const SUPPORTED_VIDEO_EXTENSIONS = [".mp4", ".webm", ".m4v"];
+const SUPPORTED_VIDEO_MIME_TYPES = ["video/mp4", "video/webm", "video/x-m4v"];
+
+type MediaEntry = {
+  name: string;
+  url: string;
+  type: "image" | "video" | "other" | "directory";
+  size?: number;
+  isDirectory?: boolean;
+};
 
 function sleepMs(ms: number) {
   const sab = new SharedArrayBuffer(4);
@@ -19,7 +29,7 @@ function tryRmPathSync(targetPath: string) {
 
   if (fs.existsSync(targetPath) && process.platform === "win32") {
     const escaped = targetPath.replace(/"/g, '\\"');
-    const cmdResult = spawnSync(
+    spawnSync(
       "cmd.exe",
       [
         "/c",
@@ -44,19 +54,10 @@ function tryRmPathSync(targetPath: string) {
   }
 }
 
-function scanDir(
-  dir: string,
-  baseDir: string,
-): {
-  name: string;
-  url: string;
-  type: "image" | "video" | "other" | "directory";
-  size?: number;
-  isDirectory?: boolean;
-}[] {
+function scanDir(dir: string): MediaEntry[] {
   if (!fs.existsSync(dir)) return [];
   const items = fs.readdirSync(dir, { withFileTypes: true });
-  const results: any[] = [];
+  const results: MediaEntry[] = [];
 
   for (const item of items) {
     const fullPath = path.join(dir, item.name);
@@ -74,7 +75,7 @@ function scanDir(
     } else {
       const ext = path.extname(item.name).toLowerCase();
       const isImage = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".avif", ".svg"].includes(ext);
-      const isVideo = [".mp4", ".mov", ".webm", ".avi", ".mkv", ".m4v"].includes(ext);
+      const isVideo = SUPPORTED_VIDEO_EXTENSIONS.includes(ext);
       const stat = fs.statSync(fullPath);
       results.push({
         name: item.name,
@@ -150,7 +151,7 @@ export async function GET(req: NextRequest) {
     }
 
     const usedMedia = getAllUsedMedia();
-    const files = scanDir(targetDir, UPLOADS_DIR).map((file) => ({
+    const files = scanDir(targetDir).map((file) => ({
       ...file,
       isUsed: usedMedia.has(file.url),
     }));
@@ -211,7 +212,11 @@ export async function POST(req: NextRequest) {
     const buffer = Buffer.from(await file.arrayBuffer());
     const ext = path.extname(file.name).toLowerCase();
     const isImage = [".jpg", ".jpeg", ".png", ".webp", ".avif"].includes(ext);
-    const isVideo = [".mp4", ".mov", ".webm", ".avi", ".mkv"].includes(ext);
+    const isSupportedVideoExt = SUPPORTED_VIDEO_EXTENSIONS.includes(ext);
+    const isSupportedVideoMime = SUPPORTED_VIDEO_MIME_TYPES.includes(file.type.toLowerCase());
+    const isVideo =
+      (file.type.startsWith("video/") || isSupportedVideoMime || isSupportedVideoExt) &&
+      isSupportedVideoExt;
 
     let fileName = file.name;
     if (customName) {
@@ -244,12 +249,19 @@ export async function POST(req: NextRequest) {
         .resize(1920, 1080, { fit: "inside", withoutEnlargement: true })
         .webp({ quality: 80 })
         .toFile(filePath);
-    } else {
+    } else if (isVideo) {
       fs.writeFileSync(filePath, buffer);
       // Force sync to disk
       const fd = fs.openSync(filePath, "r+");
       fs.fsyncSync(fd);
       fs.closeSync(fd);
+    } else {
+      return NextResponse.json(
+        {
+          error: "Only images and supported browser video formats (mp4, webm, m4v) are allowed",
+        },
+        { status: 400 },
+      );
     }
 
     const relativePath =
@@ -289,7 +301,6 @@ export async function DELETE(req: NextRequest) {
         const originalFilePath = path.join(process.cwd(), "public", cleanUrl);
         let filePath = originalFilePath;
         let renamedPath: string | undefined;
-        let resolvedPath: string | undefined;
 
         // Безопасность: проверяем, что файл все еще находится в UPLOADS_DIR или public/uploads
         const normalizedPath = path.normalize(filePath);
@@ -332,12 +343,9 @@ export async function DELETE(req: NextRequest) {
             decodedUrl,
             cleanUrl,
             filePath: originalFilePath,
-            resolvedPath,
           });
           continue;
         }
-
-        resolvedPath = filePath;
 
         const stat = fs.statSync(filePath);
         if (stat.isDirectory()) {
@@ -371,7 +379,7 @@ export async function DELETE(req: NextRequest) {
             cleanUrl,
             filePath: originalFilePath,
             renamedPath,
-            resolvedPath,
+            resolvedPath: filePath,
           });
           continue;
         }
@@ -383,7 +391,7 @@ export async function DELETE(req: NextRequest) {
           cleanUrl,
           filePath: originalFilePath,
           renamedPath,
-          resolvedPath,
+          resolvedPath: filePath,
         });
       } catch (error: unknown) {
         const message = error instanceof Error ? error.message : "Unknown error";

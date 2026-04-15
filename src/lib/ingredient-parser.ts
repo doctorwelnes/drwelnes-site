@@ -15,6 +15,15 @@ function capitalizeText(value: string): string {
   return `${trimmed.charAt(0).toUpperCase()}${trimmed.slice(1)}`;
 }
 
+function formatUnitForAmount(unit: string): string {
+  const normalized = unit.toLowerCase().replace(/\s+/g, " ").trim();
+  if (/^(шт|штука)$/.test(normalized)) return "шт";
+  if (/^ч\.?\s*л\.?$/.test(normalized) || /^чайная(?:\s+ложка)?$/.test(normalized)) return "ч. л.";
+  if (/^ст\.?\s*л\.?$/.test(normalized) || /^столовая(?:\s+ложка)?$/.test(normalized))
+    return "ст. л.";
+  return normalized;
+}
+
 /**
  * Parse ingredient text into structured format
  * Supports formats:
@@ -57,9 +66,6 @@ function parseSingleIngredient(line: string): ParsedIngredient | null {
   const unitPattern =
     "(?:г|гр|грамм|мл|миллилитр|шт|штука|стакан(?:а)?|ч\\.?\\s*л\\.?|чайная(?:\\s+ложка)?|ст\\.?\\s*л\\.?|столовая(?:\\s+ложка)?)";
 
-  const buildAmountWithUnit = (amount: string, unit: string) =>
-    `${amount} ${unit.replace(/\s+/g, " ").trim()}`.trim();
-
   // Pattern 1: Number + unit + name (e.g., "200г муки", "100 мл молока", "1 ч. л. соли")
   // Match the entire line including parentheses in the name
   const pattern1 = new RegExp(`^(${amountPattern})\\s*(${unitPattern})\\s+(.+)$`, "i");
@@ -67,12 +73,13 @@ function parseSingleIngredient(line: string): ParsedIngredient | null {
 
   if (match1) {
     const normalizedUnit = normalizeUnit(match1[2]);
+    const amount = match1[1].trim();
 
     return {
       amount:
         normalizedUnit === "г" || normalizedUnit === "мл"
-          ? match1[1].trim()
-          : buildAmountWithUnit(match1[1].trim(), match1[2]),
+          ? amount
+          : `${amount} ${formatUnitForAmount(match1[2])}`.trim(),
       weight: normalizedUnit === "г" || normalizedUnit === "мл" ? normalizedUnit : undefined,
       name: capitalizeText(match1[3]),
     };
@@ -84,12 +91,13 @@ function parseSingleIngredient(line: string): ParsedIngredient | null {
 
   if (match1b) {
     const normalizedUnit = normalizeUnit(match1b[2]);
+    const amount = match1b[1].trim();
 
     return {
       amount:
         normalizedUnit === "г" || normalizedUnit === "мл"
-          ? match1b[1].trim()
-          : buildAmountWithUnit(match1b[1].trim(), match1b[2]),
+          ? amount
+          : `${amount} ${formatUnitForAmount(match1b[2])}`.trim(),
       weight: normalizedUnit === "г" || normalizedUnit === "мл" ? normalizedUnit : undefined,
       name: capitalizeText(match1b[3]),
     };
