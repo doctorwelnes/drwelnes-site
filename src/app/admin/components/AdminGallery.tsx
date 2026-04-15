@@ -31,6 +31,7 @@ interface AdminGalleryProps {
   mediaGallery: MediaFile[];
   isGalleryLoading: boolean;
   fetchMedia: (folderPath: string) => void;
+  initialFolderPath?: string;
   gallerySearchQuery: string;
   setGallerySearchQuery: (v: string) => void;
   insertMediaLink: (url: string, type: "image" | "video" | "other") => void;
@@ -88,6 +89,7 @@ export function AdminGallery({
   mediaGallery,
   isGalleryLoading,
   fetchMedia,
+  initialFolderPath,
   gallerySearchQuery,
   setGallerySearchQuery,
   insertMediaLink,
@@ -105,7 +107,7 @@ export function AdminGallery({
   const [renamingMediaUrl, setRenamingMediaUrl] = React.useState<string | null>(null);
   const [newMediaName, setNewMediaName] = React.useState("");
   const [selectedUrls, setSelectedUrls] = React.useState<string[]>([]);
-  const [currentPath, setCurrentPath] = React.useState("/uploads");
+  const [currentPath, setCurrentPath] = React.useState(initialFolderPath || "/uploads");
   const [isCreatingFolder, setIsCreatingFolder] = React.useState(false);
   const [isMovingFiles, setIsMovingFiles] = React.useState(false);
   const [folderName, setFolderName] = React.useState("");

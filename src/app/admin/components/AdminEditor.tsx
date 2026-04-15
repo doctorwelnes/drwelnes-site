@@ -46,7 +46,7 @@ interface AdminEditorProps {
   applyMarkdown: (
     type: "bold" | "italic" | "link" | "list" | "quote" | "h2" | "h3" | "table",
   ) => void;
-  openGallery: (field?: string | null) => void;
+  openGallery: (field?: string | null, folderPath?: string) => void;
   handleUploadMedia: (file: File, customName?: string, folderPath?: string) => Promise<void>;
   moveItem: (type: "ingredients" | "steps", index: number, direction: "up" | "down") => void;
   editorRef: React.RefObject<HTMLTextAreaElement | null>;
@@ -105,6 +105,7 @@ export function AdminEditor({
   const isRecipe = activeFile?.includes("recipes/");
   const isExercise = activeFile?.includes("exercises/");
   const isTheory = activeFile?.includes("theory/");
+  const defaultGalleryFolder = isRecipe || isExercise ? "/uploads/кадры-видео" : undefined;
 
   const handleVideoMetadata = (e: React.SyntheticEvent<HTMLVideoElement>) => {
     const video = e.currentTarget;
@@ -272,7 +273,9 @@ export function AdminEditor({
                             {isTheory ? "Изображение карточки в разделе" : "Изображение карточки"}
                           </label>
                           <button
-                            onClick={() => openGallery(isTheory ? "cardImage" : "image")}
+                            onClick={() =>
+                              openGallery(isTheory ? "cardImage" : "image", defaultGalleryFolder)
+                            }
                             className="text-[9px] font-black uppercase tracking-widest text-amber-500/50 hover:text-amber-500 transition-all flex items-center gap-1.5"
                           >
                             <ImageIcon size={10} />

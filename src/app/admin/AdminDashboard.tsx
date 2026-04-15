@@ -74,6 +74,8 @@ export default function AdminDashboard({ username = "Admin" }: { username?: stri
     { name: string; url: string; type: "image" | "video" | "other" }[]
   >([]);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+  const [galleryInitialFolderPath, setGalleryInitialFolderPath] = useState("/uploads");
+  const [gallerySessionKey, setGallerySessionKey] = useState(0);
   const [isGalleryLoading, setIsGalleryLoading] = useState(false);
   const [toasts, setToasts] = useState<
     { id: string; message: string; type: "success" | "error" | "info" }[]
@@ -570,8 +572,10 @@ export default function AdminDashboard({ username = "Admin" }: { username?: stri
     }
   }, []);
 
-  const openGallery = async (targetField: string | null = null) => {
+  const openGallery = async (targetField: string | null = null, folderPath?: string) => {
     setGalleryTargetField(targetField);
+    setGalleryInitialFolderPath(folderPath || "/uploads");
+    setGallerySessionKey((prev) => prev + 1);
     setIsGalleryOpen(true);
   };
 
@@ -1160,11 +1164,13 @@ export default function AdminDashboard({ username = "Admin" }: { username?: stri
       />
 
       <AdminGallery
+        key={gallerySessionKey}
         isOpen={isGalleryOpen}
         onClose={() => setIsGalleryOpen(false)}
         mediaGallery={mediaGallery}
         isGalleryLoading={isGalleryLoading}
         fetchMedia={fetchMedia}
+        initialFolderPath={galleryInitialFolderPath}
         gallerySearchQuery={gallerySearchQuery}
         setGallerySearchQuery={setGallerySearchQuery}
         insertMediaLink={insertMediaLink}
