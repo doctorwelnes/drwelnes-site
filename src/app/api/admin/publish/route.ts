@@ -5,16 +5,24 @@ import { checkAdmin } from "@/lib/admin-auth";
 
 const execFileAsync = util.promisify(execFile);
 
-async function stagePublishChanges(cwd: string) {
-  await execFileAsync("git", ["add", "-u", "--", "content", "public/uploads"], {
+async function getGitRoot(cwd: string) {
+  const { stdout } = await execFileAsync("git", ["rev-parse", "--show-toplevel"], {
     cwd,
+    maxBuffer: 10 * 1024 * 1024,
+  });
+  return stdout.trim();
+}
+
+async function stagePublishChanges(repoRoot: string) {
+  await execFileAsync("git", ["add", "-u", "--", "content", "public/uploads"], {
+    cwd: repoRoot,
     maxBuffer: 10 * 1024 * 1024,
   });
 
   const { stdout: untrackedStdout } = await execFileAsync(
     "git",
     ["ls-files", "-o", "--exclude-standard", "-z", "--", "content", "public/uploads"],
-    { cwd, maxBuffer: 10 * 1024 * 1024 },
+    { cwd: repoRoot, maxBuffer: 10 * 1024 * 1024 },
   );
 
   const untrackedFiles = untrackedStdout
@@ -24,7 +32,7 @@ async function stagePublishChanges(cwd: string) {
 
   if (untrackedFiles.length > 0) {
     await execFileAsync("git", ["add", "--", ...untrackedFiles], {
-      cwd,
+      cwd: repoRoot,
       maxBuffer: 10 * 1024 * 1024,
     });
   }
@@ -37,13 +45,14 @@ export async function POST() {
 
   try {
     const cwd = process.cwd();
-    await stagePublishChanges(cwd);
+    const repoRoot = await getGitRoot(cwd);
+    await stagePublishChanges(repoRoot);
 
     const { stdout: stagedStdout } = await execFileAsync(
       "git",
       ["diff", "--cached", "--name-only"],
       {
-        cwd,
+        cwd: repoRoot,
         maxBuffer: 10 * 1024 * 1024,
       },
     );
@@ -69,11 +78,11 @@ export async function POST() {
         "-m",
         "Admin CMS: Published content and media",
       ],
-      { cwd, maxBuffer: 10 * 1024 * 1024 },
+      { cwd: repoRoot, maxBuffer: 10 * 1024 * 1024 },
     );
 
     const pushResult = await execFileAsync("git", ["push", "origin", "HEAD:master"], {
-      cwd,
+      cwd: repoRoot,
       maxBuffer: 10 * 1024 * 1024,
     });
 
