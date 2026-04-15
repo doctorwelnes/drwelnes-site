@@ -15,4 +15,4 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             cd /var/www/dr-welnes
-            ./deploy/deploy.sh
+            bash deploy/deploy.sh
