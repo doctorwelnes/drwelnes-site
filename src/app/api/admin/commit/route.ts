@@ -1,9 +1,34 @@
 import { NextResponse } from "next/server";
-import { exec } from "child_process";
+import { execFile } from "child_process";
 import util from "util";
 import { checkAdmin } from "@/lib/admin-auth";
 
-const execAsync = util.promisify(exec);
+const execFileAsync = util.promisify(execFile);
+
+async function stageCommitChanges(cwd: string) {
+  await execFileAsync("git", ["add", "-u", "--", "content", "public/uploads"], {
+    cwd,
+    maxBuffer: 10 * 1024 * 1024,
+  });
+
+  const { stdout: untrackedStdout } = await execFileAsync(
+    "git",
+    ["ls-files", "-o", "--exclude-standard", "-z", "--", "content", "public/uploads"],
+    { cwd, maxBuffer: 10 * 1024 * 1024 },
+  );
+
+  const untrackedFiles = untrackedStdout
+    .split("\0")
+    .map((file) => file.trim())
+    .filter(Boolean);
+
+  if (untrackedFiles.length > 0) {
+    await execFileAsync("git", ["add", "--", ...untrackedFiles], {
+      cwd,
+      maxBuffer: 10 * 1024 * 1024,
+    });
+  }
+}
 
 export async function POST() {
   if (!(await checkAdmin())) {
@@ -12,25 +37,51 @@ export async function POST() {
 
   try {
     const cwd = process.cwd();
+    await stageCommitChanges(cwd);
+
+    const { stdout: stagedStdout } = await execFileAsync(
+      "git",
+      ["diff", "--cached", "--name-only"],
+      {
+        cwd,
+        maxBuffer: 10 * 1024 * 1024,
+      },
+    );
+
+    if (!stagedStdout.trim()) {
+      return NextResponse.json({
+        success: true,
+        stdout: "No changes to commit or push",
+        stderr: "",
+      });
+    }
 
     // Выполняем git add, git commit и git push в master,
     // чтобы production workflow автоматически задеплоил изменения.
-    const { stdout, stderr } = await execAsync(
-      `set -eu
-git add content
-if [ -d public/uploads ]; then
-  git add public/uploads
-fi
-if git diff --cached --quiet; then
-  echo "No changes to commit or push"
-  exit 0
-fi
-git -c user.name="Dr Welnes CMS" -c user.email="cms@drwelnes.ru" commit -m "Admin CMS: Published content and medias"
-git push origin HEAD:master`,
-      { cwd },
+    const { stdout, stderr } = await execFileAsync(
+      "git",
+      [
+        "-c",
+        "user.name=Dr Welnes CMS",
+        "-c",
+        "user.email=cms@drwelnes.ru",
+        "commit",
+        "-m",
+        "Admin CMS: Published content and medias",
+      ],
+      { cwd, maxBuffer: 10 * 1024 * 1024 },
     );
 
-    return NextResponse.json({ success: true, stdout, stderr });
+    const pushResult = await execFileAsync("git", ["push", "origin", "HEAD:master"], {
+      cwd,
+      maxBuffer: 10 * 1024 * 1024,
+    });
+
+    return NextResponse.json({
+      success: true,
+      stdout: `${stdout || ""}${pushResult.stdout || ""}`,
+      stderr: `${stderr || ""}${pushResult.stderr || ""}`,
+    });
   } catch (error: unknown) {
     const err = error as Error & { stdout?: string; stderr?: string };
     return NextResponse.json(
