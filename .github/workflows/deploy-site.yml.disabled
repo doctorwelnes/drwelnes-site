@@ -1,0 +1,299 @@
+name: Manual Deploy Dr.Welnes to VPS
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-drwelnes
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: [self-hosted, linux, x64, vps]
+
+    env:
+      COMPOSE_FILE: /var/www/drwelnes/docker-compose.prod.yml
+      APP_DIR: /var/www/drwelnes
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          clean: true
+
+      - name: Preflight checks
+        run: |
+          set -euo pipefail
+          echo "=== Docker access ==="
+          if ! docker info >/dev/null 2>&1; then
+            echo "ERROR: Cannot access Docker. Add runner user to docker group and restart runner service."
+            exit 1
+          fi
+          echo "Docker OK"
+          echo "=== .env.production ==="
+          if [ ! -f "${{ env.APP_DIR }}/.env.production" ]; then
+            echo "ERROR: ${{ env.APP_DIR }}/.env.production not found on VPS"
+            echo "Create it with required variables (DATABASE_URL, NEXTAUTH_SECRET, NEXTAUTH_URL)."
+            exit 1
+          fi
+          echo ".env.production OK"
+
+      - name: Skip if already deployed
+        id: check_skip
+        run: |
+          set -euo pipefail
+          DEPLOYED_SHA_FILE="${{ env.APP_DIR }}/.deployed_sha"
+          if [ -f "$DEPLOYED_SHA_FILE" ]; then
+            deployed=$(cat "$DEPLOYED_SHA_FILE")
+            if [ "$deployed" = "${{ github.sha }}" ]; then
+              echo "Already deployed commit ${{ github.sha }}; skipping."
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "skip=false" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Copy source to app dir
+        if: steps.check_skip.outputs.skip != 'true'
+        run: |
+          set -euo pipefail
+          mkdir -p "${{ env.APP_DIR }}"
+          rsync -avz --delete \
+            --exclude='.git' \
+            --exclude='site' \
+            --exclude='node_modules' \
+            --exclude='public/uploads' \
+            ./ "${{ env.APP_DIR }}/src/"
+
+      - name: Copy production env file
+        if: steps.check_skip.outputs.skip != 'true'
+        run: |
+          set -euo pipefail
+          # .env.production must exist on the VPS at $APP_DIR/.env.production
+          if [ ! -f "${{ env.APP_DIR }}/.env.production" ]; then
+            echo "ERROR: ${{ env.APP_DIR }}/.env.production not found on VPS"
+            exit 1
+          fi
+          cp "${{ env.APP_DIR }}/.env.production" "${{ env.APP_DIR }}/src/.env.production"
+
+      - name: Create docker-compose .env for PostgreSQL
+        if: steps.check_skip.outputs.skip != 'true'
+        run: |
+          set -euo pipefail
+          ENV_FILE="${{ env.APP_DIR }}/src/.env"
+          echo "Creating $ENV_FILE with PostgreSQL defaults..."
+          echo "POSTGRES_USER=drwelnes" > "$ENV_FILE"
+          echo "POSTGRES_PASSWORD=drwelnes" >> "$ENV_FILE"
+          echo "POSTGRES_DB=drwelnes" >> "$ENV_FILE"
+          echo "DATABASE_URL=postgresql://drwelnes:drwelnes@db:5432/drwelnes" >> "$ENV_FILE"
+          echo "=== Created .env file ==="
+          cat "$ENV_FILE"
+          echo "=== Debug: DATABASE_URL lines ==="
+          (grep -n '^DATABASE_URL' "$ENV_FILE" || true)
+          (grep -n '^DATABASE_URL' "${{ env.APP_DIR }}/src/.env.production" || true)
+          echo "=== .env file permissions ==="
+          ls -la "$ENV_FILE"
+
+      - name: Build and deploy Docker containers
+        if: steps.check_skip.outputs.skip != 'true'
+        run: |
+          set -euo pipefail
+          cd "${{ env.APP_DIR }}/src"
+          # Prep env variables
+          ls -la .env .env.production 2>/dev/null || true
+          COMPOSE="docker compose --env-file .env.production -f docker-compose.prod.yml"
+
+          $COMPOSE pull
+
+          # Ensure uploads directory exists and is writable on the host
+          # We use a temporary docker container to fix permissions because the runner might not have sudo
+          mkdir -p public/uploads/videos
+          docker run --rm -v "$(pwd)/public:/data" alpine chmod -R 777 /data || true
+
+          $COMPOSE build
+          $COMPOSE up -d --remove-orphans
+
+      - name: Run database migrations
+        if: steps.check_skip.outputs.skip != 'true'
+        run: |
+          set -euo pipefail
+          cd "${{ env.APP_DIR }}/src"
+          COMPOSE="docker compose --env-file .env -f docker-compose.prod.yml"
+          # Wait for DB to be healthy
+          echo "Waiting for database to be ready..."
+          timeout 60 bash -c 'until '"$COMPOSE"' exec -T db pg_isready -U ${POSTGRES_USER:-drwelnes} -d ${POSTGRES_DB:-drwelnes}; do sleep 2; done'
+          # Run migrations via dedicated migrator container (builder stage = full node_modules)
+          echo "Running Prisma migrations..."
+          $COMPOSE --profile migration run --rm migrator
+          echo "Migrations completed."
+
+      - name: Configure Nginx
+        if: steps.check_skip.outputs.skip != 'true'
+        run: |
+          set -euo pipefail
+          NGINX_CONF="/etc/nginx/sites-available/drwelnes"
+          NGINX_LINK="/etc/nginx/sites-enabled/drwelnes"
+
+          # Check if sudo is available without password
+          if ! sudo -n true 2>/dev/null; then
+            echo "⚠️ sudo not available — skipping Nginx config"
+            echo "Please manually create: $NGINX_CONF"
+            exit 0
+          fi
+
+          # Always update config if sudo is available
+          echo "Updating Nginx config for drwelnes.ru..."
+          printf '%s\n' \
+            'server {' \
+            '    listen 80;' \
+            '    server_name drwelnes.ru www.drwelnes.ru;' \
+            '    return 301 https://$server_name$request_uri;' \
+            '}' \
+            '' \
+            'server {' \
+            '    listen 443 ssl http2;' \
+            '    server_name drwelnes.ru www.drwelnes.ru;' \
+            '' \
+            '    ssl_certificate /etc/letsencrypt/live/drwelnes.ru/fullchain.pem;' \
+            '    ssl_certificate_key /etc/letsencrypt/live/drwelnes.ru/privkey.pem;' \
+            '    include /etc/letsencrypt/options-ssl-nginx.conf;' \
+            '    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;' \
+            '' \
+            '    client_max_body_size 1000M;' \
+            '    client_body_timeout 600s;' \
+            '' \
+            '    location /uploads/ {' \
+            '        root /var/www/drwelnes/src/public;' \
+            '        types {' \
+            '            video/mp4 mp4;' \
+            '            image/jpeg jpg jpeg;' \
+            '            image/png png;' \
+            '            image/webp webp;' \
+            '        }' \
+            '        expires 30d;' \
+            '        add_header Cache-Control "public, immutable";' \
+            '        add_header Access-Control-Allow-Origin *;' \
+            '    }' \
+            '' \
+            '    location / {' \
+            '        proxy_pass         http://127.0.0.1:3000;' \
+            '        proxy_http_version 1.1;' \
+            '        proxy_request_buffering off;' \
+            '        proxy_buffering off;' \
+            '        proxy_max_temp_file_size 0;' \
+            '        proxy_set_header   Upgrade $http_upgrade;' \
+            '        proxy_set_header   Connection upgrade;' \
+            '        proxy_set_header   Host $host;' \
+            '        proxy_set_header   X-Real-IP $remote_addr;' \
+            '        proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;' \
+            '        proxy_set_header   X-Forwarded-Proto $scheme;' \
+            '        proxy_cache_bypass $http_upgrade;' \
+            '        proxy_read_timeout 600s;' \
+            '        proxy_connect_timeout 600s;' \
+            '        proxy_send_timeout 600s;' \
+            '    }' \
+            '}' | sudo tee "$NGINX_CONF" > /dev/null
+          sudo ln -sf "$NGINX_CONF" "$NGINX_LINK"
+          echo "Nginx config updated ✅"
+
+          sudo nginx -t && sudo nginx -s reload
+          echo "Nginx reloaded ✅"
+
+      - name: Save deployed SHA
+        if: steps.check_skip.outputs.skip != 'true'
+        run: |
+          echo "${{ github.sha }}" > "${{ env.APP_DIR }}/.deployed_sha"
+
+      - name: Healthcheck
+        if: steps.check_skip.outputs.skip != 'true'
+        run: |
+          set -euo pipefail
+          cd "${{ env.APP_DIR }}/src"
+          COMPOSE="docker compose --env-file .env -f docker-compose.prod.yml"
+
+          echo "=== Docker containers status ==="
+          $COMPOSE ps
+
+          echo "=== Step 1: Direct Next.js check (localhost:3000) [REQUIRED] ==="
+          OK=false
+          for i in $(seq 1 20); do
+            code=$(curl -sS --max-time 5 -o /tmp/nextjs_body.txt -w "%{http_code}" http://localhost:3000/ || echo "000")
+            if [ "$code" = "200" ] || [ "$code" = "308" ] || [ "$code" = "307" ]; then
+              echo "✅ Next.js OK: HTTP $code"
+              OK=true
+              break
+            fi
+            echo "Attempt $i/20: Next.js HTTP $code"
+            sleep 3
+          done
+
+          if [ "$OK" = "false" ]; then
+            echo "❌ Next.js failed to respond"
+            cat /tmp/nextjs_body.txt || true
+            echo "=== Container logs ==="
+            $COMPOSE logs --tail=50 web
+            exit 1
+          fi
+
+          echo "=== Step 2: Domain check (https://drwelnes.ru/) [INFORMATIONAL] ==="
+          domain_code=$(curl -sS -L --max-time 10 -o /tmp/domain_body.txt -w "%{http_code}" "https://drwelnes.ru/" || echo "000")
+          if [ "$domain_code" = "200" ]; then
+            echo "✅ Domain OK: HTTP $domain_code"
+          else
+            echo "⚠️ Domain returned HTTP $domain_code (Next.js is OK — check Nginx config on VPS)"
+            echo "   Run on VPS: sudo nginx -t && sudo nginx -s reload"
+            echo "   Check config: cat /etc/nginx/sites-enabled/drwelnes"
+          fi
+
+          echo "=== Deploy completed successfully ==="
+
+      - name: Cleanup old Docker images and build cache
+        if: always()
+        run: |
+          docker image prune -af --filter "until=24h"
+          docker builder prune -af --filter "until=24h"
+
+      - name: Notify Telegram on failure
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          set -euo pipefail
+          if [ -z "${TELEGRAM_BOT_TOKEN:-}" ] || [ -z "${TELEGRAM_CHAT_ID:-}" ]; then
+            echo "Telegram secrets not configured; skipping."
+            exit 0
+          fi
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          TEXT="❌ Deploy failed\nRepo: ${{ github.repository }}\nBranch: ${{ github.ref_name }}\nCommit: ${{ github.sha }}\nRun: ${RUN_URL}"
+          curl -sS -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -d "chat_id=${TELEGRAM_CHAT_ID}" \
+            --data-urlencode "text=${TEXT}" \
+            -d "disable_web_page_preview=true" \
+            >/dev/null
+
+      - name: Notify Telegram on success
+        if: success()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          set -euo pipefail
+          if [ -z "${TELEGRAM_BOT_TOKEN:-}" ] || [ -z "${TELEGRAM_CHAT_ID:-}" ]; then
+            echo "Telegram secrets not configured; skipping."
+            exit 0
+          fi
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          TEXT="✅ Deploy succeeded\nRepo: ${{ github.repository }}\nBranch: ${{ github.ref_name }}\nCommit: ${{ github.sha }}\nRun: ${RUN_URL}"
+          curl -sS -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -d "chat_id=${TELEGRAM_CHAT_ID}" \
+            --data-urlencode "text=${TEXT}" \
+            -d "disable_web_page_preview=true" \
+            >/dev/null
