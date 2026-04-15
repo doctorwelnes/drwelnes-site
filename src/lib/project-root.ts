@@ -9,7 +9,10 @@ export function getProjectRoot(): string {
   let currentDir = process.cwd();
 
   while (true) {
-    if (fs.existsSync(path.join(currentDir, ".git"))) {
+    if (
+      fs.existsSync(path.join(currentDir, "package.json")) &&
+      fs.existsSync(path.join(currentDir, "content"))
+    ) {
       return currentDir;
     }
 

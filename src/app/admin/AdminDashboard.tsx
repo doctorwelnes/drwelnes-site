@@ -216,8 +216,9 @@ export default function AdminDashboard({ username = "Admin" }: { username?: stri
         const data = await res.json();
         setFileTree(data.tree);
       } else {
-        console.error("Admin API error:", res.status, await res.text());
-        addToast(`Ошибка загрузки: ${res.status} - ${await res.text()}`, "error");
+        const errorText = await res.text();
+        console.error("Admin API error:", res.status, errorText);
+        addToast(`Ошибка загрузки: ${res.status} - ${errorText}`, "error");
       }
     } catch (err) {
       console.error("fetchFileTree error:", err);

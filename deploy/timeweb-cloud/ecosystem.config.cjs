@@ -16,6 +16,7 @@ module.exports = {
       },
       env_production: {
         NODE_ENV: "production",
+        DR_WELNES_PROJECT_ROOT: PROJECT_DIR,
         PORT: 3000,
         HOSTNAME: "0.0.0.0",
       },

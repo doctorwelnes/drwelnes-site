@@ -88,7 +88,9 @@ export async function GET() {
     );
 
     return NextResponse.json({ tree });
-  } catch {
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  } catch (error) {
+    console.error("Failed to read admin files tree:", error);
+    const message = error instanceof Error ? error.message : String(error);
+    return NextResponse.json({ error: `Internal Server Error: ${message}` }, { status: 500 });
   }
 }
