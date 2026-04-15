@@ -30,6 +30,25 @@ function capitalizeText(value: string): string {
   return `${trimmed.charAt(0).toUpperCase()}${trimmed.slice(1)}`;
 }
 
+function normalizeMediaUrl(value?: string): string | undefined {
+  const trimmed = value?.trim();
+  if (!trimmed) return undefined;
+
+  if (trimmed.startsWith("/uploads/")) return trimmed;
+  if (trimmed.startsWith("uploads/")) return `/${trimmed}`;
+
+  try {
+    const url = new URL(trimmed);
+    if (url.pathname.startsWith("/uploads/")) {
+      return `${url.pathname}${url.search}${url.hash}`;
+    }
+  } catch {
+    // Not an absolute URL; return as-is.
+  }
+
+  return trimmed;
+}
+
 function normalizeRecipeIngredients(
   ingredients: RecipeIngredient[] | undefined,
 ): RecipeIngredient[] | undefined {
@@ -120,12 +139,12 @@ export function getAllRecipes(): Recipe[] {
         ingredients: normalizeRecipeIngredients(data.ingredients),
         steps: data.steps,
         categories,
-        videoFile: data.videoFile,
-        videoPoster: data.videoPoster,
-        videoUrl: data.videoUrl,
+        videoFile: normalizeMediaUrl(data.videoFile),
+        videoPoster: normalizeMediaUrl(data.videoPoster),
+        videoUrl: normalizeMediaUrl(data.videoUrl),
         tags: data.tags,
         draft: data.draft,
-        image: data.image,
+        image: normalizeMediaUrl(data.image),
         imagePositionX: data.imagePositionX,
         imagePositionY: data.imagePositionY,
         difficulty: data.difficulty,

@@ -41,6 +41,25 @@ function toEmbedUrl(url: string) {
   } catch {}
   return url;
 }
+
+function normalizeMediaUrl(value?: string): string {
+  const trimmed = value?.trim();
+  if (!trimmed) return "";
+
+  if (trimmed.startsWith("/uploads/")) return trimmed;
+  if (trimmed.startsWith("uploads/")) return `/${trimmed}`;
+
+  try {
+    const url = new URL(trimmed);
+    if (url.pathname.startsWith("/uploads/")) {
+      return `${url.pathname}${url.search}${url.hash}`;
+    }
+  } catch {
+    // Leave non-absolute URLs untouched.
+  }
+
+  return trimmed;
+}
 function NutrientRadarChart({ kbru }: { kbru: RecipeKbru }) {
   const p = kbru.protein || 0;
   const f = kbru.fat || 0;
@@ -591,8 +610,9 @@ export default function RecipeDetailClient({ recipe }: { recipe: Recipe }) {
 
           {/* Video Section with Smart Detection - Moved up */}
           {(() => {
-            const vFile = recipe.videoFile?.trim();
-            const vUrl = recipe.videoUrl?.trim();
+            const vFile = normalizeMediaUrl(recipe.videoFile);
+            const vUrl = normalizeMediaUrl(recipe.videoUrl);
+            const vPoster = normalizeMediaUrl(recipe.videoPoster);
 
             const isLocalVideo =
               (vFile && (vFile.toLowerCase().endsWith(".mp4") || vFile.startsWith("/uploads"))) ||
@@ -617,7 +637,7 @@ export default function RecipeDetailClient({ recipe }: { recipe: Recipe }) {
                     playsInline
                     preload="metadata"
                     className="w-full h-full object-contain"
-                    poster={recipe.videoPoster}
+                    poster={vPoster || undefined}
                     onLoadedMetadata={(e) => {
                       const video = e.currentTarget;
                       if (video.videoHeight > video.videoWidth) {

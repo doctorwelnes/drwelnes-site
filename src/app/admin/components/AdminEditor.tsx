@@ -69,6 +69,23 @@ function toEmbedUrl(url: string) {
   return url;
 }
 
+function normalizeMediaUrl(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) return "";
+
+  if (trimmed.startsWith("/uploads/")) return trimmed;
+  if (trimmed.startsWith("uploads/")) return `/${trimmed}`;
+
+  try {
+    const url = new URL(trimmed);
+    if (url.pathname.startsWith("/uploads/")) {
+      return `${url.pathname}${url.search}${url.hash}`;
+    }
+  } catch {}
+
+  return trimmed;
+}
+
 export function AdminEditor({
   activeFile,
   frontmatter,
@@ -384,11 +401,13 @@ export function AdminEditor({
                           <div className="relative">
                             <input
                               type="text"
-                              value={frontmatter.videoFile || frontmatter.videoUrl || ""}
+                              value={normalizeMediaUrl(
+                                frontmatter.videoFile || frontmatter.videoUrl || "",
+                              )}
                               onChange={(e) =>
                                 setFrontmatter({
                                   ...frontmatter,
-                                  videoFile: e.target.value,
+                                  videoFile: normalizeMediaUrl(e.target.value),
                                   videoUrl: "",
                                 })
                               }
@@ -409,7 +428,7 @@ export function AdminEditor({
                         style={{ aspectRatio: videoAspectRatio }}
                       >
                         {(() => {
-                          const v = frontmatter.videoFile || "";
+                          const v = normalizeMediaUrl(frontmatter.videoFile || "");
                           if (
                             v.endsWith(".mp4") ||
                             v.startsWith("/uploads/") ||
@@ -420,7 +439,9 @@ export function AdminEditor({
                                 id="preview-video"
                                 controls
                                 className="w-full h-full object-contain"
-                                poster={frontmatter.videoPoster}
+                                poster={
+                                  normalizeMediaUrl(frontmatter.videoPoster || "") || undefined
+                                }
                                 crossOrigin="anonymous"
                                 onLoadedMetadata={handleVideoMetadata}
                               >
@@ -456,9 +477,12 @@ export function AdminEditor({
                           <div className="flex-1 relative">
                             <input
                               type="text"
-                              value={frontmatter.videoPoster || ""}
+                              value={normalizeMediaUrl(frontmatter.videoPoster || "")}
                               onChange={(e) =>
-                                setFrontmatter({ ...frontmatter, videoPoster: e.target.value })
+                                setFrontmatter({
+                                  ...frontmatter,
+                                  videoPoster: normalizeMediaUrl(e.target.value),
+                                })
                               }
                               className="w-full bg-[#0c0c0c] border border-neutral-800 p-4 rounded-2xl text-neutral-200 text-sm outline-none focus:border-amber-500/30 transition-all shadow-inner"
                               placeholder="Ссылка на обложку..."
@@ -467,7 +491,7 @@ export function AdminEditor({
                           {frontmatter.videoPoster && (
                             <div className="w-40 h-24 rounded-xl border border-white/5 overflow-hidden bg-black flex-shrink-0">
                               <img
-                                src={frontmatter.videoPoster}
+                                src={normalizeMediaUrl(frontmatter.videoPoster || "")}
                                 className="w-full h-full object-cover"
                                 alt="Poster"
                               />
