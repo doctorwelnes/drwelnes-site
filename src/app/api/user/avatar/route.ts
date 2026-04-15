@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
+import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
+import { getPublicDir } from "@/lib/project-root";
 import { getPrismaClient } from "@/lib/prisma";
 import { writeFile, unlink } from "fs/promises";
 import { mkdir } from "fs/promises";
@@ -12,7 +13,7 @@ export async function GET() {
   return NextResponse.json({ message: "Avatar API is working" });
 }
 
-export async function DELETE(req: NextRequest) {
+export async function DELETE() {
   try {
     const session = await getServerSession(authOptions);
 
@@ -30,7 +31,7 @@ export async function DELETE(req: NextRequest) {
     }
 
     // Delete file from disk
-    const filePath = path.join(process.cwd(), "public", user.image);
+    const filePath = path.join(getPublicDir(), user.image);
     if (existsSync(filePath)) {
       await unlink(filePath);
     }
@@ -82,7 +83,7 @@ export async function POST(req: NextRequest) {
     const filename = `${timestamp}_${originalName}`;
 
     // Create uploads directory if it doesn't exist
-    const uploadsDir = path.join(process.cwd(), "public", "uploads", "avatars");
+    const uploadsDir = path.join(getPublicDir(), "uploads", "avatars");
     if (!existsSync(uploadsDir)) {
       await mkdir(uploadsDir, { recursive: true });
     }

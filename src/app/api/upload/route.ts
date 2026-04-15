@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
+import { getPublicDir } from "@/lib/project-root";
 import { mkdir } from "fs/promises";
 import path from "path";
 import { writeLimiter, applyRateLimit } from "@/lib/rate-limiter";
@@ -130,7 +131,7 @@ export async function POST(request: NextRequest) {
 
     // Папка для загрузки
     const typeFolder = isVideo ? "videos" : "images";
-    const uploadDir = path.join(process.cwd(), "public", "uploads", typeFolder);
+    const uploadDir = path.join(getPublicDir(), "uploads", typeFolder);
 
     // Создаем папку если её нет
     await mkdir(uploadDir, { recursive: true });
@@ -172,8 +173,8 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const videoDir = path.join(process.cwd(), "public", "uploads", "videos");
-    const imageDir = path.join(process.cwd(), "public", "uploads", "images");
+    const videoDir = path.join(getPublicDir(), "uploads", "videos");
+    const imageDir = path.join(getPublicDir(), "uploads", "images");
 
     const dirs = [videoDir, imageDir];
     let allFiles: { name: string; url: string; size: number; mtime: Date }[] = [];

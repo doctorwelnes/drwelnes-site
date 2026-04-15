@@ -4,8 +4,9 @@ import path from "path";
 import { adminDuplicateSchema } from "@/lib/validation";
 import { validateRequest } from "@/lib/validate-request";
 import { writeLimiter, applyRateLimit } from "@/lib/rate-limiter";
+import { getContentDir } from "@/lib/project-root";
 
-const BASE_CONTENT_DIR = path.join(process.cwd(), "content");
+const BASE_CONTENT_DIR = getContentDir();
 
 export async function POST(req: NextRequest) {
   // Apply rate limiting
@@ -41,7 +42,7 @@ export async function POST(req: NextRequest) {
 
     const relative = path.relative(BASE_CONTENT_DIR, newPath).replace(/\\/g, "/");
     return NextResponse.json({ path: relative, newPath: relative });
-  } catch (err) {
+  } catch {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }

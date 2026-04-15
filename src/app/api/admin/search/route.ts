@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
 import matter from "gray-matter";
+import { getContentDir } from "@/lib/project-root";
 
 async function walkDir(dir: string, baseDir: string): Promise<string[]> {
   const entries = await fs.readdir(dir, { withFileTypes: true });
@@ -26,7 +27,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ results: [] });
     }
 
-    const contentDir = path.join(process.cwd(), "content");
+    const contentDir = getContentDir();
     const allFiles = await walkDir(contentDir, contentDir);
     const searchResults = [];
 
@@ -54,7 +55,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ results: searchResults });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Search failed" }, { status: 500 });
   }
 }

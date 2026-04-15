@@ -5,13 +5,14 @@ import { spawnSync } from "child_process";
 import sharp from "sharp";
 import { writeLimiter, applyRateLimit } from "@/lib/rate-limiter";
 import { checkAdmin } from "@/lib/admin-auth";
+import { getContentDir, getPublicDir } from "@/lib/project-root";
 
-const UPLOADS_DIR = path.join(process.cwd(), "public", "uploads");
 const SUPPORTED_VIDEO_EXTENSIONS = [".mp4", ".webm", ".m4v"];
 const SUPPORTED_VIDEO_MIME_TYPES = ["video/mp4", "video/webm", "video/x-m4v"];
+const UPLOADS_DIR = path.join(getPublicDir(), "uploads");
 const PUBLIC_ROOT = fs.realpathSync.native
-  ? fs.realpathSync.native(path.join(process.cwd(), "public"))
-  : fs.realpathSync(path.join(process.cwd(), "public"));
+  ? fs.realpathSync.native(getPublicDir())
+  : fs.realpathSync(getPublicDir());
 const UPLOADS_ROOT = path.join(PUBLIC_ROOT, "uploads");
 
 type MediaEntry = {
@@ -93,7 +94,7 @@ function scanDir(dir: string): MediaEntry[] {
 
 function getAllUsedMedia(): Set<string> {
   const usedMedia = new Set<string>();
-  const contentDir = path.join(process.cwd(), "content");
+  const contentDir = getContentDir();
   if (!fs.existsSync(contentDir)) return usedMedia;
 
   const walk = (dir: string) => {
@@ -182,11 +183,7 @@ export async function POST(req: NextRequest) {
       if (!name) return NextResponse.json({ error: "Name is required" }, { status: 400 });
 
       const targetDir = folderPath
-        ? path.join(
-            process.cwd(),
-            "public",
-            folderPath.startsWith("/") ? folderPath.slice(1) : folderPath,
-          )
+        ? path.join(getPublicDir(), folderPath.startsWith("/") ? folderPath.slice(1) : folderPath)
         : UPLOADS_DIR;
 
       const newDirPath = path.join(targetDir, name.replace(/[/\\?%*:|"<>]/g, "-"));
@@ -229,7 +226,7 @@ export async function POST(req: NextRequest) {
     }
 
     const cleanFolderPath = folderPath.startsWith("/") ? folderPath.slice(1) : folderPath;
-    const targetDir = path.join(process.cwd(), "public", cleanFolderPath);
+    const targetDir = path.join(getPublicDir(), cleanFolderPath);
 
     if (!fs.existsSync(targetDir)) {
       fs.mkdirSync(targetDir, { recursive: true });
@@ -267,8 +264,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const relativePath =
-      "/" + path.relative(path.join(process.cwd(), "public"), filePath).replace(/\\/g, "/");
+    const relativePath = "/" + path.relative(getPublicDir(), filePath).replace(/\\/g, "/");
     return NextResponse.json({ success: true, url: relativePath });
   } catch (err) {
     console.error("Upload error:", err);
@@ -434,7 +430,7 @@ export async function PATCH(req: NextRequest) {
     }
 
     const cleanUrl = url.startsWith("/") ? url.slice(1) : url;
-    const oldPath = path.join(process.cwd(), "public", cleanUrl);
+    const oldPath = path.join(getPublicDir(), cleanUrl);
     const oldDir = path.dirname(oldPath);
 
     // Оставляем оригинальное расширение

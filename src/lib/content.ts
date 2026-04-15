@@ -9,6 +9,7 @@ import type {
   TheoryArticle,
   Calculator,
 } from "@/types/content";
+import { getContentDir } from "@/lib/project-root";
 
 // Re-export shared types for backward compatibility
 export type {
@@ -22,7 +23,7 @@ export type {
 
 /* ── Helpers ───────────────────────────────────────── */
 
-const CONTENT_DIR = path.join(process.cwd(), "content");
+const CONTENT_DIR = getContentDir();
 
 function capitalizeText(value: string): string {
   const trimmed = value.trim();

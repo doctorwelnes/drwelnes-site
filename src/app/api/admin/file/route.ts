@@ -6,10 +6,11 @@ import { adminFileSchema } from "@/lib/validation";
 import { validateRequest } from "@/lib/validate-request";
 import { writeLimiter, applyRateLimit } from "@/lib/rate-limiter";
 import { checkAdmin } from "@/lib/admin-auth";
+import { getContentDir } from "@/lib/project-root";
 
 // Защита от выхода за пределы папки content (Path Traversal Protection)
 function getSafePath(relativePath: string) {
-  const contentDir = path.join(process.cwd(), "content");
+  const contentDir = getContentDir();
   const unescapedPath = decodeURIComponent(relativePath);
 
   // Нормализуем путь и проверяем, что он начинается с директории контента
@@ -46,7 +47,7 @@ export async function GET(req: NextRequest) {
       frontmatter: parsed.data,
       content: parsed.content,
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "File not found or access denied" }, { status: 404 });
   }
 }
@@ -84,7 +85,7 @@ export async function POST(req: NextRequest) {
     await fs.writeFile(fullPath, fileString, "utf-8");
 
     return NextResponse.json({ success: true, path: filePath });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to write file" }, { status: 500 });
   }
 }
@@ -107,7 +108,7 @@ export async function DELETE(req: NextRequest) {
     await fs.unlink(fullPath);
 
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to delete file" }, { status: 500 });
   }
 }
