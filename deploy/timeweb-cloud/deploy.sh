@@ -32,7 +32,11 @@ fi
 cd "$ROOT_DIR"
 
 log "Installing dependencies"
-npm ci --include=dev --legacy-peer-deps
+if ! npm ci --include=dev --legacy-peer-deps; then
+  log "npm ci failed — cleaning node_modules and retrying"
+  rm -rf "$ROOT_DIR/node_modules"
+  npm ci --include=dev --legacy-peer-deps
+fi
 
 log "Loading environment variables"
 set -a
