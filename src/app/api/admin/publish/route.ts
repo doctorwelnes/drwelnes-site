@@ -13,9 +13,17 @@ export async function POST() {
   try {
     const cwd = process.cwd();
 
-    // Выполняем git add, git commit и git push
+    // Выполняем git add, git commit и git push в master,
+    // чтобы production workflow автоматически задеплоил изменения.
     const { stdout, stderr } = await execAsync(
-      `git add content public/uploads && git commit -m "Admin CMS: Published content and medias" && git push || echo "No changes to commit or push"`,
+      `set -euo pipefail
+git add content public/uploads
+if git diff --cached --quiet; then
+  echo "No changes to commit or push"
+  exit 0
+fi
+git commit -m "Admin CMS: Published content and medias"
+git push origin HEAD:master`,
       { cwd },
     );
 

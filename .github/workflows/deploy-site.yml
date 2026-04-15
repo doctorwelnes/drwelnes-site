@@ -1,12 +1,6 @@
-name: Deploy Dr.Welnes to VPS
+name: Manual Deploy Dr.Welnes to VPS
 
 on:
-  push:
-    branches: ["master", "main"]
-    paths-ignore:
-      - "site/**"
-      - "README.md"
-      - ".vscode/**"
   workflow_dispatch:
 
 concurrency:
