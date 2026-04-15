@@ -394,7 +394,7 @@ export function AdminEditor({
                               Видео
                             </label>
                             <button
-                              onClick={() => openGallery("videoFile")}
+                              onClick={() => openGallery("videoFile", defaultGalleryFolder)}
                               className="text-[9px] font-black uppercase tracking-widest text-amber-500/50 hover:text-amber-500 transition-all flex items-center gap-1.5"
                             >
                               <ImageIcon size={10} />
@@ -469,7 +469,7 @@ export function AdminEditor({
                             Обложка видео
                           </label>
                           <button
-                            onClick={() => openGallery("videoPoster")}
+                            onClick={() => openGallery("videoPoster", defaultGalleryFolder)}
                             className="text-[9px] font-black uppercase tracking-widest text-amber-500/50 hover:text-amber-500 transition-all flex items-center gap-1.5"
                           >
                             <ImageIcon size={10} />
