@@ -60,8 +60,8 @@ fi
 
 log "Preparing standalone assets"
 rm -rf "$STANDALONE_PUBLIC" "$STANDALONE_STATIC_DIR"
-mkdir -p "$STANDALONE_PUBLIC" "$STANDALONE_STATIC_DIR"
-cp -R "$ROOT_DIR/public/." "$STANDALONE_PUBLIC/"
+mkdir -p "$STANDALONE_DIR" "$STANDALONE_STATIC_DIR"
+ln -s "$ROOT_DIR/public" "$STANDALONE_PUBLIC"
 cp -R "$ROOT_DIR/.next/static/." "$STANDALONE_STATIC_DIR/"
 
 log "Starting or reloading PM2 process"

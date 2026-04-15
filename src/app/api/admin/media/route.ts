@@ -9,6 +9,10 @@ import { checkAdmin } from "@/lib/admin-auth";
 const UPLOADS_DIR = path.join(process.cwd(), "public", "uploads");
 const SUPPORTED_VIDEO_EXTENSIONS = [".mp4", ".webm", ".m4v"];
 const SUPPORTED_VIDEO_MIME_TYPES = ["video/mp4", "video/webm", "video/x-m4v"];
+const PUBLIC_ROOT = fs.realpathSync.native
+  ? fs.realpathSync.native(path.join(process.cwd(), "public"))
+  : fs.realpathSync(path.join(process.cwd(), "public"));
+const UPLOADS_ROOT = path.join(PUBLIC_ROOT, "uploads");
 
 type MediaEntry = {
   name: string;
@@ -62,8 +66,7 @@ function scanDir(dir: string): MediaEntry[] {
   for (const item of items) {
     const fullPath = path.join(dir, item.name);
     // Ensure we use forward slashes for URLs and handle potential encoding issues
-    const rel =
-      "/" + path.relative(path.join(process.cwd(), "public"), fullPath).replace(/\\/g, "/");
+    const rel = "/" + path.relative(PUBLIC_ROOT, fullPath).replace(/\\/g, "/");
 
     if (item.isDirectory()) {
       results.push({
@@ -136,11 +139,11 @@ export async function GET(req: NextRequest) {
 
     // Разрешаем путь относительно корня public
     const cleanPath = folderPath.startsWith("/") ? folderPath.slice(1) : folderPath;
-    const targetDir = path.join(process.cwd(), "public", cleanPath);
+    const targetDir = path.join(PUBLIC_ROOT, cleanPath);
 
     // Проверка безопасности: путь должен быть внутри public/uploads или быть самим public/uploads
     const normalizedTarget = path.normalize(targetDir);
-    const normalizedUploads = path.normalize(UPLOADS_DIR);
+    const normalizedUploads = path.normalize(UPLOADS_ROOT);
 
     if (!normalizedTarget.startsWith(normalizedUploads)) {
       return NextResponse.json({ error: "Access denied" }, { status: 403 });
@@ -298,15 +301,15 @@ export async function DELETE(req: NextRequest) {
 
         // Разрешаем путь относительно корня public
         const cleanUrl = trimmedUrl.startsWith("/") ? trimmedUrl.slice(1) : trimmedUrl;
-        const originalFilePath = path.join(process.cwd(), "public", cleanUrl);
+        const originalFilePath = path.join(PUBLIC_ROOT, cleanUrl);
         let filePath = originalFilePath;
         let renamedPath: string | undefined;
 
         // Безопасность: проверяем, что файл все еще находится в UPLOADS_DIR или public/uploads
         const normalizedPath = path.normalize(filePath);
         if (
-          !normalizedPath.startsWith(path.normalize(UPLOADS_DIR)) &&
-          !normalizedPath.startsWith(path.join(process.cwd(), "public", "uploads"))
+          !normalizedPath.startsWith(path.normalize(UPLOADS_ROOT)) &&
+          !normalizedPath.startsWith(path.join(PUBLIC_ROOT, "uploads"))
         ) {
           results.push({ url: targetUrl, success: false, error: "Access denied" });
           continue;
@@ -480,7 +483,7 @@ export async function PUT(req: NextRequest) {
     }
 
     const cleanTargetDir = targetFolder.startsWith("/") ? targetFolder.slice(1) : targetFolder;
-    const targetDirPath = path.join(process.cwd(), "public", cleanTargetDir);
+    const targetDirPath = path.join(PUBLIC_ROOT, cleanTargetDir);
 
     if (!fs.existsSync(targetDirPath)) {
       fs.mkdirSync(targetDirPath, { recursive: true });
@@ -489,7 +492,7 @@ export async function PUT(req: NextRequest) {
     const results = [];
     for (const url of urls) {
       const cleanUrl = url.startsWith("/") ? url.slice(1) : url;
-      const oldPath = path.join(process.cwd(), "public", cleanUrl);
+      const oldPath = path.join(PUBLIC_ROOT, cleanUrl);
       const fileName = path.basename(oldPath);
       const newPath = path.join(targetDirPath, fileName);
 
@@ -497,8 +500,8 @@ export async function PUT(req: NextRequest) {
       const normalizedOld = path.normalize(oldPath);
       const normalizedNew = path.normalize(newPath);
       if (
-        !normalizedOld.startsWith(path.normalize(UPLOADS_DIR)) ||
-        !normalizedNew.startsWith(path.normalize(UPLOADS_DIR))
+        !normalizedOld.startsWith(path.normalize(UPLOADS_ROOT)) ||
+        !normalizedNew.startsWith(path.normalize(UPLOADS_ROOT))
       ) {
         results.push({ url, success: false, error: "Access denied" });
         continue;
