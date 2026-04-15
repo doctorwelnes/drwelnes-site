@@ -47,6 +47,8 @@ npx prisma migrate deploy
 
 log "Clearing previous build artifacts"
 rm -rf "$ROOT_DIR/.next"
+# Also clean any Next.js cache in node_modules
+rm -rf "$ROOT_DIR/node_modules/.cache"
 
 log "Building the application"
 npm run build
