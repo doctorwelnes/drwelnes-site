@@ -3,7 +3,7 @@ title: Творожно-маковый рулет
 slug: tvorojno-makovyy-rulet
 published: false
 date: '2026-04-16T21:49:57.633Z'
-image: ''
+image: /uploads/кадры-видео/poster-1776377398659.jpg
 category: Десерт
 kcal: 0
 time: 0
@@ -61,6 +61,12 @@ tags:
   - ПП
   - Полезно
   - Десерт
+  - Быстро
+cookTimeMinutes: 25
+prepTimeMinutes: 10
+videoFile: /uploads/Видео/творожно-маковый рулет.mp4
+videoPoster: /uploads/кадры-видео/poster-1776377398659.jpg
+imagePositionY: 56
 ---
 # Творожно-маковый рулет
 

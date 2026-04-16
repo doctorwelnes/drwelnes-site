@@ -18,11 +18,11 @@ ingredients:
     isGroup: true
   - name: Банан (зрелый)
     amount: 1 шт.
-    weight: ''
+    weight: '110'
     isGroup: false
   - name: Яйцо
     amount: 1 шт.
-    weight: ''
+    weight: '60'
     isGroup: false
   - name: Какао без сахара
     amount: ''
