@@ -89,6 +89,7 @@ rsync -a --delete \
   --exclude 'current' \
   --exclude '.env.production' \
   --exclude 'public/uploads/' \
+  --exclude 'package-lock.json' \
   "$PROJECT_ROOT"/ "$TMP_RELEASE_DIR"/
 
 mkdir -p "$TMP_RELEASE_DIR/public"
