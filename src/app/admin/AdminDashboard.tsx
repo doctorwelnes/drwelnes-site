@@ -1133,7 +1133,6 @@ export default function AdminDashboard({ username = "Admin" }: { username?: stri
               handleAICommand={handleAICommand}
               applyMarkdown={applyMarkdown}
               openGallery={openGallery}
-              handleUploadMedia={handleGalleryUpload}
               moveItem={moveItem}
               editorRef={editorRef}
             />

@@ -2,7 +2,6 @@
 
 import React from "react";
 import {
-  Type,
   Image as ImageIcon,
   Video,
   Bold as BoldIcon,
@@ -11,26 +10,24 @@ import {
   List as ListIcon,
   Quote as QuoteIcon,
   Table,
-  Clock,
-  CheckCircle2,
   Sparkles,
-  Flame,
-  Dna,
-  Droplets,
-  Wheat,
   MoveHorizontal,
   MoveVertical,
   Plus,
   Trash2,
 } from "lucide-react";
+import type { Frontmatter as AdminFrontmatter } from "../AdminDashboard";
 import { EditorMetadata } from "./EditorMetadata";
 import { IngredientsList } from "./IngredientsList";
 import { StepsList } from "./StepsList";
 
+type IngredientItem = { name: string; amount: string; weight: string; isGroup?: boolean };
+type StepItem = { text: string };
+
 interface AdminEditorProps {
   activeFile: string | null;
-  frontmatter: any;
-  setFrontmatter: (fm: any) => void;
+  frontmatter: AdminFrontmatter;
+  setFrontmatter: React.Dispatch<React.SetStateAction<AdminFrontmatter>>;
   fileContent: string;
   setFileContent: (content: string) => void;
   isAIGenerating: boolean;
@@ -47,7 +44,6 @@ interface AdminEditorProps {
     type: "bold" | "italic" | "link" | "list" | "quote" | "h2" | "h3" | "table",
   ) => void;
   openGallery: (field?: string | null, folderPath?: string) => void;
-  handleUploadMedia: (file: File, customName?: string, folderPath?: string) => Promise<void>;
   moveItem: (type: "ingredients" | "steps", index: number, direction: "up" | "down") => void;
   editorRef: React.RefObject<HTMLTextAreaElement | null>;
 }
@@ -86,6 +82,51 @@ function normalizeMediaUrl(value: string) {
   return trimmed;
 }
 
+function getStringField(value: unknown) {
+  return typeof value === "string" ? value : "";
+}
+
+function getNumberField(value: unknown, fallback = 50) {
+  return typeof value === "number" && Number.isFinite(value) ? value : fallback;
+}
+
+function getIngredientItems(value: unknown): IngredientItem[] {
+  if (!Array.isArray(value)) return [];
+
+  return value.map((item) => {
+    const record = item as Record<string, unknown>;
+
+    return {
+      name: getStringField(record.name),
+      amount: getStringField(record.amount),
+      weight: getStringField(record.weight),
+      isGroup: Boolean(record.isGroup),
+    };
+  });
+}
+
+function getStepItems(value: unknown): StepItem[] {
+  if (!Array.isArray(value)) return [];
+
+  return value.map((item) => {
+    const record = item as Record<string, unknown>;
+
+    return {
+      text: getStringField(record.text),
+    };
+  });
+}
+
+function getStringArrayField(value: unknown) {
+  return Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === "string")
+    : [];
+}
+
+function getFrontmatterValue(frontmatter: AdminFrontmatter, key: string) {
+  return getStringField(frontmatter[key]);
+}
+
 export function AdminEditor({
   activeFile,
   frontmatter,
@@ -96,7 +137,6 @@ export function AdminEditor({
   handleAICommand,
   applyMarkdown,
   openGallery,
-  handleUploadMedia,
   moveItem,
   editorRef,
 }: AdminEditorProps) {
@@ -105,7 +145,19 @@ export function AdminEditor({
   const isRecipe = activeFile?.includes("recipes/");
   const isExercise = activeFile?.includes("exercises/");
   const isTheory = activeFile?.includes("theory/");
-  const defaultGalleryFolder = isRecipe || isExercise ? "/uploads/кадры-видео" : undefined;
+  const defaultPosterGalleryFolder = isRecipe || isExercise ? "/uploads/кадры-видео" : undefined;
+  const defaultVideoGalleryFolder = isRecipe || isExercise ? "/uploads/Видео" : undefined;
+  const ingredients = getIngredientItems(frontmatter.ingredients);
+  const steps = getStepItems(frontmatter.steps);
+  const cardImage = getStringField(frontmatter.cardImage);
+  const image = getStringField(frontmatter.image);
+  const articleImages = getStringArrayField(frontmatter.articleImages);
+  const videoFile = getStringField(frontmatter.videoFile || frontmatter.videoUrl);
+  const videoPoster = getStringField(frontmatter.videoPoster);
+  const cardImagePositionX = getNumberField(frontmatter.cardImagePositionX);
+  const cardImagePositionY = getNumberField(frontmatter.cardImagePositionY);
+  const imagePositionX = getNumberField(frontmatter.imagePositionX);
+  const imagePositionY = getNumberField(frontmatter.imagePositionY);
 
   const handleVideoMetadata = (e: React.SyntheticEvent<HTMLVideoElement>) => {
     const video = e.currentTarget;
@@ -151,12 +203,12 @@ export function AdminEditor({
                 {isRecipe && (
                   <>
                     <IngredientsList
-                      ingredients={frontmatter.ingredients || []}
+                      ingredients={ingredients}
                       onChange={(val) => setFrontmatter({ ...frontmatter, ingredients: val })}
                       moveItem={(idx, dir) => moveItem("ingredients", idx, dir)}
                     />
                     <StepsList
-                      steps={frontmatter.steps || []}
+                      steps={steps}
                       onChange={(val) => setFrontmatter({ ...frontmatter, steps: val })}
                       moveItem={(idx, dir) => moveItem("steps", idx, dir)}
                     />
@@ -274,7 +326,10 @@ export function AdminEditor({
                           </label>
                           <button
                             onClick={() =>
-                              openGallery(isTheory ? "cardImage" : "image", defaultGalleryFolder)
+                              openGallery(
+                                isTheory ? "cardImage" : "image",
+                                defaultPosterGalleryFolder,
+                              )
                             }
                             className="text-[9px] font-black uppercase tracking-widest text-amber-500/50 hover:text-amber-500 transition-all flex items-center gap-1.5"
                           >
@@ -286,9 +341,7 @@ export function AdminEditor({
                           <div className="flex-1 relative">
                             <input
                               type="text"
-                              value={
-                                isTheory ? frontmatter.cardImage || "" : frontmatter.image || ""
-                              }
+                              value={isTheory ? cardImage : image}
                               onChange={(e) =>
                                 setFrontmatter({
                                   ...frontmatter,
@@ -299,10 +352,10 @@ export function AdminEditor({
                               placeholder="https://images..."
                             />
                           </div>
-                          {(isTheory ? frontmatter.cardImage : frontmatter.image) && (
+                          {(isTheory ? cardImage : image) && (
                             <div className="w-40 h-24 rounded-xl border border-white/5 overflow-hidden bg-black shrink-0 animate-in fade-in zoom-in-95">
                               <img
-                                src={isTheory ? frontmatter.cardImage : frontmatter.image}
+                                src={isTheory ? cardImage : image}
                                 className="w-full h-full object-cover"
                                 alt="Preview"
                               />
@@ -323,7 +376,7 @@ export function AdminEditor({
                             </label>
                             <button
                               onClick={() => {
-                                const currentImages = frontmatter.articleImages || [];
+                                const currentImages = articleImages;
                                 setFrontmatter({
                                   ...frontmatter,
                                   articleImages: [...currentImages, ""],
@@ -336,14 +389,14 @@ export function AdminEditor({
                             </button>
                           </div>
                           <div className="space-y-3">
-                            {(frontmatter.articleImages || []).map((img: string, idx: number) => (
+                            {articleImages.map((img: string, idx: number) => (
                               <div key={idx} className="flex gap-3 items-start">
                                 <div className="flex-1 relative">
                                   <input
                                     type="text"
                                     value={img}
                                     onChange={(e) => {
-                                      const newImages = [...(frontmatter.articleImages || [])];
+                                      const newImages = [...articleImages];
                                       newImages[idx] = e.target.value;
                                       setFrontmatter({ ...frontmatter, articleImages: newImages });
                                     }}
@@ -359,7 +412,7 @@ export function AdminEditor({
                                 </button>
                                 <button
                                   onClick={() => {
-                                    const newImages = [...(frontmatter.articleImages || [])];
+                                    const newImages = [...articleImages];
                                     newImages.splice(idx, 1);
                                     setFrontmatter({ ...frontmatter, articleImages: newImages });
                                   }}
@@ -374,7 +427,7 @@ export function AdminEditor({
                                 )}
                               </div>
                             ))}
-                            {(frontmatter.articleImages || []).length === 0 && (
+                            {articleImages.length === 0 && (
                               <div className="text-[11px] text-neutral-600 italic">
                                 Нет изображений. Нажмите «Добавить» чтобы добавить.
                               </div>
@@ -394,7 +447,7 @@ export function AdminEditor({
                               Видео
                             </label>
                             <button
-                              onClick={() => openGallery("videoFile", defaultGalleryFolder)}
+                              onClick={() => openGallery("videoFile", defaultVideoGalleryFolder)}
                               className="text-[9px] font-black uppercase tracking-widest text-amber-500/50 hover:text-amber-500 transition-all flex items-center gap-1.5"
                             >
                               <ImageIcon size={10} />
@@ -404,9 +457,7 @@ export function AdminEditor({
                           <div className="relative">
                             <input
                               type="text"
-                              value={normalizeMediaUrl(
-                                frontmatter.videoFile || frontmatter.videoUrl || "",
-                              )}
+                              value={normalizeMediaUrl(videoFile)}
                               onChange={(e) =>
                                 setFrontmatter({
                                   ...frontmatter,
@@ -424,14 +475,14 @@ export function AdminEditor({
                   </div>
 
                   {/* Video Preview & Poster */}
-                  {!activeFile?.includes("theory/") && frontmatter.videoFile && (
+                  {!activeFile?.includes("theory/") && videoFile && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 border-t border-white/5">
                       <div
                         className="rounded-2xl overflow-hidden bg-black border border-white/5 shadow-2xl relative w-full"
                         style={{ aspectRatio: videoAspectRatio }}
                       >
                         {(() => {
-                          const v = normalizeMediaUrl(frontmatter.videoFile || "");
+                          const v = normalizeMediaUrl(videoFile);
                           if (
                             v.endsWith(".mp4") ||
                             v.startsWith("/uploads/") ||
@@ -442,9 +493,7 @@ export function AdminEditor({
                                 id="preview-video"
                                 controls
                                 className="w-full h-full object-contain"
-                                poster={
-                                  normalizeMediaUrl(frontmatter.videoPoster || "") || undefined
-                                }
+                                poster={normalizeMediaUrl(videoPoster) || undefined}
                                 crossOrigin="anonymous"
                                 onLoadedMetadata={handleVideoMetadata}
                               >
@@ -469,7 +518,7 @@ export function AdminEditor({
                             Обложка видео
                           </label>
                           <button
-                            onClick={() => openGallery("videoPoster", defaultGalleryFolder)}
+                            onClick={() => openGallery("videoPoster", defaultPosterGalleryFolder)}
                             className="text-[9px] font-black uppercase tracking-widest text-amber-500/50 hover:text-amber-500 transition-all flex items-center gap-1.5"
                           >
                             <ImageIcon size={10} />
@@ -480,7 +529,9 @@ export function AdminEditor({
                           <div className="flex-1 relative">
                             <input
                               type="text"
-                              value={normalizeMediaUrl(frontmatter.videoPoster || "")}
+                              value={normalizeMediaUrl(
+                                getFrontmatterValue(frontmatter, "videoPoster"),
+                              )}
                               onChange={(e) =>
                                 setFrontmatter({
                                   ...frontmatter,
@@ -491,10 +542,12 @@ export function AdminEditor({
                               placeholder="Ссылка на обложку..."
                             />
                           </div>
-                          {frontmatter.videoPoster && (
-                            <div className="w-40 h-24 rounded-xl border border-white/5 overflow-hidden bg-black flex-shrink-0">
+                          {getFrontmatterValue(frontmatter, "videoPoster") && (
+                            <div className="w-40 h-24 rounded-xl border border-white/5 overflow-hidden bg-black shrink-0">
                               <img
-                                src={normalizeMediaUrl(frontmatter.videoPoster || "")}
+                                src={normalizeMediaUrl(
+                                  getFrontmatterValue(frontmatter, "videoPoster"),
+                                )}
                                 className="w-full h-full object-cover"
                                 alt="Poster"
                               />
@@ -502,8 +555,8 @@ export function AdminEditor({
                           )}
                         </div>
 
-                        {(frontmatter.videoFile?.endsWith(".mp4") ||
-                          frontmatter.videoFile?.startsWith("/")) && (
+                        {(getFrontmatterValue(frontmatter, "videoFile").endsWith(".mp4") ||
+                          getFrontmatterValue(frontmatter, "videoFile").startsWith("/")) && (
                           <button
                             onClick={() => {
                               const video = document.getElementById(
@@ -557,9 +610,9 @@ export function AdminEditor({
                 {/* Image Positioning for Recipe, Exercise and Theory Cards */}
                 {(isRecipe || isExercise || isTheory) &&
                   (isExercise || isRecipe
-                    ? frontmatter.image
+                    ? getFrontmatterValue(frontmatter, "image")
                     : isTheory
-                      ? frontmatter.cardImage
+                      ? getFrontmatterValue(frontmatter, "cardImage")
                       : null) && (
                     <div className="bg-[#0d0d0d] p-8 rounded-3xl border border-white/5 shadow-2xl space-y-6">
                       <div className="flex items-center gap-3 border-b border-white/5 pb-4">
@@ -578,11 +631,7 @@ export function AdminEditor({
                             type="range"
                             min="0"
                             max="100"
-                            value={
-                              isTheory
-                                ? frontmatter.cardImagePositionX
-                                : (frontmatter.imagePositionX ?? 50)
-                            }
+                            value={isTheory ? cardImagePositionX : imagePositionX}
                             onChange={(e) =>
                               setFrontmatter({
                                 ...frontmatter,
@@ -596,10 +645,7 @@ export function AdminEditor({
                           <div className="flex items-center justify-between text-[9px] text-neutral-500">
                             <span>Лево</span>
                             <span className="text-amber-500 font-black">
-                              {(isTheory
-                                ? frontmatter.cardImagePositionX
-                                : frontmatter.imagePositionX) ?? 50}
-                              %
+                              {isTheory ? cardImagePositionX : imagePositionX}%
                             </span>
                             <span>Право</span>
                           </div>
@@ -613,11 +659,7 @@ export function AdminEditor({
                             type="range"
                             min="0"
                             max="100"
-                            value={
-                              isTheory
-                                ? frontmatter.cardImagePositionY
-                                : (frontmatter.imagePositionY ?? 50)
-                            }
+                            value={isTheory ? cardImagePositionY : imagePositionY}
                             onChange={(e) =>
                               setFrontmatter({
                                 ...frontmatter,
@@ -631,10 +673,7 @@ export function AdminEditor({
                           <div className="flex items-center justify-between text-[9px] text-neutral-500">
                             <span>Верх</span>
                             <span className="text-amber-500 font-black">
-                              {isTheory
-                                ? frontmatter.cardImagePositionY
-                                : (frontmatter.imagePositionY ?? 50)}
-                              %
+                              {isTheory ? cardImagePositionY : imagePositionY}%
                             </span>
                             <span>Низ</span>
                           </div>
@@ -647,11 +686,11 @@ export function AdminEditor({
                         </div>
                         <div className="relative h-56 w-full max-w-xs bg-[#0c0c0c] rounded-xl overflow-hidden border border-neutral-800">
                           <img
-                            src={isTheory ? frontmatter.cardImage : frontmatter.image}
+                            src={isTheory ? cardImage : image}
                             alt="Preview"
                             className="w-full h-full object-cover"
                             style={{
-                              objectPosition: `${(isTheory ? frontmatter.cardImagePositionX : frontmatter.imagePositionX) ?? 50}% ${(isTheory ? frontmatter.cardImagePositionY : frontmatter.imagePositionY) ?? 50}%`,
+                              objectPosition: `${(isTheory ? cardImagePositionX : imagePositionX) ?? 50}% ${(isTheory ? cardImagePositionY : imagePositionY) ?? 50}%`,
                             }}
                           />
                         </div>
