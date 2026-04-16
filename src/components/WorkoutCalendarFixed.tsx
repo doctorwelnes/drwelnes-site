@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { Calendar, Clock, MapPin, X, Users, Plus } from "lucide-react";
+import { Calendar, Clock, MapPin, X, Users } from "lucide-react";
 import CustomCalendar from "./CustomCalendar";
 
 interface WorkoutSlot {
@@ -39,7 +39,6 @@ export default function WorkoutCalendar({
   const [isLoading, setIsLoading] = useState(false);
   const [bookingNotes, setBookingNotes] = useState("");
   const [isBooking, setIsBooking] = useState(false);
-  const [isJoiningWaitlist, setIsJoiningWaitlist] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
@@ -128,58 +127,12 @@ export default function WorkoutCalendar({
         }, 3000);
       } else {
         const data = await response.json();
-
-        // Если слот заполнен, предлагаем очередь
-        if (data.canJoinWaitlist) {
-          if (confirm("Слот заполнен. Хотите добавиться в очередь?")) {
-            await handleJoinWaitlist();
-          }
-        } else {
-          setError(data.error || "Ошибка при записи на тренировку");
-        }
+        setError(data.error || "Ошибка при записи на тренировку");
       }
     } catch {
       setError("Ошибка при записи на тренировку");
     } finally {
       setIsBooking(false);
-    }
-  };
-
-  const handleJoinWaitlist = async () => {
-    if (!selectedSlot || !userId) return;
-
-    setIsJoiningWaitlist(true);
-    setError("");
-
-    try {
-      const response = await fetch("/api/waitlist", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          slotId: selectedSlot.id,
-          userId,
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setSuccess(`Вы добавлены в очередь! Ваше место: #${data.position}`);
-        setSelectedSlot(null);
-        fetchSlots();
-
-        setTimeout(() => {
-          setSuccess("");
-        }, 3000);
-      } else {
-        const data = await response.json();
-        setError(data.error || "Ошибка при добавлении в очередь");
-      }
-    } catch {
-      setError("Ошибка при добавлении в очередь");
-    } finally {
-      setIsJoiningWaitlist(false);
     }
   };
 
@@ -227,9 +180,9 @@ export default function WorkoutCalendar({
   return (
     <>
       <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div className="bg-gradient-to-b from-[#1a1d24] to-[#13151a] rounded-2xl border border-white/10 shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col animate-in fade-in slide-in-from-bottom duration-200">
+        <div className="bg-linear-to-b from-[#1a1d24] to-[#13151a] rounded-2xl border border-white/10 shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col animate-in fade-in slide-in-from-bottom duration-200">
           {/* Header */}
-          <div className="bg-gradient-to-r from-orange-500/20 to-red-500/20 p-4 sm:p-6 border-b border-orange-500/20 flex-shrink-0">
+          <div className="bg-linear-to-r from-orange-500/20 to-red-500/20 p-4 sm:p-6 border-b border-orange-500/20 shrink-0">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-xl sm:text-2xl font-black text-white uppercase tracking-wider">
@@ -247,7 +200,7 @@ export default function WorkoutCalendar({
           </div>
 
           {/* Date Selection */}
-          <div className="p-4 sm:p-6 border-b border-white/10 flex-shrink-0">
+          <div className="p-4 sm:p-6 border-b border-white/10 shrink-0">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
                 <h3 className="text-base sm:text-lg font-medium text-white mb-1">Выберите дату</h3>
@@ -281,7 +234,7 @@ export default function WorkoutCalendar({
                   <div
                     key={slot.id}
                     onClick={() => setSelectedSlot(slot)}
-                    className="bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl border border-white/10 hover:border-orange-500/30 transition-all duration-200 cursor-pointer group"
+                    className="bg-linear-to-br from-white/5 to-white/2 rounded-xl border border-white/10 hover:border-orange-500/30 transition-all duration-200 cursor-pointer group"
                   >
                     <div className="p-4">
                       <div className="flex items-start justify-between mb-3">
@@ -312,8 +265,8 @@ export default function WorkoutCalendar({
                                 {getStatusText(slot.status)}
                               </span>
                               {isSlotFull(slot) && (
-                                <span className="px-2 py-1 rounded-lg text-xs font-black uppercase tracking-wide bg-yellow-500/20 text-yellow-500 border border-yellow-500/30">
-                                  Очередь
+                                <span className="px-2 py-1 rounded-lg text-xs font-black uppercase tracking-wide bg-red-500/20 text-red-500 border border-red-500/30">
+                                  Занято
                                 </span>
                               )}
                             </div>
@@ -339,8 +292,8 @@ export default function WorkoutCalendar({
                           </div>
                           {slot.location && (
                             <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-lg border border-white/10">
-                              <MapPin className="w-4 h-4 text-orange-500 flex-shrink-0" />
-                              <span className="text-zinc-300 text-xs sm:text-sm break-words flex-1">
+                              <MapPin className="w-4 h-4 text-orange-500 shrink-0" />
+                              <span className="text-zinc-300 text-xs sm:text-sm wrap-break-word flex-1">
                                 {slot.location}
                               </span>
                             </div>
@@ -364,7 +317,7 @@ export default function WorkoutCalendar({
 
           {/* Booking Form */}
           {selectedSlot && (
-            <div className="border-t border-white/10 p-4 sm:p-6 bg-[#13151a] flex-shrink-0">
+            <div className="border-t border-white/10 p-4 sm:p-6 bg-[#13151a] shrink-0">
               <div className="space-y-4">
                 <div>
                   <h4 className="text-white font-medium mb-2">
@@ -373,7 +326,7 @@ export default function WorkoutCalendar({
                   <div className="text-sm text-zinc-400 space-y-1">
                     <p>Дата: {formatDate(selectedSlot.date)}</p>
                     {selectedSlot.location && (
-                      <p className="break-words">Место: {selectedSlot.location}</p>
+                      <p className="wrap-break-word">Место: {selectedSlot.location}</p>
                     )}
                     {selectedSlot.price && <p>Цена: {selectedSlot.price} ₽</p>}
                     <div className="flex items-center gap-1">
@@ -401,24 +354,17 @@ export default function WorkoutCalendar({
                     Отмена
                   </button>
 
-                  {!isSlotFull(selectedSlot) ? (
-                    <button
-                      onClick={handleBooking}
-                      disabled={isBooking}
-                      className="flex-1 py-3 bg-orange-500 text-white rounded-xl font-medium hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
-                    >
-                      {isBooking ? "Запись..." : "Записаться"}
-                    </button>
-                  ) : (
-                    <button
-                      onClick={handleJoinWaitlist}
-                      disabled={isJoiningWaitlist}
-                      className="flex-1 py-3 bg-yellow-500 text-white rounded-xl font-medium hover:bg-yellow-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm sm:text-base"
-                    >
-                      <Plus className="w-4 h-4" />
-                      {isJoiningWaitlist ? "Добавление..." : "В очередь"}
-                    </button>
-                  )}
+                  <button
+                    onClick={handleBooking}
+                    disabled={isBooking || isSlotFull(selectedSlot)}
+                    className="flex-1 py-3 bg-orange-500 text-white rounded-xl font-medium hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+                  >
+                    {isSlotFull(selectedSlot)
+                      ? "Слот занят"
+                      : isBooking
+                        ? "Запись..."
+                        : "Записаться"}
+                  </button>
                 </div>
               </div>
             </div>
@@ -442,7 +388,7 @@ export default function WorkoutCalendar({
       {/* Calendar Modal */}
       {isCalendarOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-gradient-to-b from-[#1a1d24] to-[#13151a] rounded-2xl border border-white/10 shadow-2xl w-full max-w-md animate-in fade-in slide-in-from-bottom duration-200">
+          <div className="bg-linear-to-b from-[#1a1d24] to-[#13151a] rounded-2xl border border-white/10 shadow-2xl w-full max-w-md animate-in fade-in slide-in-from-bottom duration-200">
             <div className="flex items-center justify-between p-4 sm:p-6 border-b border-white/10">
               <h3 className="text-lg font-black text-white uppercase tracking-wider">
                 Выберите дату

@@ -13,6 +13,57 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
+  const formatPhoneNumber = (value: string) => {
+    const digits = value.replace(/\D/g, "");
+
+    if (!digits) return "";
+
+    let cleanDigits = digits;
+    if (!cleanDigits.startsWith("7")) {
+      cleanDigits = `7${cleanDigits}`;
+    }
+
+    cleanDigits = cleanDigits.slice(0, 11);
+
+    if (cleanDigits.length === 1) {
+      return `+${cleanDigits}`;
+    }
+
+    if (cleanDigits.length <= 4) {
+      return `+${cleanDigits.slice(0, 1)} (${cleanDigits.slice(1)}`;
+    }
+
+    if (cleanDigits.length <= 7) {
+      return `+${cleanDigits.slice(0, 1)} (${cleanDigits.slice(1, 4)}) ${cleanDigits.slice(4)}`;
+    }
+
+    if (cleanDigits.length <= 9) {
+      return `+${cleanDigits.slice(0, 1)} (${cleanDigits.slice(1, 4)}) ${cleanDigits.slice(4, 7)}-${cleanDigits.slice(7)}`;
+    }
+
+    return `+${cleanDigits.slice(0, 1)} (${cleanDigits.slice(1, 4)}) ${cleanDigits.slice(4, 7)}-${cleanDigits.slice(7, 9)}-${cleanDigits.slice(9, 11)}`;
+  };
+
+  const formatIdentifier = (value: string) => {
+    const cleanValue = value.replace(/[^\d+a-zA-Z_@+]/g, "");
+
+    if (/^[a-zA-Z_@]/.test(cleanValue) && !/^\+?\d/.test(cleanValue)) {
+      return cleanValue.startsWith("@") ? cleanValue : `@${cleanValue}`;
+    }
+
+    if (/^\+?\d/.test(cleanValue)) {
+      return formatPhoneNumber(value);
+    }
+
+    return value;
+  };
+
+  const handleIdentifierChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIdentifier(formatIdentifier(e.target.value));
+  };
+
+  const identifierMaxLength = identifier.startsWith("@") ? 32 : 18;
+
   const handleCopy = async (text: string, field: string) => {
     try {
       // Try modern Clipboard API first
@@ -131,7 +182,8 @@ export default function LoginPage() {
                   <input
                     type="text"
                     value={identifier}
-                    onChange={(e) => setIdentifier(e.target.value)}
+                    onChange={handleIdentifierChange}
+                    maxLength={identifierMaxLength}
                     required
                     placeholder="@username или +7 999 123-45-67"
                     className="w-full bg-[#0c0d10]/50 border border-white/5 rounded-[24px] py-4 px-6 text-sm font-bold text-white placeholder:text-zinc-800 outline-none focus:border-orange-500/30 focus:ring-4 focus:ring-orange-500/5 transition-all shadow-inner"

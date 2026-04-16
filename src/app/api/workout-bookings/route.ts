@@ -227,16 +227,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (slot.currentParticipants >= slot.maxParticipants) {
-      // Слот заполнен, но можно добавить в очередь
-      return NextResponse.json(
-        {
-          error: "This slot is already full",
-          canJoinWaitlist: true,
-          slotId: slot.id,
-          message: "Slot is full, but you can join the waitlist",
-        },
-        { status: 409 },
-      );
+      return NextResponse.json({ error: "This slot is already full" }, { status: 409 });
     }
 
     // Проверяем, что пользователь уже записывался на этот слот

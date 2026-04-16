@@ -26,6 +26,52 @@ export default function RegisterClient() {
   const methodConfig = useMemo(() => METHOD_CONFIG[method], [method]);
   const IdentifierIcon = methodConfig.icon;
 
+  const formatPhoneNumber = (value: string) => {
+    const digits = value.replace(/\D/g, "");
+
+    if (!digits) return "";
+
+    let cleanDigits = digits;
+    if (!cleanDigits.startsWith("7")) {
+      cleanDigits = `7${cleanDigits}`;
+    }
+
+    cleanDigits = cleanDigits.slice(0, 11);
+
+    if (cleanDigits.length === 1) {
+      return `+${cleanDigits}`;
+    }
+
+    if (cleanDigits.length <= 4) {
+      return `+${cleanDigits.slice(0, 1)} (${cleanDigits.slice(1)}`;
+    }
+
+    if (cleanDigits.length <= 7) {
+      return `+${cleanDigits.slice(0, 1)} (${cleanDigits.slice(1, 4)}) ${cleanDigits.slice(4)}`;
+    }
+
+    if (cleanDigits.length <= 9) {
+      return `+${cleanDigits.slice(0, 1)} (${cleanDigits.slice(1, 4)}) ${cleanDigits.slice(4, 7)}-${cleanDigits.slice(7)}`;
+    }
+
+    return `+${cleanDigits.slice(0, 1)} (${cleanDigits.slice(1, 4)}) ${cleanDigits.slice(4, 7)}-${cleanDigits.slice(7, 9)}-${cleanDigits.slice(9, 11)}`;
+  };
+
+  const formatIdentifier = (value: string) => {
+    if (method === "phone") {
+      return formatPhoneNumber(value);
+    }
+
+    const cleanValue = value.replace(/[^\d+a-zA-Z_@+]/g, "");
+    return cleanValue.startsWith("@") ? cleanValue : `@${cleanValue.replace(/^@/, "")}`;
+  };
+
+  const handleIdentifierChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIdentifier(formatIdentifier(e.target.value));
+  };
+
+  const identifierMaxLength = method === "telegram" ? 32 : 18;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -145,7 +191,8 @@ export default function RegisterClient() {
                       required
                       type="text"
                       value={identifier}
-                      onChange={(e) => setIdentifier(e.target.value)}
+                      onChange={handleIdentifierChange}
+                      maxLength={identifierMaxLength}
                       placeholder={methodConfig.placeholder}
                       className="w-full bg-[#0c0d10]/50 border border-white/5 rounded-[24px] py-4 pl-14 pr-6 text-sm font-bold text-white placeholder:text-zinc-800 outline-none focus:border-[#f95700]/30 focus:ring-4 focus:ring-[#f95700]/5 transition-all shadow-inner"
                     />

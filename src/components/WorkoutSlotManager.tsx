@@ -68,6 +68,8 @@ export default function WorkoutSlotManager() {
   const [isClearAllModalOpen, setIsClearAllModalOpen] = useState(false);
   const [isEveningPackageModalOpen, setIsEveningPackageModalOpen] = useState(false);
   const [eveningPackageDate, setEveningPackageDate] = useState("");
+  const [isWeeklyPackageModalOpen, setIsWeeklyPackageModalOpen] = useState(false);
+  const [weeklyPackageDate, setWeeklyPackageDate] = useState("");
   const [slotToDelete, setSlotToDelete] = useState<string | null>(null);
   const [toasts, setToasts] = useState<
     { id: string; message: string; type: "success" | "error" | "info" }[]
@@ -79,6 +81,69 @@ export default function WorkoutSlotManager() {
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
     }, 4000);
+  };
+
+  const confirmWeeklyPackage = async () => {
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const anchorDate = weeklyPackageDate || formatLocalDateKey(new Date());
+      const weekStart = getStartOfWeek(anchorDate);
+      const slots = [];
+
+      for (let dayOffset = 0; dayOffset < 7; dayOffset += 1) {
+        const currentDate = new Date(weekStart);
+        currentDate.setDate(weekStart.getDate() + dayOffset);
+        const dateKey = formatLocalDateKey(currentDate);
+
+        for (let hour = 17; hour <= 22; hour += 1) {
+          const startTime = `${hour.toString().padStart(2, "0")}:00`;
+          const endTime = `${(hour + 1).toString().padStart(2, "0")}:00`;
+
+          slots.push({
+            date: dateKey,
+            startTime,
+            endTime,
+            maxParticipants: 1,
+            location: "DDX Fitness ул. Саляма Адиля, 4, РЦ Патриот, этаж -1",
+            workoutType: "Персональная тренировка",
+            price: 4000,
+            notes: "Недельный пакет",
+          });
+        }
+      }
+
+      const response = await fetch("/api/workout-slots/batch", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ slots }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        const createdCount = data.slots?.length || slots.length;
+        setSuccess("Недельный пакет создан");
+        addToast(
+          `📅 Недельный пакет создан! Создано ${createdCount} слотов на неделю ${formatWeekRange(anchorDate)}`,
+          "success",
+        );
+        fetchSlots();
+        setTimeout(() => setSuccess(""), 3000);
+      } else {
+        setError(data.error || "Ошибка создания недельного пакета");
+        addToast("❌ Не удалось создать недельный пакет. Попробуйте еще раз", "error");
+      }
+    } catch {
+      setError("Ошибка при создании недельного пакета");
+      addToast("❌ Ошибка сети при создании недельного пакета", "error");
+    } finally {
+      setIsLoading(false);
+      setIsWeeklyPackageModalOpen(false);
+    }
   };
 
   // Форма для создания/редактирования
@@ -306,6 +371,28 @@ export default function WorkoutSlotManager() {
     setIsEveningPackageModalOpen(true);
   };
 
+  const getStartOfWeek = (dateValue: string) => {
+    const date = new Date(`${dateValue}T00:00:00`);
+    const day = date.getDay();
+    const diff = day === 0 ? -6 : 1 - day;
+    date.setDate(date.getDate() + diff);
+    date.setHours(0, 0, 0, 0);
+    return date;
+  };
+
+  const formatWeekRange = (dateValue: string) => {
+    const start = getStartOfWeek(dateValue);
+    const end = new Date(start);
+    end.setDate(start.getDate() + 6);
+
+    return `${start.toLocaleDateString("ru-RU", { day: "numeric", month: "long" })} — ${end.toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" })}`;
+  };
+
+  const handleWeeklyPackage = async () => {
+    setWeeklyPackageDate(filterDate || formatLocalDateKey(new Date()));
+    setIsWeeklyPackageModalOpen(true);
+  };
+
   const confirmEveningPackage = async () => {
     setIsLoading(true);
     setError("");
@@ -412,6 +499,65 @@ export default function WorkoutSlotManager() {
                   className="flex-1 bg-red-500 hover:bg-red-400 text-white shadow-red-500/20 py-4 rounded-2xl transition-all"
                 >
                   Удалить
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Модальное окно недельного пакета */}
+      {isWeeklyPackageModalOpen && (
+        <div
+          className="fixed inset-0 bg-black/80 z-600 flex items-center justify-center p-6 backdrop-blur-md"
+          onClick={() => setIsWeeklyPackageModalOpen(false)}
+        >
+          <div
+            className="bg-[#141414] border border-neutral-800 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-8">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-cyan-500/10 text-cyan-400">
+                  <Calendar size={24} />
+                </div>
+                <div>
+                  <h2 className="text-xl font-black text-white">Недельный пакет</h2>
+                  <p className="text-neutral-500 text-sm mt-1">
+                    Создать вечерние слоты на всю неделю, начиная с выбранной даты.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-zinc-400 mb-2">
+                  Дата внутри недели
+                </label>
+                <input
+                  type="date"
+                  value={weeklyPackageDate}
+                  onChange={(e) => setWeeklyPackageDate(e.target.value)}
+                  className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-cyan-500/50"
+                />
+                {weeklyPackageDate && (
+                  <p className="mt-2 text-xs text-zinc-500">
+                    Неделя: {formatWeekRange(weeklyPackageDate)}
+                  </p>
+                )}
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setIsWeeklyPackageModalOpen(false)}
+                  className="flex-1 bg-neutral-900 hover:bg-neutral-800 text-neutral-400 font-bold py-4 rounded-2xl transition-all border border-neutral-800"
+                >
+                  Отмена
+                </button>
+                <button
+                  onClick={confirmWeeklyPackage}
+                  className="flex-1 bg-cyan-500 hover:bg-cyan-400 text-black shadow-cyan-500/20 py-4 rounded-2xl transition-all"
+                >
+                  Создать пакет
                 </button>
               </div>
             </div>
@@ -592,6 +738,14 @@ export default function WorkoutSlotManager() {
             >
               <Calendar className="w-4 h-4" />
               <span className="truncate">Вечерний пакет</span>
+            </button>
+            <button
+              onClick={handleWeeklyPackage}
+              disabled={isLoading}
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-cyan-500 text-white rounded-lg font-medium hover:bg-cyan-600 transition-colors disabled:opacity-50 text-sm"
+            >
+              <Calendar className="w-4 h-4" />
+              <span className="truncate">Недельный пакет</span>
             </button>
             <button
               onClick={handleClearAll}
