@@ -4,10 +4,19 @@ This folder contains everything you need to deploy **Dr.Welnes** on a Linux VPS 
 
 ## What is included
 
-- `deploy.sh` — one-command deploy/update script
+- `deploy-atomic.sh` — one-command deploy/update script
 - `ecosystem.config.cjs` — PM2 process configuration
 - `nginx.conf` — reverse proxy config for Nginx
 - `env.production.example` — production environment template for a VPS
+
+> `deploy.sh` at the repository root now just calls `deploy-atomic.sh`.
+
+The deploy script now uses an **atomic release flow**:
+
+- each build goes into `releases/<timestamp>-<gitsha>`
+- the live app always runs from the `current` symlink
+- `public/uploads` stays persistent in `shared/public/uploads`
+- if the healthcheck fails, the script rolls back to the previous release
 
 ## Recommended server
 
@@ -101,23 +110,25 @@ Fill in:
 ### 9) Make the deploy script executable
 
 ```bash
-chmod +x deploy/timeweb-cloud/deploy.sh
+chmod +x deploy/timeweb-cloud/deploy-atomic.sh
 ```
 
 ### 10) Run the first deploy
 
 ```bash
-deploy/timeweb-cloud/deploy.sh
+bash deploy/timeweb-cloud/deploy-atomic.sh
 ```
 
 This will:
 
-- install dependencies
-- generate Prisma client
+- copy the repository into a timestamped release directory
+- install dependencies inside the release
+- generate the Prisma client
 - run Prisma migrations
 - build the app
-- copy static assets into the standalone output
-- start/reload PM2
+- prepare the standalone output and persistent uploads symlink
+- switch `current` to the new release only after the build succeeds
+- reload PM2 and verify the app with a healthcheck
 
 ### 11) Enable PM2 on boot
 
@@ -180,7 +191,7 @@ After each new release:
 ```bash
 cd /var/www/dr-welnes
 git pull
-deploy/timeweb-cloud/deploy.sh
+bash deploy/timeweb-cloud/deploy-atomic.sh
 ```
 
 ## Notes
@@ -189,3 +200,4 @@ deploy/timeweb-cloud/deploy.sh
 - Do not use `npm run dev` in production.
 - If you change database schema, deploy with `prisma migrate deploy` only.
 - The app already uses `output: "standalone"`, so this deployment runs the generated standalone server.
+- The live PM2 process points at `/var/www/dr-welnes/current`, not the mutable repository root.

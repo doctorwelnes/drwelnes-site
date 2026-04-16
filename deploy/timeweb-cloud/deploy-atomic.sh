@@ -42,6 +42,12 @@ rollback_to_previous_release() {
   log "Rollback completed successfully"
 }
 
+cleanup_staging() {
+  if [ -d "$TMP_RELEASE_DIR" ]; then
+    rm -rf "$TMP_RELEASE_DIR"
+  fi
+}
+
 log "Checking prerequisites"
 require_command curl
 require_command git
@@ -69,12 +75,6 @@ STANDALONE_STATIC_DIR="$STANDALONE_DIR/.next/static"
 if [ -e "$TMP_RELEASE_DIR" ]; then
   rm -rf "$TMP_RELEASE_DIR"
 fi
-
-cleanup_staging() {
-  if [ -d "$TMP_RELEASE_DIR" ]; then
-    rm -rf "$TMP_RELEASE_DIR"
-  fi
-}
 
 trap cleanup_staging EXIT
 

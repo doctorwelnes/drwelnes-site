@@ -1,11 +1,12 @@
 const PROJECT_DIR = "/var/www/dr-welnes";
+const CURRENT_DIR = `${PROJECT_DIR}/current`;
 
 module.exports = {
   apps: [
     {
       name: "dr-welnes",
-      script: `${PROJECT_DIR}/.next/standalone/server.js`,
-      cwd: PROJECT_DIR,
+      script: `${CURRENT_DIR}/.next/standalone/server.js`,
+      cwd: CURRENT_DIR,
       instances: 1,
       exec_mode: "fork",
       watch: false,

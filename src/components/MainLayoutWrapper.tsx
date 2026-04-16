@@ -6,16 +6,10 @@ import Link from "next/link";
 import TopNavClient from "../app/ui/top-nav-client";
 import MobileNavBar from "@/components/MobileNavBar";
 import { PageTransition } from "@/components/PageTransition";
-import { useState, useEffect } from "react";
 
 export default function MainLayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isAdmin = pathname?.startsWith("/admin");
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   if (isAdmin) {
     return <>{children}</>;
@@ -34,13 +28,13 @@ export default function MainLayoutWrapper({ children }: { children: React.ReactN
 
           <div className="mx-auto flex items-center justify-between gap-4 py-2 md:py-4 max-w-7xl px-6 md:px-8">
             <Link href="/" className="flex items-center gap-3 group relative z-10">
-              <div className="relative">
+              <div className="relative rounded-xl bg-white/5 border border-white/10 p-0.5 shadow-2xl">
                 <Image
                   src="/logo-new.png"
                   alt="Dr.Welnes"
                   width={40}
                   height={40}
-                  className="h-10 w-10 rounded-xl object-contain shadow-2xl transition-transform group-hover:scale-110"
+                  className="h-10 w-10 rounded-[10px] object-contain transition-transform group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-orange-500/20 blur-lg rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
@@ -51,7 +45,7 @@ export default function MainLayoutWrapper({ children }: { children: React.ReactN
 
             <div className="flex items-center gap-4 relative z-10">
               <div className="hidden md:flex items-center gap-4 min-h-[40px]">
-                {mounted ? <TopNavClient /> : <div className="w-[100px] h-[36px]" />}
+                <TopNavClient />
               </div>
             </div>
           </div>

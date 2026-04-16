@@ -50,13 +50,15 @@ export const HomeHero = ({ onBookingClick }: HomeHeroProps) => {
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="rounded-full border-2 border-[#0d0d0d] bg-zinc-800 overflow-hidden relative shadow-xl w-8 h-8 md:w-10 md:h-10"
+              className="relative aspect-square w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-[#0d0d0d] bg-zinc-800 overflow-hidden shadow-xl"
             >
               <Image
                 src={`/uploads/avatars/avatar-${i}.jpg`}
                 alt="User avatar"
                 fill
-                className="object-cover"
+                className="object-cover object-center"
+                style={{ objectFit: "cover", objectPosition: "center 30%" }}
+                sizes="40px"
               />
             </div>
           ))}

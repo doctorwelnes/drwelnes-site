@@ -7,4 +7,4 @@ PROJECT_DIR="/var/www/dr-welnes"
 cd "$PROJECT_DIR"
 
 # Use the single source of truth deployment helper.
-bash deploy/timeweb-cloud/deploy.sh
+bash deploy/timeweb-cloud/deploy-atomic.sh

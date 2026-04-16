@@ -20,4 +20,4 @@ jobs:
             rm -f .git/index.lock
             git fetch --prune origin
             git reset --hard origin/master
-            bash deploy/timeweb-cloud/deploy.sh
+            bash deploy/timeweb-cloud/deploy-atomic.sh
