@@ -156,8 +156,24 @@ trap - EXIT
 log "Starting or reloading PM2 process"
 pm2 startOrReload "$PROJECT_ROOT/deploy/timeweb-cloud/ecosystem.config.cjs" --only "$APP_NAME" --env production
 
+log "Waiting for server to start listening on port 3000"
+MAX_WAIT=30
+WAITED=0
+while [ $WAITED -lt $MAX_WAIT ]; do
+  if ss -ltnp 2>/dev/null | grep -q ":3000"; then
+    break
+  fi
+  sleep 1
+  WAITED=$((WAITED + 1))
+done
+
+if [ $WAITED -eq $MAX_WAIT ]; then
+  echo "Server did not start listening on port 3000 within ${MAX_WAIT}s" >&2
+  rollback_to_previous_release "$PREVIOUS_RELEASE"
+fi
+
 log "Running healthcheck"
-if ! curl -fsS --max-time 10 --retry 5 --retry-delay 2 --retry-all-errors "$HEALTHCHECK_URL" >/dev/null; then
+if ! curl -fsS --max-time 10 --retry 10 --retry-delay 3 --retry-all-errors "$HEALTHCHECK_URL" >/dev/null; then
   echo "Healthcheck failed for $HEALTHCHECK_URL" >&2
   rollback_to_previous_release "$PREVIOUS_RELEASE"
 fi
