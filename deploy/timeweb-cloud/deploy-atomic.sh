@@ -3,6 +3,7 @@ set -euo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 APP_NAME="dr-welnes"
+BUILD_ROOT="${BUILD_ROOT:-/tmp/dr-welnes-builds}"
 RELEASES_DIR="$PROJECT_ROOT/releases"
 SHARED_DIR="$PROJECT_ROOT/shared"
 SHARED_UPLOADS_DIR="$SHARED_DIR/public/uploads"
@@ -43,8 +44,8 @@ rollback_to_previous_release() {
 }
 
 cleanup_staging() {
-  if [ -d "$TMP_RELEASE_DIR" ]; then
-    rm -rf "$TMP_RELEASE_DIR"
+  if [ -d "$BUILD_RELEASE_DIR" ]; then
+    rm -rf "$BUILD_RELEASE_DIR"
   fi
 }
 
@@ -66,20 +67,20 @@ mkdir -p "$RELEASES_DIR" "$SHARED_UPLOADS_DIR"
 
 GIT_SHA="$(git -C "$PROJECT_ROOT" rev-parse --short HEAD)"
 RELEASE_ID="$(date -u +%Y%m%d%H%M%S)-${GIT_SHA}"
-RELEASE_DIR="$RELEASES_DIR/$RELEASE_ID"
-TMP_RELEASE_DIR="$RELEASE_DIR.tmp"
-STANDALONE_DIR="$TMP_RELEASE_DIR/.next/standalone"
+FINAL_RELEASE_DIR="$RELEASES_DIR/$RELEASE_ID"
+BUILD_RELEASE_DIR="$BUILD_ROOT/$RELEASE_ID"
+STANDALONE_DIR="$BUILD_RELEASE_DIR/.next/standalone"
 STANDALONE_PUBLIC="$STANDALONE_DIR/public"
 STANDALONE_STATIC_DIR="$STANDALONE_DIR/.next/static"
 
-if [ -e "$TMP_RELEASE_DIR" ]; then
-  rm -rf "$TMP_RELEASE_DIR"
+if [ -e "$BUILD_RELEASE_DIR" ]; then
+  rm -rf "$BUILD_RELEASE_DIR"
 fi
 
 trap cleanup_staging EXIT
 
-log "Preparing release directory $RELEASE_DIR"
-mkdir -p "$TMP_RELEASE_DIR"
+log "Preparing build directory $BUILD_RELEASE_DIR"
+mkdir -p "$BUILD_RELEASE_DIR"
 rsync -a --delete \
   --exclude '.git/' \
   --exclude 'node_modules/' \
@@ -89,25 +90,24 @@ rsync -a --delete \
   --exclude 'current' \
   --exclude '.env.production' \
   --exclude 'public/uploads/' \
-  --exclude 'package-lock.json' \
-  "$PROJECT_ROOT"/ "$TMP_RELEASE_DIR"/
+  "$PROJECT_ROOT"/ "$BUILD_RELEASE_DIR"/
 
-mkdir -p "$TMP_RELEASE_DIR/public"
-rm -rf "$TMP_RELEASE_DIR/public/uploads"
-ln -sfn "$SHARED_UPLOADS_DIR" "$TMP_RELEASE_DIR/public/uploads"
-ln -sfn "$ENV_FILE" "$TMP_RELEASE_DIR/.env.production"
+mkdir -p "$BUILD_RELEASE_DIR/public"
+rm -rf "$BUILD_RELEASE_DIR/public/uploads"
+ln -sfn "$SHARED_UPLOADS_DIR" "$BUILD_RELEASE_DIR/public/uploads"
+ln -sfn "$ENV_FILE" "$BUILD_RELEASE_DIR/.env.production"
 
 log "Loading environment variables"
 set -a
 . "$ENV_FILE"
 set +a
 
-cd "$TMP_RELEASE_DIR"
+cd "$BUILD_RELEASE_DIR"
 
 log "Installing dependencies"
 if ! npm install --include=dev --legacy-peer-deps; then
   log "npm install failed — cleaning node_modules and retrying"
-  rm -rf "$TMP_RELEASE_DIR/node_modules"
+  rm -rf "$BUILD_RELEASE_DIR/node_modules"
   npm install --include=dev --legacy-peer-deps
 fi
 
@@ -118,8 +118,8 @@ log "Applying Prisma migrations"
 npx prisma migrate deploy
 
 log "Clearing previous build artifacts"
-rm -rf "$TMP_RELEASE_DIR/.next"
-rm -rf "$TMP_RELEASE_DIR/node_modules/.cache"
+rm -rf "$BUILD_RELEASE_DIR/.next"
+rm -rf "$BUILD_RELEASE_DIR/node_modules/.cache"
 
 log "Building the application"
 npm run build
@@ -133,17 +133,24 @@ log "Preparing standalone assets"
 rm -rf "$STANDALONE_PUBLIC" "$STANDALONE_STATIC_DIR"
 mkdir -p "$STANDALONE_DIR" "$STANDALONE_STATIC_DIR"
 ln -sfn "../../public" "$STANDALONE_PUBLIC"
-cp -R "$TMP_RELEASE_DIR/.next/static/." "$STANDALONE_STATIC_DIR/"
+cp -R "$BUILD_RELEASE_DIR/.next/static/." "$STANDALONE_STATIC_DIR/"
 
 PREVIOUS_RELEASE=""
 if [ -L "$CURRENT_LINK" ] || [ -e "$CURRENT_LINK" ]; then
   PREVIOUS_RELEASE="$(readlink -f "$CURRENT_LINK" || true)"
 fi
 
+log "Publishing runtime assets"
+rm -rf "$FINAL_RELEASE_DIR"
+mkdir -p "$FINAL_RELEASE_DIR/.next/standalone" "$FINAL_RELEASE_DIR/.next/static" "$FINAL_RELEASE_DIR/public"
+rsync -a --delete "$BUILD_RELEASE_DIR/.next/standalone/" "$FINAL_RELEASE_DIR/.next/standalone/"
+rsync -a --delete "$BUILD_RELEASE_DIR/.next/static/" "$FINAL_RELEASE_DIR/.next/static/"
+rsync -a --delete "$BUILD_RELEASE_DIR/public/" "$FINAL_RELEASE_DIR/public/"
+rm -rf "$FINAL_RELEASE_DIR/public/uploads"
+ln -sfn "$SHARED_UPLOADS_DIR" "$FINAL_RELEASE_DIR/public/uploads"
+
 log "Switching current release atomically"
-rm -rf "$RELEASE_DIR"
-mv "$TMP_RELEASE_DIR" "$RELEASE_DIR"
-ln -sfn "$RELEASE_DIR" "$CURRENT_LINK"
+ln -sfn "$FINAL_RELEASE_DIR" "$CURRENT_LINK"
 trap - EXIT
 
 log "Starting or reloading PM2 process"
