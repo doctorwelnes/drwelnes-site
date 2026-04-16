@@ -7,7 +7,6 @@ import {
   ArrowLeft,
   Camera,
   User,
-  Mail,
   Phone,
   MessageCircle,
   Lock,
@@ -27,7 +26,6 @@ export default function SettingsPage() {
 
   // Profile states
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [telegram, setTelegram] = useState("");
   const [isSavingProfile, setIsSavingProfile] = useState(false);
@@ -38,7 +36,6 @@ export default function SettingsPage() {
   useEffect(() => {
     if (session?.user) {
       setName(session.user.name || "");
-      setEmail(session.user.email || "");
       setPhone(session.user.phone || "");
       setTelegram(session.user.telegram || "");
     }
@@ -230,7 +227,7 @@ export default function SettingsPage() {
       const response = await fetch("/api/user/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, phone, telegram }),
+        body: JSON.stringify({ name, phone, telegram }),
       });
 
       if (!response.ok) {
@@ -239,7 +236,7 @@ export default function SettingsPage() {
       }
 
       // Update session
-      await update({ name, email, phone, telegram });
+      await update({ name, phone, telegram });
       router.refresh();
       setProfileSuccess(true);
       setTimeout(() => setProfileSuccess(false), 3000);
@@ -452,22 +449,6 @@ export default function SettingsPage() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Ваше имя"
-                  className="w-full bg-[#0c0d10]/50 border border-white/5 rounded-[18px] py-4 pl-12 pr-4 text-sm font-bold text-white placeholder:text-zinc-800 outline-none focus:border-orange-500/30 focus:ring-2 focus:ring-orange-500/5 transition-all"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-2 block">
-                Email
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="email@example.com"
                   className="w-full bg-[#0c0d10]/50 border border-white/5 rounded-[18px] py-4 pl-12 pr-4 text-sm font-bold text-white placeholder:text-zinc-800 outline-none focus:border-orange-500/30 focus:ring-2 focus:ring-orange-500/5 transition-all"
                 />
               </div>

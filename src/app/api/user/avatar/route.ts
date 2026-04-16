@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
+import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { getPublicDir } from "@/lib/project-root";
 import { getPrismaClient } from "@/lib/prisma";
 import { writeFile, unlink } from "fs/promises";
@@ -14,17 +13,13 @@ export async function GET() {
 
 export async function DELETE() {
   try {
-    const session = await getServerSession(authOptions);
-
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const auth = await getAuthenticatedUser();
+    if ("error" in auth) {
+      return auth.error;
     }
 
+    const { user } = auth;
     const prisma = getPrismaClient();
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
-
     if (!user || !user.image) {
       return NextResponse.json({ error: "No avatar found" }, { status: 404 });
     }
@@ -53,11 +48,12 @@ export async function DELETE() {
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const auth = await getAuthenticatedUser();
+    if ("error" in auth) {
+      return auth.error;
     }
+
+    const { user } = auth;
 
     const formData = await req.formData();
     const file = formData.get("file") as File;
@@ -109,19 +105,6 @@ export async function POST(req: NextRequest) {
 
     // Update user in database
     const prisma = getPrismaClient();
-
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
-
-    if (!user) {
-      return NextResponse.json(
-        {
-          error: "User not found",
-        },
-        { status: 404 },
-      );
-    }
 
     await prisma.user.update({
       where: { id: user.id },

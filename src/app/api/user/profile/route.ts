@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { getPrismaClient } from "@/lib/prisma";
 import { updateProfileSchema } from "@/lib/validation";
 import { validateRequest } from "@/lib/validate-request";
@@ -12,11 +11,12 @@ export async function PATCH(req: NextRequest) {
   if (rateLimitResponse) return rateLimitResponse;
 
   try {
-    const session = await getServerSession(authOptions);
-
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const auth = await getAuthenticatedUser();
+    if ("error" in auth) {
+      return auth.error;
     }
+
+    const { user } = auth;
 
     const body = await req.json();
 
@@ -26,36 +26,15 @@ export async function PATCH(req: NextRequest) {
       return validation.error;
     }
 
-    const { name, email, phone, telegram } = validation.data;
+    const { name, phone, telegram } = validation.data;
 
     const prisma = getPrismaClient();
 
-    // Get current user by email to get their ID
-    const currentUser = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
-
-    if (!currentUser) {
-      return NextResponse.json({ error: "Пользователь не найден" }, { status: 404 });
-    }
-
-    // Check if email is being changed and if it's already taken
-    if (email && email !== session.user.email) {
-      const existingUser = await prisma.user.findUnique({
-        where: { email },
-      });
-
-      if (existingUser) {
-        return NextResponse.json({ error: "Email уже используется" }, { status: 400 });
-      }
-    }
-
-    // Update user profile by ID (not email, because email might change)
+    // Update user profile by id
     const updatedUser = await prisma.user.update({
-      where: { id: currentUser.id },
+      where: { id: user.id },
       data: {
         ...(name !== undefined && { name }),
-        ...(email !== undefined && { email }),
         ...(phone !== undefined && { phone }),
         ...(telegram !== undefined && { telegram }),
       },

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { getPrismaClient } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { updatePasswordSchema } from "@/lib/validation";
@@ -13,11 +12,12 @@ export async function PATCH(req: NextRequest) {
   if (rateLimitResponse) return rateLimitResponse;
 
   try {
-    const session = await getServerSession(authOptions);
-
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const auth = await getAuthenticatedUser();
+    if ("error" in auth) {
+      return auth.error;
     }
+
+    const { user } = auth;
 
     const body = await req.json();
 
@@ -32,10 +32,6 @@ export async function PATCH(req: NextRequest) {
     const prisma = getPrismaClient();
 
     // Get user with password hash
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
-
     if (!user?.passwordHash) {
       return NextResponse.json(
         { error: "Пользователь не найден или не имеет пароля" },
@@ -55,7 +51,7 @@ export async function PATCH(req: NextRequest) {
 
     // Update password
     await prisma.user.update({
-      where: { email: session.user.email },
+      where: { id: user.id },
       data: { passwordHash: hashedPassword },
     });
 

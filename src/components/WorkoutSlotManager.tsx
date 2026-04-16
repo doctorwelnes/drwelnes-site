@@ -554,7 +554,7 @@ export default function WorkoutSlotManager() {
           <Calendar className="w-5 h-5 text-orange-500" />
           Управление расписанием
         </h2>
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3 w-full xl:w-auto">
           <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 p-1.5">
             <button
               onClick={() => shiftFilterDate(-1)}
@@ -567,7 +567,7 @@ export default function WorkoutSlotManager() {
               type="date"
               value={filterDate}
               onChange={(e) => setFilterDate(e.target.value)}
-              className="px-3 py-2 bg-transparent border-0 text-white text-sm focus:outline-none min-w-35"
+              className="px-3 py-2 bg-transparent border-0 text-white text-sm focus:outline-none min-w-0 flex-1"
             />
             <button
               onClick={() => shiftFilterDate(1)}
@@ -577,29 +577,31 @@ export default function WorkoutSlotManager() {
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
-          <button
-            onClick={handleCreate}
-            className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-lg font-medium hover:bg-orange-600 transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-            Добавить слот
-          </button>
-          <button
-            onClick={handleEveningPackage}
-            disabled={isLoading}
-            className="flex items-center gap-2 px-4 py-2 bg-purple-500 text-white rounded-lg font-medium hover:bg-purple-600 transition-colors disabled:opacity-50"
-          >
-            <Calendar className="w-4 h-4" />
-            Вечерний пакет
-          </button>
-          <button
-            onClick={handleClearAll}
-            disabled={isLoading}
-            className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg font-medium hover:bg-red-600 transition-colors disabled:opacity-50"
-          >
-            <RefreshCw className="w-4 h-4" />
-            Очистить все
-          </button>
+          <div className="grid grid-cols-2 sm:flex gap-2 sm:gap-3">
+            <button
+              onClick={handleCreate}
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-lg font-medium hover:bg-orange-600 transition-colors text-sm"
+            >
+              <Plus className="w-4 h-4" />
+              <span className="truncate">Добавить слот</span>
+            </button>
+            <button
+              onClick={handleEveningPackage}
+              disabled={isLoading}
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-purple-500 text-white rounded-lg font-medium hover:bg-purple-600 transition-colors disabled:opacity-50 text-sm"
+            >
+              <Calendar className="w-4 h-4" />
+              <span className="truncate">Вечерний пакет</span>
+            </button>
+            <button
+              onClick={handleClearAll}
+              disabled={isLoading}
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg font-medium hover:bg-red-600 transition-colors disabled:opacity-50 col-span-2 sm:col-span-1 text-sm"
+            >
+              <RefreshCw className="w-4 h-4" />
+              Очистить все
+            </button>
+          </div>
         </div>
       </div>
 

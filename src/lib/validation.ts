@@ -3,7 +3,6 @@ import { z } from "zod";
 // User schemas
 export const updateProfileSchema = z.object({
   name: z.string().min(1).max(100).optional(),
-  email: z.string().email().optional(),
   phone: z.string().max(20).optional(),
   telegram: z.string().max(32).optional(),
 });

@@ -3,20 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
-import {
-  ChevronRight,
-  Lock,
-  Mail,
-  Loader2,
-  ShieldCheck,
-  Eye,
-  EyeOff,
-  Copy,
-  Check,
-} from "lucide-react";
+import { ChevronRight, Lock, Loader2, ShieldCheck, Eye, EyeOff, Copy, Check } from "lucide-react";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -59,7 +49,7 @@ export default function LoginPage() {
     setError(null);
     setLoading(true);
     const res = await signIn("credentials", {
-      identifier: email,
+      identifier,
       password,
       redirect: false,
     });
@@ -126,7 +116,7 @@ export default function LoginPage() {
                     Вход
                   </h1>
                   <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mt-1">
-                    Авторизация в системе
+                    Авторизация по Telegram или телефону
                   </p>
                 </div>
               </div>
@@ -135,17 +125,16 @@ export default function LoginPage() {
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 ml-4">
-                  Email / Телега / Телефон
+                  Telegram / Телефон
                 </label>
                 <div className="relative group">
-                  <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600 group-focus-within:text-orange-500 transition-colors" />
                   <input
                     type="text"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    value={identifier}
+                    onChange={(e) => setIdentifier(e.target.value)}
                     required
-                    placeholder="example@mail.com, @username или +7 999 123-45-67"
-                    className="w-full bg-[#0c0d10]/50 border border-white/5 rounded-[24px] py-4 pl-14 pr-6 text-sm font-bold text-white placeholder:text-zinc-800 outline-none focus:border-orange-500/30 focus:ring-4 focus:ring-orange-500/5 transition-all shadow-inner"
+                    placeholder="@username или +7 999 123-45-67"
+                    className="w-full bg-[#0c0d10]/50 border border-white/5 rounded-[24px] py-4 px-6 text-sm font-bold text-white placeholder:text-zinc-800 outline-none focus:border-orange-500/30 focus:ring-4 focus:ring-orange-500/5 transition-all shadow-inner"
                   />
                 </div>
               </div>
@@ -207,19 +196,18 @@ export default function LoginPage() {
                     Тестовый аккаунт
                   </p>
                   <div className="space-y-2">
-                    {/* Email row */}
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2 text-[11px] text-zinc-400 font-mono">
-                        <Mail className="w-3 h-3 text-zinc-600" />
-                        <span>test@test.com</span>
+                        <ShieldCheck className="w-3 h-3 text-zinc-600" />
+                        <span>@testuser</span>
                       </div>
                       <button
                         type="button"
-                        onClick={() => handleCopy("test@test.com", "email")}
+                        onClick={() => handleCopy("@testuser", "identifier")}
                         className="p-1.5 rounded-lg bg-white/5 hover:bg-orange-500/20 text-zinc-500 hover:text-orange-500 transition-all"
-                        title="Копировать email"
+                        title="Копировать Telegram"
                       >
-                        {copiedField === "email" ? (
+                        {copiedField === "identifier" ? (
                           <Check className="w-3 h-3 text-green-500" />
                         ) : (
                           <Copy className="w-3 h-3" />

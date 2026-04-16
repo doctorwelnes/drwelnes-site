@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
+import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { getPrismaClient } from "@/lib/prisma";
-import { authOptions } from "@/lib/auth";
 
 const escapeTelegramHtml = (value: string) =>
   value.replace(/[&<>"]/g, (char) => {
@@ -143,16 +142,12 @@ export async function GET(request: NextRequest) {
 
     let effectiveUserId = userId;
     if (!effectiveUserId) {
-      const session = await getServerSession(authOptions);
-      effectiveUserId = session?.user?.id || "";
-
-      if (!effectiveUserId && session?.user?.email) {
-        const currentUser = await prisma.user.findUnique({
-          where: { email: session.user.email },
-          select: { id: true },
-        });
-        effectiveUserId = currentUser?.id || "";
+      const auth = await getAuthenticatedUser();
+      if ("error" in auth) {
+        return auth.error;
       }
+
+      effectiveUserId = auth.user.id;
     }
 
     if (effectiveUserId) {
@@ -194,7 +189,6 @@ export async function GET(request: NextRequest) {
           select: {
             id: true,
             name: true,
-            email: true,
           },
         },
       },
@@ -273,7 +267,6 @@ export async function POST(request: NextRequest) {
               select: {
                 id: true,
                 name: true,
-                email: true,
               },
             },
           },
@@ -305,7 +298,6 @@ export async function POST(request: NextRequest) {
             select: {
               id: true,
               name: true,
-              email: true,
             },
           },
         },
@@ -364,7 +356,6 @@ export async function DELETE(request: NextRequest) {
           select: {
             id: true,
             name: true,
-            email: true,
           },
         },
       },

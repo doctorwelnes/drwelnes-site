@@ -48,7 +48,6 @@ export async function GET(request: NextRequest) {
                 select: {
                   id: true,
                   name: true,
-                  email: true,
                   ...(includeContactFields ? { phone: true, telegram: true } : {}),
                 },
               },

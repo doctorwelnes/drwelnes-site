@@ -15,17 +15,10 @@ describe("Validation Schemas", () => {
     it("should validate valid profile data", () => {
       const result = updateProfileSchema.safeParse({
         name: "John Doe",
-        email: "john@example.com",
         phone: "+1234567890",
+        telegram: "@john",
       });
       expect(result.success).toBe(true);
-    });
-
-    it("should reject invalid email", () => {
-      const result = updateProfileSchema.safeParse({
-        email: "invalid-email",
-      });
-      expect(result.success).toBe(false);
     });
 
     it("should allow partial updates", () => {

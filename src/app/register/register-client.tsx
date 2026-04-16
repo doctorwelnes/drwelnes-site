@@ -2,21 +2,20 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ChevronRight, User, Mail, Lock, Loader2, Sparkles, AtSign, Phone } from "lucide-react";
+import { ChevronRight, User, Lock, Loader2, Sparkles, AtSign, Phone } from "lucide-react";
 
-type RegisterMethod = "email" | "telegram" | "phone";
+type RegisterMethod = "telegram" | "phone";
 
 const METHOD_CONFIG: Record<
   RegisterMethod,
-  { label: string; placeholder: string; icon: typeof Mail }
+  { label: string; placeholder: string; icon: typeof AtSign }
 > = {
-  email: { label: "Почта", placeholder: "mail@site.ru", icon: Mail },
   telegram: { label: "Телега", placeholder: "@username", icon: AtSign },
   phone: { label: "Телефон", placeholder: "+7 (999) 123-45-67", icon: Phone },
 };
 
 export default function RegisterClient() {
-  const [method, setMethod] = useState<RegisterMethod>("email");
+  const [method, setMethod] = useState<RegisterMethod>("telegram");
   const [name, setName] = useState("");
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
@@ -111,7 +110,7 @@ export default function RegisterClient() {
                   <label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 ml-4">
                     Способ регистрации
                   </label>
-                  <div className="grid grid-cols-3 gap-2 rounded-[24px] bg-[#0c0d10]/50 border border-white/5 p-2">
+                  <div className="grid grid-cols-2 gap-2 rounded-[24px] bg-[#0c0d10]/50 border border-white/5 p-2">
                     {(Object.keys(METHOD_CONFIG) as RegisterMethod[]).map((option) => {
                       const active = method === option;
                       return (
@@ -144,7 +143,7 @@ export default function RegisterClient() {
                     <IdentifierIcon className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600 group-focus-within:text-[#f95700] transition-colors" />
                     <input
                       required
-                      type={method === "email" ? "email" : "text"}
+                      type="text"
                       value={identifier}
                       onChange={(e) => setIdentifier(e.target.value)}
                       placeholder={methodConfig.placeholder}
@@ -219,7 +218,7 @@ export default function RegisterClient() {
 
             <div className="pt-6 border-t border-white/5 text-center">
               <p className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">
-                Dr.Welnes — регистрация без инвайта
+                Dr.Welnes — регистрация через Telegram или телефон
               </p>
             </div>
           </div>

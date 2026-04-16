@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { getPrismaClient } from "@/lib/prisma";
 import { addExerciseFavoriteSchema } from "@/lib/validation";
 import { validateRequest } from "@/lib/validate-request";
@@ -10,20 +9,13 @@ import { getAllExercises } from "@/lib/content";
 // GET - получить избранные упражнения пользователя
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
-
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const auth = await getAuthenticatedUser();
+    if ("error" in auth) {
+      return auth.error;
     }
 
     const prisma = getPrismaClient();
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
+    const { user } = auth;
 
     const favorites = await prisma.favoriteExercise.findMany({
       where: { userId: user.id },
@@ -58,20 +50,13 @@ export async function POST(req: NextRequest) {
   if (rateLimitResponse) return rateLimitResponse;
 
   try {
-    const session = await getServerSession(authOptions);
-
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const auth = await getAuthenticatedUser();
+    if ("error" in auth) {
+      return auth.error;
     }
 
     const prisma = getPrismaClient();
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
+    const { user } = auth;
 
     const body = await req.json();
 
@@ -114,20 +99,13 @@ export async function POST(req: NextRequest) {
 // DELETE - удалить из избранного
 export async function DELETE(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const auth = await getAuthenticatedUser();
+    if ("error" in auth) {
+      return auth.error;
     }
 
     const prisma = getPrismaClient();
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
+    const { user } = auth;
 
     const { searchParams } = new URL(req.url);
     const exerciseId = searchParams.get("exerciseId");

@@ -57,7 +57,6 @@ export async function POST(request: NextRequest) {
           select: {
             id: true,
             name: true,
-            email: true,
           },
         },
         slot: true,
@@ -81,15 +80,14 @@ export async function POST(request: NextRequest) {
           select: {
             id: true,
             name: true,
-            email: true,
           },
         },
         slot: true,
       },
     });
 
-    // TODO: Здесь можно добавить отправку email/SMS уведомления
-    // await sendNotificationEmail(updatedEntry.user.email, updatedEntry.slot);
+    // TODO: Здесь можно добавить отправку Telegram/SMS уведомления
+    // await sendTelegramNotification(updatedEntry.user, updatedEntry.slot);
 
     return NextResponse.json({
       message: "First in queue notified",
@@ -122,7 +120,6 @@ export async function PUT(request: NextRequest) {
           select: {
             id: true,
             name: true,
-            email: true,
           },
         },
       },
@@ -183,7 +180,6 @@ export async function PUT(request: NextRequest) {
             select: {
               id: true,
               name: true,
-              email: true,
             },
           },
         },
