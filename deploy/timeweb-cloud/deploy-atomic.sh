@@ -105,10 +105,10 @@ set +a
 cd "$TMP_RELEASE_DIR"
 
 log "Installing dependencies"
-if ! npm ci --include=dev --legacy-peer-deps; then
-  log "npm ci failed — cleaning node_modules and retrying"
+if ! npm install --include=dev --legacy-peer-deps; then
+  log "npm install failed — cleaning node_modules and retrying"
   rm -rf "$TMP_RELEASE_DIR/node_modules"
-  npm ci --include=dev --legacy-peer-deps
+  npm install --include=dev --legacy-peer-deps
 fi
 
 log "Generating Prisma client"
