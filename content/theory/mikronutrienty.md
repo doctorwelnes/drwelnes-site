@@ -2,8 +2,8 @@
 title: Микронутриенты
 slug: mikronutrienty
 draft: false
-date: '2026-04-18T00:00:00.000Z'
-image: ''
+date: "2026-04-18T00:00:00.000Z"
+image: ""
 categories:
   - Питание
 description: Статья о витаминах и минералах — микронутриентах, необходимых для здоровья.
@@ -16,11 +16,11 @@ author: Dr. Welnes
 readingTime: 5 мин
 references:
   - title: Harvard T.H. Chan School of Public Health. Vitamins and Minerals. 2024
-    url: 'https://www.hsph.harvard.edu/nutritionsource/vitamins-and-minerals/'
-  - title: National Institutes of Health. Dietary Supplements: What You Need to Know. 2023
-    url: 'https://www.nih.gov/health/dietary-supplements'
+    url: "https://www.hsph.harvard.edu/nutritionsource/vitamins-and-minerals/"
+  - title: National Institutes of Health. Dietary Supplements. 2023
+    url: "https://www.nih.gov/health/dietary-supplements"
   - title: World Health Organization. Micronutrient Deficiencies. 2023
-    url: 'https://www.who.int/nutrition/topics/micronutrient/en/'
+    url: "https://www.who.int/nutrition/topics/micronutrient/en/"
 articleImages:
 cardImage:
 ---
