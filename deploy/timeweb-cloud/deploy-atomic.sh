@@ -49,6 +49,26 @@ cleanup_staging() {
   fi
 }
 
+cleanup_old_builds() {
+  if [ ! -d "$BUILD_ROOT" ]; then
+    return
+  fi
+  log "Cleaning old build directories from $BUILD_ROOT"
+  # Remove build directories older than 1 day
+  find "$BUILD_ROOT" -maxdepth 1 -type d -mtime +1 -exec rm -rf {} + 2>/dev/null || true
+}
+
+cleanup_old_releases() {
+  if [ ! -d "$RELEASES_DIR" ]; then
+    return
+  fi
+  log "Cleaning old releases (keeping last 5)"
+  # Keep only the 5 most recent releases
+  ls -t "$RELEASES_DIR" | tail -n +6 | while read -r release; do
+    rm -rf "$RELEASES_DIR/$release"
+  done
+}
+
 log "Checking prerequisites"
 require_command curl
 require_command git
@@ -64,6 +84,9 @@ if [ ! -f "$ENV_FILE" ]; then
 fi
 
 mkdir -p "$RELEASES_DIR" "$SHARED_UPLOADS_DIR"
+
+# Clean up old build directories before starting new build
+cleanup_old_builds
 
 GIT_SHA="$(git -C "$PROJECT_ROOT" rev-parse --short HEAD)"
 RELEASE_ID="$(date -u +%Y%m%d%H%M%S)-${GIT_SHA}"
@@ -177,6 +200,9 @@ if ! curl -fsS --max-time 10 --retry 10 --retry-delay 3 --retry-all-errors "$HEA
   echo "Healthcheck failed for $HEALTHCHECK_URL" >&2
   rollback_to_previous_release "$PREVIOUS_RELEASE"
 fi
+
+# Clean up old releases after successful deployment
+cleanup_old_releases
 
 pm2 save
 
