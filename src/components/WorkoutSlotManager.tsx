@@ -204,6 +204,9 @@ export default function WorkoutSlotManager() {
     ? (slots.find((slot) => slot.id === selectedSlotId) ?? slots[0] ?? null)
     : (slots[0] ?? null);
 
+  const isInitialLoading = isLoading && slots.length === 0;
+  const isRefreshing = isLoading && slots.length > 0;
+
   const availableSlots = slots.filter(
     (slot) => slot.status === "AVAILABLE" || slot.currentParticipants < slot.maxParticipants,
   );
@@ -884,8 +887,16 @@ export default function WorkoutSlotManager() {
 
       {/* Список слотов */}
       {!isCreating && !editingSlot && (
-        <div className="space-y-6">
-          {isLoading ? (
+        <div className={`space-y-6 ${isRefreshing ? "relative" : ""}`} aria-busy={isLoading}>
+          {isRefreshing && (
+            <div className="pointer-events-none absolute inset-x-0 -top-2 z-10 flex justify-center">
+              <div className="rounded-full border border-white/10 bg-[#0f1013]/95 px-3 py-1 text-[10px] font-black uppercase tracking-[0.22em] text-zinc-400 shadow-lg backdrop-blur-md">
+                Обновление списка
+              </div>
+            </div>
+          )}
+
+          {isInitialLoading ? (
             <div className="flex justify-center py-8">
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
               <p className="text-zinc-500 mt-2">Загрузка...</p>

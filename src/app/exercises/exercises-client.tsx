@@ -1,13 +1,19 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
-import { Search, Dumbbell } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { Search, Dumbbell, Sparkles } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
+import ContentGate from "@/components/ContentGate";
 import type { Exercise } from "@/lib/content";
 import { useExerciseFavoritesSWR } from "@/hooks/useExerciseFavoritesSWR";
 import ExerciseCard from "@/components/ExerciseCard";
 
+const GUEST_LIMIT = 3;
+
 export default function ExercisesClient({ exercises }: { exercises: Exercise[] }) {
+  const { data: session } = useSession();
+  const isGuest = !session?.user;
   const { toggleFavorite, isFavorite } = useExerciseFavoritesSWR();
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [search, setSearch] = useState("");
@@ -104,34 +110,34 @@ export default function ExercisesClient({ exercises }: { exercises: Exercise[] }
         {/* Results Grid */}
         {filtered.length === 0 ? (
           <div className="py-20 text-center border-2 border-dashed border-white/10 rounded-3xl bg-[#13151a] mt-8 animate-in fade-in zoom-in-95 duration-300">
-            <Dumbbell className="w-12 h-12 text-zinc-600 mx-auto mb-4 opacity-50" />
+            <Sparkles className="w-12 h-12 text-orange-500 mx-auto mb-4 opacity-70" />
             <h3 className="text-2xl font-black text-white uppercase tracking-widest mb-2">
-              УПРАЖНЕНИЯ НЕ НАЙДЕНЫ
+              УПРАЖНЕНИЯ СКОРО БУДУТ ДОБАВЛЕНЫ
             </h3>
             <p className="text-zinc-500 font-mono text-sm uppercase tracking-wide">
-              ПОПРОБУЙТЕ ИЗМЕНИТЬ ПАРАМЕТРЫ ПОИСКА ИЛИ ФИЛЬТРОВ
+              МЫ ГОТОВИМ ДЛЯ ВАС ЛУЧШИЕ УПРАЖНЕНИЯ — СЛЕДИТЕ ЗА ОБНОВЛЕНИЯМИ
             </p>
-            <button
-              onClick={() => {
-                setSearch("");
-                setActiveCategory(null);
-              }}
-              className="mt-8 px-8 py-3 bg-zinc-800 text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-zinc-700 transition-colors"
-            >
-              СБРОСИТЬ ФИЛЬТРЫ
-            </button>
           </div>
         ) : (
-          <div className="grid gap-8 pb-12 mt-8 sm:grid-cols-2 lg:grid-cols-4">
-            {filtered.map((ex) => (
-              <ExerciseCard
-                key={ex.slug}
-                exercise={ex}
-                isFavorite={checkIsFavorite(ex.slug)}
-                onToggleFavorite={handleToggleFavorite}
+          <>
+            <div className="grid gap-8 pb-12 mt-8 sm:grid-cols-2 lg:grid-cols-4">
+              {(isGuest ? filtered.slice(0, GUEST_LIMIT) : filtered).map((ex) => (
+                <ExerciseCard
+                  key={ex.slug}
+                  exercise={ex}
+                  isFavorite={checkIsFavorite(ex.slug)}
+                  onToggleFavorite={handleToggleFavorite}
+                />
+              ))}
+            </div>
+            {isGuest && (
+              <ContentGate
+                total={filtered.length}
+                freeLimit={GUEST_LIMIT}
+                sectionLabel="упражнений"
               />
-            ))}
-          </div>
+            )}
+          </>
         )}
       </div>
     </div>

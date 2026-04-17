@@ -173,6 +173,30 @@ export default function LoginPage() {
               </div>
             </div>
 
+            <div className="rounded-2xl border border-orange-500/20 bg-orange-500/10 p-4">
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-orange-500/20 bg-black/20 text-orange-400">
+                  <ShieldCheck className="w-5 h-5" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-black uppercase tracking-widest text-orange-300">
+                    Для записи на тренировки нужен аккаунт
+                  </p>
+                  <p className="mt-1 text-sm text-zinc-200 leading-snug">
+                    Войдите или зарегистрируйтесь, чтобы записываться на тренировки, видеть свои
+                    слоты и возвращаться обратно после авторизации.
+                  </p>
+                  <Link
+                    href="/register"
+                    className="mt-3 inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-xs font-black uppercase tracking-widest text-white transition-colors hover:bg-white/10"
+                  >
+                    Зарегистрироваться
+                    <ChevronRight className="w-4 h-4" />
+                  </Link>
+                </div>
+              </div>
+            </div>
+
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 ml-4">

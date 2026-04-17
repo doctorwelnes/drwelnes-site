@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Search, User } from "lucide-react";
-import { useState, useEffect } from "react";
 
 const LINKS = [
   { href: "/", label: "Главная" },
@@ -17,16 +16,9 @@ const LINKS = [
 
 export default function TopNavClient({ onLinkClick }: { onLinkClick?: () => void }) {
   const pathname = usePathname();
-  const { data: session } = useSession();
-  const [mounted, setMounted] = useState(false);
+  const { status } = useSession();
 
-  const isAuthed = !!session?.user;
-  const isDashboard = pathname === "/dashboard" || pathname?.startsWith("/dashboard/");
-  const showCabinet = isAuthed || isDashboard; // Fallback для кабинета
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const isReady = status !== "loading";
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
@@ -34,7 +26,7 @@ export default function TopNavClient({ onLinkClick }: { onLinkClick?: () => void
   };
 
   // Показываем плейсхолдер до монтирования
-  if (!mounted) {
+  if (!isReady) {
     return (
       <nav className="flex items-center justify-end gap-2 min-h-[40px]" aria-label="Навигация">
         {LINKS.map((link) => (
@@ -96,24 +88,14 @@ export default function TopNavClient({ onLinkClick }: { onLinkClick?: () => void
         <Search className="w-4 h-4" />
       </button>
 
-      {showCabinet ? (
-        <Link
-          href="/dashboard"
-          onClick={onLinkClick}
-          className="px-4 py-2 rounded-xl text-sm font-black uppercase tracking-widest bg-orange-500/10 text-orange-500 border border-orange-500/20 flex items-center justify-center gap-2 min-w-[100px] min-h-[36px] shrink-0"
-        >
-          <User className="w-4 h-4 shrink-0" />
-          <span>Кабинет</span>
-        </Link>
-      ) : (
-        <Link
-          className="px-4 py-2 rounded-xl bg-white text-black text-sm font-black tracking-widest min-w-[100px] min-h-[36px] flex items-center justify-center shrink-0"
-          href="/login"
-          onClick={onLinkClick}
-        >
-          <span>войти</span>
-        </Link>
-      )}
+      <Link
+        href="/dashboard"
+        onClick={onLinkClick}
+        className="px-4 py-2 rounded-xl text-sm font-black uppercase tracking-widest bg-orange-500/10 text-orange-500 border border-orange-500/20 flex items-center justify-center gap-2 min-w-25 min-h-9 shrink-0"
+      >
+        <User className="w-4 h-4 shrink-0" />
+        <span>Профиль</span>
+      </Link>
     </nav>
   );
 }

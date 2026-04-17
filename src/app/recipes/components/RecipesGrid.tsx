@@ -1,10 +1,14 @@
 "use client";
 
 import React from "react";
+import { useSession } from "next-auth/react";
 import { Activity } from "lucide-react";
 import { RecipeCard } from "@/components/RecipeCard";
 import { RecipeCardSkeleton } from "@/components/RecipeCardSkeleton";
+import ContentGate from "@/components/ContentGate";
 import type { Recipe } from "@/lib/content";
+
+const GUEST_LIMIT = 3;
 
 interface RecipesGridProps {
   recipes: Recipe[];
@@ -21,6 +25,9 @@ export function RecipesGrid({
   resetFilters,
   isLoading = false,
 }: RecipesGridProps) {
+  const { data: session } = useSession();
+  const isGuest = !session?.user;
+
   if (isLoading) {
     return (
       <div className="grid gap-8 pb-12 mt-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
@@ -49,16 +56,23 @@ export function RecipesGrid({
     );
   }
 
+  const visible = isGuest ? recipes.slice(0, GUEST_LIMIT) : recipes;
+
   return (
-    <div className="grid gap-8 pb-12 mt-8 animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
-      {recipes.map((r) => (
-        <RecipeCard
-          key={r.slug}
-          recipe={r}
-          isFavorite={isFavorite(r.slug)}
-          onToggleFavorite={toggleFavorite}
-        />
-      ))}
-    </div>
+    <>
+      <div className="grid gap-8 pb-12 mt-8 animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+        {visible.map((r) => (
+          <RecipeCard
+            key={r.slug}
+            recipe={r}
+            isFavorite={isFavorite(r.slug)}
+            onToggleFavorite={toggleFavorite}
+          />
+        ))}
+      </div>
+      {isGuest && (
+        <ContentGate total={recipes.length} freeLimit={GUEST_LIMIT} sectionLabel="рецептов" />
+      )}
+    </>
   );
 }

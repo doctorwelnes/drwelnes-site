@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import {
   Activity,
   Beaker,
@@ -18,6 +19,9 @@ import {
   Check,
 } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
+import ContentGate from "@/components/ContentGate";
+
+const GUEST_LIMIT = 3;
 
 const CALCULATORS = [
   {
@@ -113,6 +117,8 @@ const CALCULATORS = [
 ];
 
 export default function CalculatorsPage() {
+  const { data: session } = useSession();
+  const isGuest = !session?.user;
   const [calculatorHistory, setCalculatorHistory] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
@@ -164,7 +170,7 @@ export default function CalculatorsPage() {
         />
 
         <div className="grid gap-4 md:gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-          {CALCULATORS.map((c, idx) => (
+          {(isGuest ? CALCULATORS.slice(0, GUEST_LIMIT) : CALCULATORS).map((c, idx) => (
             <Link
               key={`${c.href}-${idx}-v3`}
               href={c.href}
@@ -220,6 +226,13 @@ export default function CalculatorsPage() {
             </Link>
           ))}
         </div>
+        {isGuest && (
+          <ContentGate
+            total={CALCULATORS.length}
+            freeLimit={GUEST_LIMIT}
+            sectionLabel="калькуляторов"
+          />
+        )}
       </div>
     </main>
   );

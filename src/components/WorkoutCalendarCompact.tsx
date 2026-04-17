@@ -216,6 +216,7 @@ export default function WorkoutCalendar({
   const hasContact = Boolean(userPhone || userTelegram);
 
   const isInitialLoading = isLoading && slots.length === 0;
+  const isRefreshing = isLoading && slots.length > 0;
 
   if (!isOpen) return null;
 
@@ -280,7 +281,13 @@ export default function WorkoutCalendar({
           </div>
 
           {/* Slots List */}
-          <div className="p-4 sm:p-6 overflow-y-auto flex-1">
+          <div className="p-4 sm:p-6 overflow-y-auto flex-1 relative">
+            {isRefreshing && (
+              <div className="pointer-events-none absolute right-4 top-4 z-10 rounded-full border border-white/10 bg-[#0f1013]/95 px-3 py-1 text-[10px] font-black uppercase tracking-[0.22em] text-zinc-400 shadow-lg backdrop-blur-md">
+                Обновление даты
+              </div>
+            )}
+
             {isInitialLoading ? (
               <div className="flex justify-center py-8">
                 <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>

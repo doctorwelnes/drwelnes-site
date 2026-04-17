@@ -236,6 +236,10 @@ function CalorieShareWidget({ recipe, isMobile }: { recipe: Recipe; isMobile: bo
                 {realValues.kcal} ккал
               </span>
             </div>
+
+            <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 rounded-full border border-white/10 bg-[#0c0d10]/90 px-3 py-1 text-[8px] font-bold uppercase tracking-[0.18em] text-zinc-400 whitespace-nowrap shadow-lg backdrop-blur-md">
+              Эталон: 175 см / 70 кг
+            </div>
           </div>
 
           {/* BJU Bars Column */}
@@ -629,13 +633,15 @@ export default function RecipeDetailClient({ recipe }: { recipe: Recipe }) {
 
               return (
                 <div
-                  className={`rounded-[40px] overflow-hidden bg-black shadow-2xl flex items-center justify-center border border-white/5 w-full transition-all duration-500 ${isVideoVertical ? "aspect-[9/16] max-w-[400px] mx-auto" : "aspect-video"}`}
+                  className={`relative rounded-[40px] overflow-hidden bg-black shadow-2xl flex items-center justify-center border border-white/5 w-full transition-all duration-500 touch-manipulation ${isVideoVertical ? "aspect-[9/16] max-w-[320px] sm:max-w-[400px] mx-auto" : "aspect-video"}`}
                 >
                   <video
                     key={cleanedSrc}
                     controls
                     playsInline
                     preload="metadata"
+                    controlsList="nodownload noplaybackrate noremoteplayback"
+                    disablePictureInPicture
                     className="w-full h-full object-contain"
                     poster={vPoster || undefined}
                     onLoadedMetadata={(e) => {
@@ -648,6 +654,12 @@ export default function RecipeDetailClient({ recipe }: { recipe: Recipe }) {
                     <source src={cleanedSrc} type="video/mp4" />
                     Ваш браузер не поддерживает встроенные видео.
                   </video>
+
+                  <div className="pointer-events-none absolute inset-x-3 bottom-3 sm:hidden">
+                    <div className="mx-auto w-fit rounded-full border border-white/10 bg-black/60 px-3 py-1 text-[10px] font-bold text-white/80 backdrop-blur-md">
+                      Откройте на весь экран для удобного просмотра
+                    </div>
+                  </div>
                 </div>
               );
             }
@@ -655,7 +667,7 @@ export default function RecipeDetailClient({ recipe }: { recipe: Recipe }) {
             if (vUrl || vFile) {
               const embedUrl = toEmbedUrl(vUrl || vFile || "");
               return (
-                <div className="rounded-[40px] overflow-hidden shadow-2xl aspect-video border border-white/5 w-full">
+                <div className="relative rounded-[40px] overflow-hidden shadow-2xl aspect-video border border-white/5 w-full bg-black touch-manipulation">
                   <iframe
                     width="100%"
                     height="100%"
@@ -663,8 +675,16 @@ export default function RecipeDetailClient({ recipe }: { recipe: Recipe }) {
                     title={recipe.title}
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="strict-origin-when-cross-origin"
                     className="border-0"
                   />
+
+                  <div className="pointer-events-none absolute inset-x-3 bottom-3 sm:hidden">
+                    <div className="mx-auto w-fit rounded-full border border-white/10 bg-black/60 px-3 py-1 text-[10px] font-bold text-white/80 backdrop-blur-md">
+                      Нажмите полноэкранный режим для лучшего просмотра
+                    </div>
+                  </div>
                 </div>
               );
             }

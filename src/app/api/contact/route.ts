@@ -2,6 +2,24 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { writeLimiter, applyRateLimit } from "@/lib/rate-limiter";
 
+const escapeTelegramHtml = (value: string) =>
+  value.replace(/[&<>"']/g, (char) => {
+    switch (char) {
+      case "&":
+        return "&amp;";
+      case "<":
+        return "&lt;";
+      case ">":
+        return "&gt;";
+      case '"':
+        return "&quot;";
+      case "'":
+        return "&#39;";
+      default:
+        return char;
+    }
+  });
+
 const contactSchema = z.object({
   name: z.string().min(2, "Имя должно содержать минимум 2 символа"),
   contact: z.string().min(5, "Контакт должен содержать минимум 5 символов"),
@@ -45,21 +63,23 @@ export async function POST(req: NextRequest) {
 
     if (TELEGRAM_BOT_TOKEN && TELEGRAM_CHAT_ID) {
       try {
-        const text = `*Новая заявка на консультацию!*
+        const text = `<b>Новая заявка на консультацию!</b>
 
-*Имя:* ${name}
-*Контакт:* ${contact}
-*Категория:* ${selectedCategory.icon} ${selectedCategory.name}
-*Сообщение:* ${message || "Нет сообщения"}
+<b>Имя:</b> ${escapeTelegramHtml(name)}
+<b>Контакт:</b> ${escapeTelegramHtml(contact)}
+<b>Категория:</b> ${escapeTelegramHtml(`${selectedCategory.icon} ${selectedCategory.name}`)}
+<b>Сообщение:</b> ${escapeTelegramHtml(message || "Нет сообщения")}
 
-*Время:* ${new Date().toLocaleString("ru-RU", {
-          timeZone: "Europe/Moscow",
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-        })}`;
+<b>Время:</b> ${escapeTelegramHtml(
+          new Date().toLocaleString("ru-RU", {
+            timeZone: "Europe/Moscow",
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+        )}`;
 
         const response = await fetch(
           `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
@@ -69,7 +89,7 @@ export async function POST(req: NextRequest) {
             body: JSON.stringify({
               chat_id: TELEGRAM_CHAT_ID,
               text,
-              parse_mode: "Markdown",
+              parse_mode: "HTML",
             }),
           },
         );
@@ -94,7 +114,7 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ success: true, message: "Заявка успешно отправлена" });
-  } catch (_error) {
+  } catch {
     return NextResponse.json({ error: "Произошла ошибка при отправке заявки" }, { status: 500 });
   }
 }

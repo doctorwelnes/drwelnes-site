@@ -14,6 +14,12 @@ import {
   Dumbbell,
   Phone,
   Smartphone,
+  UserPlus,
+  Lock,
+  MoreVertical,
+  Share2,
+  Plus,
+  Sparkles,
   X,
 } from "lucide-react";
 import Link from "next/link";
@@ -101,12 +107,14 @@ export default function DashboardPage() {
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [showAuthWarning, setShowAuthWarning] = useState(false);
   const [showPhoneWarning, setShowPhoneWarning] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [expandedPWA, setExpandedPWA] = useState<"ios" | "android" | null>(null);
 
+  const isLoggedIn = !!session?.user;
   const userName = session?.user?.name || "Ваше имя";
-  const currentUserId = session?.user?.id || "cmnawufm30025x8hge3lwgn07"; // ID тестового пользователя
+  const currentUserId = session?.user?.id || "";
 
   const handleBookingSuccess = () => {
     setRefreshTrigger((prev) => prev + 1); // Обновляем список записей
@@ -189,9 +197,77 @@ export default function DashboardPage() {
         {/* Page Title */}
         <div className="pt-4">
           <h1 className="text-xl font-black italic uppercase tracking-widest text-white">
-            Личный кабинет
+            Профиль
           </h1>
         </div>
+
+        {!isLoggedIn && (
+          <div className="rounded-2xl border border-orange-500/20 bg-orange-500/10 p-4 sm:p-5 shadow-[0_18px_45px_rgba(249,87,0,0.12)]">
+            <div className="flex items-start gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-orange-500/20 bg-black/20 text-orange-400">
+                <Lock className="h-5 w-5" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-black uppercase tracking-widest text-orange-300">
+                  Доступ к тренировкам
+                </p>
+                <p className="mt-1 text-sm text-zinc-200 leading-snug">
+                  Чтобы записываться на тренировки и видеть свои записи, нужно войти в аккаунт или
+                  зарегистрироваться.
+                </p>
+                <div className="mt-4 flex flex-col sm:flex-row gap-3">
+                  <Link
+                    href="/login?next=/dashboard"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-black uppercase tracking-widest text-black transition-transform hover:scale-[1.01] active:scale-[0.98]"
+                  >
+                    <UserPlus className="h-4 w-4" />
+                    Войти
+                  </Link>
+                  <Link
+                    href="/register"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-black uppercase tracking-widest text-white transition-colors hover:bg-white/10"
+                  >
+                    Регистрация
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {!isLoggedIn && (
+          <div className="rounded-2xl border border-orange-500/20 bg-orange-500/10 p-4 sm:p-5 shadow-[0_18px_45px_rgba(249,87,0,0.12)]">
+            <div className="flex items-start gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-orange-500/20 bg-black/20 text-orange-400">
+                <Lock className="h-5 w-5" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-black uppercase tracking-widest text-orange-300">
+                  Доступ к тренировкам
+                </p>
+                <p className="mt-1 text-sm text-zinc-200 leading-snug">
+                  Чтобы записываться на тренировки и видеть свои записи, нужно войти в аккаунт или
+                  зарегистрироваться.
+                </p>
+                <div className="mt-4 flex flex-col sm:flex-row gap-3">
+                  <Link
+                    href="/login?next=/dashboard"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-black uppercase tracking-widest text-black transition-transform hover:scale-[1.01] active:scale-[0.98]"
+                  >
+                    <UserPlus className="h-4 w-4" />
+                    Войти
+                  </Link>
+                  <Link
+                    href="/register"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-black uppercase tracking-widest text-white transition-colors hover:bg-white/10"
+                  >
+                    Регистрация
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Header Section with Avatar and Name */}
         <div className="flex items-center justify-between gap-2">
@@ -273,7 +349,9 @@ export default function DashboardPage() {
           <div
             className="relative overflow-hidden bg-linear-to-br from-[#f95700]/75 via-orange-500/75 to-[#ff8a1f]/70 border border-orange-300/20 rounded-xl p-4 text-center cursor-pointer transition-all duration-500 hover:scale-[1.02] hover:-translate-y-1 row-span-2 flex flex-col justify-center shadow-[0_18px_45px_rgba(249,87,0,0.22)]"
             onClick={() => {
-              if (!hasContact) {
+              if (!isLoggedIn) {
+                setShowAuthWarning(true);
+              } else if (!hasContact) {
                 setShowPhoneWarning(true);
               } else {
                 setIsCalendarOpen(true);
@@ -283,17 +361,37 @@ export default function DashboardPage() {
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.10),transparent_45%)]" />
             <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-white/5 blur-2xl" />
             <div className="relative z-10 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center mx-auto mb-2 border border-white/15">
-              <Dumbbell className="w-5 h-5 text-white/90" />
+              {isLoggedIn ? (
+                <Dumbbell className="w-5 h-5 text-white/90" />
+              ) : (
+                <Lock className="w-5 h-5 text-white/90" />
+              )}
             </div>
-            <p className="relative z-10 text-xs font-black text-white/90 uppercase leading-tight mb-2 tracking-wide">
-              Записаться на тренировку
-            </p>
-            <p className="relative z-10 text-3xl font-black text-white leading-none">
-              {upcomingWorkouts}
-            </p>
-            <p className="relative z-10 text-[10px] font-bold text-white/70 uppercase tracking-widest mt-1">
-              Предстоящих тренировок
-            </p>
+            {isLoggedIn ? (
+              <>
+                <p className="relative z-10 text-xs font-black text-white/90 uppercase leading-tight mb-2 tracking-wide">
+                  Записаться на тренировку
+                </p>
+                <p className="relative z-10 text-3xl font-black text-white leading-none">
+                  {upcomingWorkouts}
+                </p>
+                <p className="relative z-10 text-[10px] font-bold text-white/70 uppercase tracking-widest mt-1">
+                  Предстоящих тренировок
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="relative z-10 text-xs font-black text-white/90 uppercase leading-tight mb-2 tracking-wide">
+                  Войти / Регистрация
+                </p>
+                <p className="relative z-10 text-[11px] font-semibold text-white/85 leading-snug px-1">
+                  Чтобы записываться на тренировки, нужен аккаунт.
+                </p>
+                <p className="relative z-10 text-[10px] font-bold text-white/70 uppercase tracking-widest mt-2">
+                  Нажмите, чтобы войти
+                </p>
+              </>
+            )}
           </div>
 
           {/* Small Stats Column */}
@@ -333,14 +431,48 @@ export default function DashboardPage() {
             </h2>
           </div>
 
-          <UserWorkoutBookings
-            userId={currentUserId}
-            refreshTrigger={refreshTrigger}
-            section="preview"
-            previewLimit={1}
-            upcomingHref="/dashboard/workouts/upcoming"
-            pastHref="/dashboard/workouts/past"
-          />
+          {isLoggedIn ? (
+            <UserWorkoutBookings
+              userId={currentUserId}
+              refreshTrigger={refreshTrigger}
+              section="preview"
+              previewLimit={1}
+              upcomingHref="/dashboard/workouts/upcoming"
+              pastHref="/dashboard/workouts/past"
+            />
+          ) : (
+            <div className="rounded-2xl border border-white/5 bg-[#16181d] p-5 sm:p-6">
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-orange-500/20 bg-orange-500/10 text-orange-500">
+                  <Lock className="h-5 w-5" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-black uppercase tracking-widest text-white">
+                    Нужен вход в аккаунт
+                  </p>
+                  <p className="mt-2 text-sm text-zinc-400 leading-snug">
+                    Чтобы видеть тренировки, записываться на них и управлять очередью, сначала
+                    войдите или зарегистрируйтесь.
+                  </p>
+                  <div className="mt-4 flex flex-col sm:flex-row gap-3">
+                    <Link
+                      href="/login?next=/dashboard"
+                      className="inline-flex items-center justify-center gap-2 rounded-xl bg-orange-500 px-4 py-3 text-sm font-black uppercase tracking-widest text-black transition-colors hover:bg-orange-400"
+                    >
+                      <UserPlus className="h-4 w-4" />
+                      Войти
+                    </Link>
+                    <Link
+                      href="/register"
+                      className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-black uppercase tracking-widest text-white transition-colors hover:bg-white/10"
+                    >
+                      Регистрация
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Favorite Recipes Section */}
@@ -542,47 +674,121 @@ export default function DashboardPage() {
 
         {/* Waitlist Section */}
         <div className="mt-8">
-          <UserWaitlist userId={currentUserId} refreshTrigger={refreshTrigger} />
+          {isLoggedIn ? (
+            <UserWaitlist userId={currentUserId} refreshTrigger={refreshTrigger} />
+          ) : (
+            <div className="rounded-2xl border border-white/5 bg-[#16181d] p-5 sm:p-6">
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-orange-500/20 bg-orange-500/10 text-orange-500">
+                  <Lock className="h-5 w-5" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-black uppercase tracking-widest text-white">
+                    Очередь доступна после входа
+                  </p>
+                  <p className="mt-2 text-sm text-zinc-400 leading-snug">
+                    Авторизуйтесь, чтобы видеть свои записи, очередь и возможность записаться на
+                    тренировку.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* PWA Install Section */}
         <div className="space-y-3">
-          <h2 className="text-sm font-black uppercase tracking-widest text-white flex items-center gap-2">
-            <Smartphone className="w-4 h-4 text-orange-500" />
-            Установить приложение
-          </h2>
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="text-sm font-black uppercase tracking-widest text-white flex items-center gap-2">
+              <Smartphone className="w-4 h-4 text-orange-500" />
+              Установить приложение
+            </h2>
+
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-zinc-400">
+              <Sparkles className="w-3.5 h-3.5 text-orange-400" />
+              PWA
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-2">
+            <div className="rounded-2xl border border-white/5 bg-[#16181d] p-3">
+              <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.18em] text-zinc-500">
+                <MoreVertical className="w-3.5 h-3.5 text-orange-500" />
+                Android
+              </div>
+              <p className="mt-2 text-[11px] font-semibold text-white leading-tight">
+                Ищите <span className="text-orange-400">⋮</span> в Chrome
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-white/5 bg-[#16181d] p-3">
+              <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.18em] text-zinc-500">
+                <Share2 className="w-3.5 h-3.5 text-orange-500" />
+                iOS
+              </div>
+              <p className="mt-2 text-[11px] font-semibold text-white leading-tight">
+                Через <span className="text-orange-400">Поделиться</span>
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-white/5 bg-[#16181d] p-3">
+              <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.18em] text-zinc-500">
+                <Plus className="w-3.5 h-3.5 text-orange-500" />
+                На экран
+              </div>
+              <p className="mt-2 text-[11px] font-semibold text-white leading-tight">
+                Добавьте иконку в один тап
+              </p>
+            </div>
+          </div>
 
           {/* iOS */}
           <div className="bg-[#16181d] border border-white/5 rounded-2xl overflow-hidden">
             <button
               onClick={() => setExpandedPWA(expandedPWA === "ios" ? null : "ios")}
-              className="w-full p-4 flex items-center justify-between"
+              className="w-full p-4 flex items-center justify-between gap-4"
             >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center text-base">
                   🍎
                 </div>
-                <span className="text-sm font-bold text-white">iPhone / iPad (iOS, Safari)</span>
+                <div className="text-left">
+                  <span className="text-sm font-bold text-white block">
+                    iPhone / iPad (iOS, Safari)
+                  </span>
+                  <span className="text-[10px] font-black uppercase tracking-[0.18em] text-zinc-500">
+                    Меню ↗ → Домой
+                  </span>
+                </div>
               </div>
-              <ChevronRight
-                className={`w-4 h-4 text-zinc-500 transition-transform duration-200 ${
-                  expandedPWA === "ios" ? "rotate-90" : ""
-                }`}
-              />
+              <div className="flex items-center gap-2">
+                <span className="hidden sm:inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-zinc-400">
+                  <Share2 className="w-3 h-3 text-orange-400" />
+                  Share
+                </span>
+                <ChevronRight
+                  className={`w-4 h-4 text-zinc-500 transition-transform duration-200 ${
+                    expandedPWA === "ios" ? "rotate-90" : ""
+                  }`}
+                />
+              </div>
             </button>
             {expandedPWA === "ios" && (
-              <div className="px-4 pb-4 space-y-2">
+              <div className="px-4 pb-4 space-y-2.5">
                 {[
                   "Откройте сайт в браузере Safari",
-                  "Нажмите кнопку \u00ABПоделиться\u00BB (⬜ со стрелкой вверх) внизу экрана",
+                  "Нажмите кнопку \u00ABПоделиться\u00BB (квадрат со стрелкой вверх) внизу экрана",
                   "Прокрутите список и выберите \u00ABНа экран \u00ABДомой\u00BB\u00BB",
                   "Нажмите \u00ABДобавить\u00BB — иконка появится на рабочем столе",
                 ].map((step, i) => (
-                  <div key={i} className="flex items-start gap-2">
-                    <span className="w-5 h-5 rounded-full bg-orange-500 text-white text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                  <div
+                    key={i}
+                    className="flex items-start gap-3 rounded-xl border border-white/5 bg-white/5 px-3 py-2.5"
+                  >
+                    <span className="w-6 h-6 rounded-full bg-orange-500 text-black text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">
                       {i + 1}
                     </span>
-                    <p className="text-xs text-zinc-400">{step}</p>
+                    <p className="text-xs text-zinc-300 leading-snug">{step}</p>
                   </div>
                 ))}
               </div>
@@ -593,33 +799,47 @@ export default function DashboardPage() {
           <div className="bg-[#16181d] border border-white/5 rounded-2xl overflow-hidden">
             <button
               onClick={() => setExpandedPWA(expandedPWA === "android" ? null : "android")}
-              className="w-full p-4 flex items-center justify-between"
+              className="w-full p-4 flex items-center justify-between gap-4"
             >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center text-base">
                   🤖
                 </div>
-                <span className="text-sm font-bold text-white">Android (Chrome)</span>
+                <div className="text-left">
+                  <span className="text-sm font-bold text-white block">Android (Chrome)</span>
+                  <span className="text-[10px] font-black uppercase tracking-[0.18em] text-zinc-500">
+                    ⋮ → Установить
+                  </span>
+                </div>
               </div>
-              <ChevronRight
-                className={`w-4 h-4 text-zinc-500 transition-transform duration-200 ${
-                  expandedPWA === "android" ? "rotate-90" : ""
-                }`}
-              />
+              <div className="flex items-center gap-2">
+                <span className="hidden sm:inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-zinc-400">
+                  <MoreVertical className="w-3 h-3 text-orange-400" />
+                  Menu
+                </span>
+                <ChevronRight
+                  className={`w-4 h-4 text-zinc-500 transition-transform duration-200 ${
+                    expandedPWA === "android" ? "rotate-90" : ""
+                  }`}
+                />
+              </div>
             </button>
             {expandedPWA === "android" && (
-              <div className="px-4 pb-4 space-y-2">
+              <div className="px-4 pb-4 space-y-2.5">
                 {[
                   "Откройте сайт в браузере Chrome",
                   "Нажмите \u22EE (три точки) в правом верхнем углу",
                   "Выберите \u00ABДобавить на главный экран\u00BB или \u00ABУстановить приложение\u00BB",
                   "Нажмите \u00ABДобавить\u00BB — иконка появится на рабочем столе",
                 ].map((step, i) => (
-                  <div key={i} className="flex items-start gap-2">
-                    <span className="w-5 h-5 rounded-full bg-orange-500 text-white text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                  <div
+                    key={i}
+                    className="flex items-start gap-3 rounded-xl border border-white/5 bg-white/5 px-3 py-2.5"
+                  >
+                    <span className="w-6 h-6 rounded-full bg-orange-500 text-black text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">
                       {i + 1}
                     </span>
-                    <p className="text-xs text-zinc-400">{step}</p>
+                    <p className="text-xs text-zinc-300 leading-snug">{step}</p>
                   </div>
                 ))}
                 <p className="text-[10px] text-zinc-600 pt-1">
@@ -646,6 +866,57 @@ export default function DashboardPage() {
         userTelegram={session?.user?.telegram}
         onBookingSuccess={handleBookingSuccess}
       />
+
+      {/* Auth Warning Modal */}
+      {showAuthWarning && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-999 p-4">
+          <div className="bg-linear-to-b from-[#1a1d24] to-[#13151a] rounded-2xl border border-white/10 shadow-2xl w-full max-w-md animate-in fade-in slide-in-from-bottom duration-200">
+            <div className="flex items-center justify-between p-4 sm:p-6 border-b border-white/10">
+              <h3 className="text-lg font-black text-white uppercase tracking-wider">
+                Войдите в аккаунт
+              </h3>
+              <button
+                onClick={() => setShowAuthWarning(false)}
+                className="p-2 rounded-lg bg-white/10 border border-white/20 text-zinc-400 hover:text-white hover:bg-white/20 transition-all duration-200"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-4 sm:p-6">
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 bg-orange-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Lock className="w-8 h-8 text-orange-500" />
+                </div>
+                <p className="text-white font-medium mb-2">
+                  Для записи на тренировку нужен аккаунт
+                </p>
+                <p className="text-zinc-400 text-sm">
+                  Войдите или зарегистрируйтесь, чтобы открыть календарь тренировок, видеть записи и
+                  записываться на новые слоты.
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Link
+                  href="/login?next=/dashboard"
+                  className="flex-1 py-3 bg-orange-500 text-black rounded-xl font-black uppercase tracking-widest hover:bg-orange-400 transition-colors text-center"
+                  onClick={() => setShowAuthWarning(false)}
+                >
+                  Войти
+                </Link>
+                <Link
+                  href="/register"
+                  className="flex-1 py-3 bg-white/5 border border-white/10 text-white rounded-xl font-medium hover:bg-white/10 transition-colors text-center"
+                  onClick={() => setShowAuthWarning(false)}
+                >
+                  Регистрация
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Phone Warning Modal */}
       {showPhoneWarning && (
