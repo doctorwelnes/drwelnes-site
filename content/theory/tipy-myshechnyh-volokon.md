@@ -2,11 +2,13 @@
 title: Типы мышечных волокон
 slug: tipy-myshechnyh-volokon
 draft: false
-date: "2026-04-18T00:00:00.000Z"
-image: ""
+date: '2026-04-18T00:00:00.000Z'
+image: ''
 categories:
   - Тренировки
-description: Статья о типах мышечных волокон — медленных и быстрых, и их влиянии на тренировки.
+description: >-
+  Статья о типах мышечных волокон — медленных и быстрых, и их влиянии на
+  тренировки.
 tags:
   - Тренировки
   - Здоровье
@@ -16,13 +18,15 @@ author: Dr. Welnes
 readingTime: 5 мин
 references:
   - title: National Academy of Sports Medicine. Muscle Fiber Types. 2023
-    url: "https://www.nasm.org/resources/evidence-centered-practice/muscle-fiber-types"
+    url: >-
+      https://www.nasm.org/resources/evidence-centered-practice/muscle-fiber-types
   - title: American Council on Exercise. Muscle Fiber Types and Training. 2024
-    url: "https://www.acefitness.org/education-and-resources/lifestyle/blog/6604/muscle-fiber-types-and-training/"
+    url: >-
+      https://www.acefitness.org/education-and-resources/lifestyle/blog/6604/muscle-fiber-types-and-training/
   - title: PubMed. Skeletal Muscle Fiber Types. 2019
-    url: "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6588692/"
-articleImages:
-cardImage:
+    url: 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6588692/'
+articleImages: null
+cardImage: /uploads/Изображения/типы мышечных волокон.webp
 ---
 
 # Типы мышечных волокон
