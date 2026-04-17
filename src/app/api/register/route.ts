@@ -44,14 +44,23 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Укажите корректный идентификатор" }, { status: 400 });
     }
 
-    const existingUser = await prisma.user.findFirst({
-      where:
-        method === "email"
-          ? { email: normalizedEmail! }
-          : method === "telegram"
-            ? { telegram: normalizedTelegram! }
-            : { phone: normalizedPhone! },
-    });
+    let existingUser = null;
+
+    if (method === "email") {
+      existingUser = await prisma.user.findFirst({
+        where: { email: normalizedEmail! },
+      });
+    } else if (method === "telegram") {
+      existingUser = await prisma.user.findFirst({
+        where: { telegram: normalizedTelegram! },
+      });
+    } else if (method === "phone") {
+      existingUser = await prisma.user.findFirst({
+        where: { phone: normalizedPhone! },
+      });
+    } else {
+      return NextResponse.json({ error: "Некорректный способ регистрации" }, { status: 400 });
+    }
 
     if (existingUser) {
       const errorByMethod = {
@@ -91,6 +100,7 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (error: unknown) {
+    console.error("Registration error:", error);
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json(
       {

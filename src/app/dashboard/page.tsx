@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession, signOut } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import useSWR, { mutate as globalMutate } from "swr";
@@ -56,6 +56,15 @@ interface WorkoutBookingSummary {
   status?: string;
 }
 
+interface DashboardUser {
+  id?: string;
+  name?: string | null;
+  image?: string | null;
+  phone?: string | null;
+  telegram?: string | null;
+  role?: string | null;
+}
+
 const calculatorTypes: Record<string, { icon: string; color: string; label: string; url: string }> =
   {
     BMI: {
@@ -103,7 +112,6 @@ function resolveTitle(
 }
 
 export default function DashboardPage() {
-  const { data: session } = useSession();
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
@@ -111,48 +119,85 @@ export default function DashboardPage() {
   const [showPhoneWarning, setShowPhoneWarning] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [expandedPWA, setExpandedPWA] = useState<"ios" | "android" | null>(null);
+  const [authUser, setAuthUser] = useState<DashboardUser | null>(null);
+  const [isAuthChecked, setIsAuthChecked] = useState(false);
 
-  const isLoggedIn = !!session?.user;
-  const userName = session?.user?.name || "Ваше имя";
-  const currentUserId = session?.user?.id || "";
+  const isLoggedIn = !!authUser;
+  const userName = authUser?.name || "Ваше имя";
+  const currentUserId = authUser?.id || "";
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const verifySession = async () => {
+      try {
+        const response = await fetch("/api/auth/session", { cache: "no-store" });
+        const payload = (await response.json().catch(() => null)) as {
+          user?: DashboardUser;
+        } | null;
+        const user = payload?.user ?? null;
+
+        if (!isMounted) return;
+
+        setAuthUser(user);
+        setIsAuthChecked(true);
+
+        if (!user) {
+          router.replace("/login?next=/dashboard");
+        }
+      } catch {
+        if (!isMounted) return;
+
+        setAuthUser(null);
+        setIsAuthChecked(true);
+        router.replace("/login?next=/dashboard");
+      }
+    };
+
+    verifySession();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [router]);
 
   const handleBookingSuccess = () => {
     setRefreshTrigger((prev) => prev + 1); // Обновляем список записей
   };
 
-  const hasContact = Boolean(session?.user?.phone || session?.user?.telegram);
+  const hasContact = Boolean(authUser?.phone || authUser?.telegram);
 
   // Force refresh favorites on mount (fixes bfcache issue)
   useEffect(() => {
-    if (session?.user) {
+    if (authUser) {
       globalMutate(swrKeys.favorites.recipes);
       globalMutate(swrKeys.favorites.exercises);
     }
-  }, [session?.user]);
+  }, [authUser]);
 
   // --- SWR data fetching (replaces 8 useState + 3 useEffect) ---
   const { data: calcData, isLoading: isLoadingCalculations } = useSWR<{
     calculations: Calculation[];
-  }>(session?.user ? swrKeys.user.calculations : null, fetcher, {
+  }>(authUser ? swrKeys.user.calculations : null, fetcher, {
     revalidateOnFocus: false,
     fallbackData: { calculations: [] },
   });
 
   const { data: recipeFavData, isLoading: isLoadingRecipeFavs } = useSWR<{
     favorites: FavoriteItem[];
-  }>(session?.user ? swrKeys.favorites.recipes : null, fetcher, {
+  }>(authUser ? swrKeys.favorites.recipes : null, fetcher, {
     fallbackData: { favorites: [] },
   });
 
   const { data: exerciseFavData, isLoading: isLoadingExerciseFavs } = useSWR<{
     favorites: FavoriteItem[];
-  }>(session?.user ? swrKeys.favorites.exercises : null, fetcher, {
+  }>(authUser ? swrKeys.favorites.exercises : null, fetcher, {
     fallbackData: { favorites: [] },
   });
 
   // Fetch workout bookings data
   const { data: bookingsData } = useSWR<WorkoutBookingSummary[]>(
-    session?.user ? `/api/workout-bookings?userId=${currentUserId}` : null,
+    authUser ? `/api/workout-bookings?userId=${currentUserId}` : null,
     fetcher,
     {
       fallbackData: [],
@@ -191,6 +236,23 @@ export default function DashboardPage() {
     bookingsData?.filter((booking) => booking.status !== "CANCELLED" && isUpcomingWorkout(booking))
       .length ?? 0;
 
+  if (!isAuthChecked) {
+    return (
+      <main className="min-h-screen bg-[#0c0d10] font-sans text-zinc-300 pb-24 md:pb-12 overflow-x-hidden">
+        <div className="mx-auto max-w-2xl px-4 space-y-6 animate-in fade-in duration-1000">
+          <div className="pt-4">
+            <div className="h-7 w-24 rounded-xl bg-white/5 animate-pulse" />
+          </div>
+          <div className="h-24 rounded-2xl bg-white/5 animate-pulse" />
+        </div>
+      </main>
+    );
+  }
+
+  if (!isLoggedIn) {
+    return null;
+  }
+
   return (
     <main className="min-h-screen bg-[#0c0d10] font-sans text-zinc-300 pb-24 md:pb-12 overflow-x-hidden">
       <div className="mx-auto max-w-2xl px-4 space-y-6 animate-in fade-in duration-1000">
@@ -201,86 +263,14 @@ export default function DashboardPage() {
           </h1>
         </div>
 
-        {!isLoggedIn && (
-          <div className="rounded-2xl border border-orange-500/20 bg-orange-500/10 p-4 sm:p-5 shadow-[0_18px_45px_rgba(249,87,0,0.12)]">
-            <div className="flex items-start gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-orange-500/20 bg-black/20 text-orange-400">
-                <Lock className="h-5 w-5" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-black uppercase tracking-widest text-orange-300">
-                  Доступ к тренировкам
-                </p>
-                <p className="mt-1 text-sm text-zinc-200 leading-snug">
-                  Чтобы записываться на тренировки и видеть свои записи, нужно войти в аккаунт или
-                  зарегистрироваться.
-                </p>
-                <div className="mt-4 flex flex-col sm:flex-row gap-3">
-                  <Link
-                    href="/login?next=/dashboard"
-                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-black uppercase tracking-widest text-black transition-transform hover:scale-[1.01] active:scale-[0.98]"
-                  >
-                    <UserPlus className="h-4 w-4" />
-                    Войти
-                  </Link>
-                  <Link
-                    href="/register"
-                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-black uppercase tracking-widest text-white transition-colors hover:bg-white/10"
-                  >
-                    Регистрация
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {!isLoggedIn && (
-          <div className="rounded-2xl border border-orange-500/20 bg-orange-500/10 p-4 sm:p-5 shadow-[0_18px_45px_rgba(249,87,0,0.12)]">
-            <div className="flex items-start gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-orange-500/20 bg-black/20 text-orange-400">
-                <Lock className="h-5 w-5" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-black uppercase tracking-widest text-orange-300">
-                  Доступ к тренировкам
-                </p>
-                <p className="mt-1 text-sm text-zinc-200 leading-snug">
-                  Чтобы записываться на тренировки и видеть свои записи, нужно войти в аккаунт или
-                  зарегистрироваться.
-                </p>
-                <div className="mt-4 flex flex-col sm:flex-row gap-3">
-                  <Link
-                    href="/login?next=/dashboard"
-                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-black uppercase tracking-widest text-black transition-transform hover:scale-[1.01] active:scale-[0.98]"
-                  >
-                    <UserPlus className="h-4 w-4" />
-                    Войти
-                  </Link>
-                  <Link
-                    href="/register"
-                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-black uppercase tracking-widest text-white transition-colors hover:bg-white/10"
-                  >
-                    Регистрация
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Header Section with Avatar and Name */}
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-3 flex-1">
             <div className="relative shrink-0">
               <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-white/10 shadow-2xl bg-zinc-800 flex items-center justify-center">
-                {session?.user?.image ? (
+                {authUser?.image ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={session.user.image}
-                    alt="Profile"
-                    className="object-cover w-full h-full"
-                  />
+                  <img src={authUser.image} alt="Profile" className="object-cover w-full h-full" />
                 ) : (
                   <div className="flex items-center justify-center text-zinc-600">
                     <Camera className="w-6 h-6" />
@@ -298,7 +288,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="flex gap-2 shrink-0">
-            {session?.user?.role === "ADMIN" && (
+            {authUser?.role === "ADMIN" && (
               <Link
                 href="/admin"
                 className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 font-bold text-xs hover:bg-amber-500/20 transition-all whitespace-nowrap"
@@ -862,8 +852,8 @@ export default function DashboardPage() {
         isOpen={isCalendarOpen}
         onClose={() => setIsCalendarOpen(false)}
         userId={currentUserId}
-        userPhone={session?.user?.phone}
-        userTelegram={session?.user?.telegram}
+        userPhone={authUser?.phone}
+        userTelegram={authUser?.telegram}
         onBookingSuccess={handleBookingSuccess}
       />
 

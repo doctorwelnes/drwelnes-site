@@ -39,7 +39,11 @@ export default function MobileNavBar() {
   const menuLinks = [
     { href: "/theory", icon: BookOpen, label: "Теория" },
     { href: "/about", icon: Info, label: "О проекте" },
-    { href: isAuthed ? "/dashboard" : "/login", icon: User, label: isAuthed ? "Профиль" : "Войти" },
+    {
+      href: isAuthed ? "/dashboard" : "/login?next=/dashboard",
+      icon: User,
+      label: "Профиль",
+    },
   ];
 
   return (

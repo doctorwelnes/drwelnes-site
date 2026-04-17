@@ -174,26 +174,13 @@ export default function LoginPage() {
             </div>
 
             <div className="rounded-2xl border border-orange-500/20 bg-orange-500/10 p-4 sm:p-5">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-3">
+              <div className="flex items-start gap-3">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-orange-500/20 bg-black/20 text-orange-400">
                   <ShieldCheck className="w-5 h-5" />
                 </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-black uppercase tracking-widest text-orange-300">
-                    Для записи на тренировки и полного функционала приложения нужен аккаунт
-                  </p>
-                  <p className="mt-1 text-sm text-zinc-200 leading-snug">
-                    Войдите или зарегистрируйтесь, чтобы записываться на тренировки, видеть свои
-                    слоты и пользоваться всем функционалом приложения.
-                  </p>
-                  <Link
-                    href="/register"
-                    className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-black uppercase tracking-widest text-white transition-colors hover:bg-white/10 sm:w-auto"
-                  >
-                    Зарегистрироваться / войти
-                    <ChevronRight className="w-4 h-4" />
-                  </Link>
-                </div>
+                <p className="min-w-0 flex-1 text-sm font-black uppercase tracking-widest text-orange-300 leading-snug">
+                  Для записи на тренировки и полного функционала приложения нужен аккаунт
+                </p>
               </div>
             </div>
 

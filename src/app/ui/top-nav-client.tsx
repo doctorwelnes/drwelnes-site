@@ -19,6 +19,7 @@ export default function TopNavClient({ onLinkClick }: { onLinkClick?: () => void
   const { status } = useSession();
 
   const isReady = status !== "loading";
+  const profileHref = status === "authenticated" ? "/dashboard" : "/login?next=/dashboard";
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
@@ -89,7 +90,7 @@ export default function TopNavClient({ onLinkClick }: { onLinkClick?: () => void
       </button>
 
       <Link
-        href="/dashboard"
+        href={profileHref}
         onClick={onLinkClick}
         className="px-4 py-2 rounded-xl text-sm font-black uppercase tracking-widest bg-orange-500/10 text-orange-500 border border-orange-500/20 flex items-center justify-center gap-2 min-w-25 min-h-9 shrink-0"
       >
