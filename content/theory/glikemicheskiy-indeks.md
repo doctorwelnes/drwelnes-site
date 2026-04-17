@@ -2,8 +2,8 @@
 title: Гликемический индекс
 slug: glikemicheskiy-indeks
 draft: false
-date: "2026-04-18T00:00:00.000Z"
-image: ""
+date: '2026-04-18T00:00:00.000Z'
+image: ''
 categories:
   - Питание
 description: Статья о гликемическом индексе и его влиянии на уровень сахара в крови.
@@ -15,14 +15,19 @@ tags:
 author: Dr. Welnes
 readingTime: 5 мин
 references:
-  - title: Harvard T.H. Chan School of Public Health. Carbohydrates and Blood Sugar. 2024
-    url: "https://www.hsph.harvard.edu/nutritionsource/carbohydrates/carbohydrates-and-blood-sugar/"
+  - title: >-
+      Harvard T.H. Chan School of Public Health. Carbohydrates and Blood Sugar.
+      2024
+    url: >-
+      https://www.hsph.harvard.edu/nutritionsource/carbohydrates/carbohydrates-and-blood-sugar/
   - title: American Diabetes Association. Glycemic Index and Diabetes. 2023
-    url: "https://www.diabetes.org/healthy-living/nutrition-and-physical-activity/glycemic-index"
+    url: >-
+      https://www.diabetes.org/healthy-living/nutrition-and-physical-activity/glycemic-index
   - title: University of Sydney. Glycemic Index Research. 2024
-    url: "https://www.glycemicindex.com/"
-articleImages:
-cardImage:
+    url: 'https://www.glycemicindex.com/'
+articleImages: null
+cardImage: /uploads/Изображения/гликемический индекс.webp
+cardImagePositionY: 61
 ---
 
 # Гликемический индекс
