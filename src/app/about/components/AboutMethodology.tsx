@@ -55,7 +55,7 @@ export function AboutMethodology() {
           ))}
         </div>
 
-        <div className="mt-12 bg-gradient-to-br from-[#f95700]/10 to-transparent border border-[#f95700]/20 rounded-[48px] p-8 md:p-12 flex flex-col md:flex-row items-center gap-8 overflow-hidden group">
+        <div className="mt-12 bg-gradient-to-br from-[#f95700]/10 to-transparent border border-[#f95700]/20 rounded-[48px] p-8 md:p-12 flex flex-col md:flex-row items-center gap-8 group">
           <div className="relative w-32 h-32 shrink-0">
             <div className="absolute inset-0 bg-[#f95700]/20 blur-2xl animate-pulse" />
             <svg className="w-full h-full text-[#f95700]" viewBox="0 0 100 100">

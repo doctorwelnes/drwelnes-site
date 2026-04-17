@@ -4,7 +4,7 @@ interface AboutCTAProps {
 
 export function AboutCTA({ onOpenBooking }: AboutCTAProps) {
   return (
-    <section className="relative rounded-3xl md:rounded-[40px] overflow-hidden bg-linear-to-br from-zinc-900 to-[#16181d] border border-white/5 px-6 py-12 sm:px-10 md:p-20 text-center flex flex-col items-center justify-center">
+    <section className="relative rounded-3xl md:rounded-[40px] bg-linear-to-br from-zinc-900 to-[#16181d] border border-white/5 px-6 py-12 sm:px-10 md:p-20 text-center flex flex-col items-center justify-center">
       <div className="relative z-10 max-w-2xl mx-auto space-y-6 md:space-y-8 w-full">
         <h2 className="text-2xl sm:text-3xl md:text-5xl font-black italic uppercase leading-tight hyphens-auto">
           Готовы к <span className="text-[#f95700]">научной</span> трансформации?

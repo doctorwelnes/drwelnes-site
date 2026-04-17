@@ -138,12 +138,12 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex items-center justify-center py-10">
+    <div className="flex min-h-dvh items-start justify-center px-4 py-6 sm:items-center sm:px-6 sm:py-10">
       {/* Background Decor */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg aspect-square bg-orange-500/10 blur-[120px] rounded-full -z-10" />
 
-      <section className="w-full max-w-[440px] animate-in fade-in zoom-in-95 duration-500">
-        <div className="bg-[#13151a]/60 backdrop-blur-2xl p-8 md:p-10 rounded-[40px] border border-white/5 shadow-2xl relative overflow-hidden">
+      <section className="w-full max-w-[440px] animate-in fade-in zoom-in-95 duration-500 pt-4 sm:pt-0">
+        <div className="bg-[#13151a]/60 backdrop-blur-2xl p-6 sm:p-8 md:p-10 rounded-[40px] border border-white/5 shadow-2xl relative overflow-hidden">
           {/* Top accent line */}
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-transparent opacity-50" />
 
@@ -173,24 +173,24 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-orange-500/20 bg-orange-500/10 p-4">
-              <div className="flex items-start gap-3">
+            <div className="rounded-2xl border border-orange-500/20 bg-orange-500/10 p-4 sm:p-5">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-3">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-orange-500/20 bg-black/20 text-orange-400">
                   <ShieldCheck className="w-5 h-5" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-black uppercase tracking-widest text-orange-300">
-                    Для записи на тренировки нужен аккаунт
+                    Для записи на тренировки и полного функционала приложения нужен аккаунт
                   </p>
                   <p className="mt-1 text-sm text-zinc-200 leading-snug">
                     Войдите или зарегистрируйтесь, чтобы записываться на тренировки, видеть свои
-                    слоты и возвращаться обратно после авторизации.
+                    слоты и пользоваться всем функционалом приложения.
                   </p>
                   <Link
                     href="/register"
-                    className="mt-3 inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-xs font-black uppercase tracking-widest text-white transition-colors hover:bg-white/10"
+                    className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-black uppercase tracking-widest text-white transition-colors hover:bg-white/10 sm:w-auto"
                   >
-                    Зарегистрироваться
+                    Зарегистрироваться / войти
                     <ChevronRight className="w-4 h-4" />
                   </Link>
                 </div>

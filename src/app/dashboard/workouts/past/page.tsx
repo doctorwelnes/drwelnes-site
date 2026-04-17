@@ -22,7 +22,7 @@ export default function PastWorkoutsPage() {
             </Link>
             <div className="min-w-0">
               <p className="text-[10px] font-black uppercase tracking-[0.22em] text-zinc-500">
-                Личный кабинет
+                Профиль
               </p>
               <h1 className="text-lg font-black text-white">Прошедшие тренировки</h1>
             </div>

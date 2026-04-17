@@ -84,7 +84,7 @@ export default function TdeePage() {
 
       if (response.ok) {
         toast.success("Расчет сохранен!", {
-          description: "Данные добавлены в ваш личный кабинет",
+          description: "Данные добавлены в ваш Профиль",
         });
         // Refresh history immediately
         loadHistory();

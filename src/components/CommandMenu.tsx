@@ -101,7 +101,7 @@ export function CommandMenu() {
               className="flex items-center gap-2 px-3 py-2.5 text-sm text-white rounded-xl aria-selected:bg-white/10 hover:bg-white/10 cursor-pointer transition-colors"
             >
               <User className="w-4 h-4 text-orange-500" />
-              Личный кабинет
+              Профиль
             </Command.Item>
           </Command.Group>
         </Command.List>
