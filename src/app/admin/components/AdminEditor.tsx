@@ -205,7 +205,6 @@ export function AdminEditor({
                     <IngredientsList
                       ingredients={ingredients}
                       onChange={(val) => setFrontmatter({ ...frontmatter, ingredients: val })}
-                      moveItem={(idx, dir) => moveItem("ingredients", idx, dir)}
                     />
                     <StepsList
                       steps={steps}

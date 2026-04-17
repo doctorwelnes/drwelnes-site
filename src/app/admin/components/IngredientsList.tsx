@@ -1,17 +1,16 @@
 "use client";
 
 import React from "react";
-import { Trash2, Sparkles } from "lucide-react";
+import { Trash2, Sparkles, GripVertical } from "lucide-react";
 
 interface IngredientsListProps {
   ingredients: { name: string; amount: string; weight: string; isGroup?: boolean }[];
   onChange: (
     newIngredients: { name: string; amount: string; weight: string; isGroup?: boolean }[],
   ) => void;
-  moveItem: (index: number, direction: "up" | "down") => void;
 }
 
-export function IngredientsList({ ingredients, onChange, moveItem }: IngredientsListProps) {
+export function IngredientsList({ ingredients, onChange }: IngredientsListProps) {
   const [activeIdx, setActiveIdx] = React.useState<number | null>(null);
   const [suggestions, setSuggestions] = React.useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = React.useState(false);
@@ -19,6 +18,7 @@ export function IngredientsList({ ingredients, onChange, moveItem }: Ingredients
   const [showPasteModal, setShowPasteModal] = React.useState(false);
   const [pasteText, setPasteText] = React.useState("");
   const [isParsing, setIsParsing] = React.useState(false);
+  const [draggedIndex, setDraggedIndex] = React.useState<number | null>(null);
 
   const getWeightValue = (weight: string) => weight.replace(/[^\d.,]/g, "");
 
@@ -131,6 +131,32 @@ export function IngredientsList({ ingredients, onChange, moveItem }: Ingredients
     }
   };
 
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  };
+
+  const handleDrop = (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === dropIndex) return;
+
+    const newIngredients = [...ingredients];
+    const [draggedItem] = newIngredients.splice(draggedIndex, 1);
+    newIngredients.splice(dropIndex, 0, draggedItem);
+
+    onChange(newIngredients);
+    setDraggedIndex(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+  };
+
   return (
     <div className="space-y-6 bg-[#0d0d0d] p-8 rounded-3xl border border-white/5 shadow-2xl mt-8">
       <div className="flex items-center justify-between mb-2">
@@ -191,21 +217,19 @@ export function IngredientsList({ ingredients, onChange, moveItem }: Ingredients
         {ingredients.map((ing, i) => (
           <div
             key={i}
-            className={`flex gap-3 items-center group animate-in fade-in slide-in-from-left-2 duration-200 ${ing.isGroup ? "mt-6 first:mt-0" : ""}`}
+            draggable
+            onDragStart={(e) => handleDragStart(e, i)}
+            onDragOver={handleDragOver}
+            onDrop={(e) => handleDrop(e, i)}
+            onDragEnd={handleDragEnd}
+            className={`flex gap-3 items-center group animate-in fade-in slide-in-from-left-2 duration-200 ${
+              ing.isGroup ? "mt-6 first:mt-0" : ""
+            } ${draggedIndex === i ? "opacity-50" : ""} ${
+              draggedIndex !== null && draggedIndex !== i ? "border-t-2 border-amber-500/30" : ""
+            }`}
           >
-            <div className="flex flex-col opacity-0 group-hover:opacity-100 transition-opacity">
-              <button
-                onClick={() => moveItem(i, "up")}
-                className="text-[8px] text-neutral-600 hover:text-amber-500 p-0.5"
-              >
-                ▲
-              </button>
-              <button
-                onClick={() => moveItem(i, "down")}
-                className="text-[8px] text-neutral-600 hover:text-amber-500 p-0.5"
-              >
-                ▼
-              </button>
+            <div className="flex flex-col items-center gap-1 cursor-grab active:cursor-grabbing opacity-50 group-hover:opacity-100 transition-opacity">
+              <GripVertical size={14} className="text-neutral-600" />
             </div>
 
             {ing.isGroup ? (

@@ -11,6 +11,7 @@ import {
   Droplets,
   Wheat,
   Tag,
+  HelpCircle,
 } from "lucide-react";
 import Link from "next/link";
 import type { Recipe, RecipeKbru } from "@/lib/content";
@@ -116,6 +117,7 @@ function NutrientRadarChart({ kbru }: { kbru: RecipeKbru }) {
 }
 function CalorieShareWidget({ recipe, isMobile }: { recipe: Recipe; isMobile: boolean }) {
   const [view, setView] = useState<"100g" | "dish">("100g");
+  const [showTooltip, setShowTooltip] = useState(false);
   const uniqueId = useId().replace(/:/g, "");
 
   const ETALON = {
@@ -157,9 +159,30 @@ function CalorieShareWidget({ recipe, isMobile }: { recipe: Recipe; isMobile: bo
       className={`bg-[#13151a]/60 backdrop-blur-xl border border-white/5 rounded-[32px] overflow-hidden ${isMobile ? "p-4" : "p-5"}`}
     >
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-2 text-orange-500">
-          <span className="w-4 h-px bg-orange-500/50" /> КБЖУ
-        </h2>
+        <div className="flex items-center gap-2">
+          <h2 className="text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-2 text-orange-500">
+            <span className="w-4 h-px bg-orange-500/50" /> КБЖУ на эталон
+          </h2>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setShowTooltip(!showTooltip)}
+              className="relative group"
+            >
+              <HelpCircle className="w-3.5 h-3.5 text-zinc-600 hover:text-orange-500 cursor-help transition-colors" />
+              <div
+                className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 bg-[#0c0d10] border border-white/10 rounded-xl p-3 transition-all duration-200 z-50 shadow-2xl ${
+                  showTooltip ? "opacity-100 visible" : "opacity-0 invisible"
+                } group-hover:opacity-100 group-hover:visible`}
+              >
+                <p className="text-[10px] text-zinc-400 font-medium leading-relaxed">
+                  Расчёт КБЖУ относительно эталонного профиля: мужчина 175 см / 70 кг / 25 лет
+                  (суточная норма ~2500 ккал).
+                </p>
+              </div>
+            </button>
+          </div>
+        </div>
         <div className="flex bg-white/5 rounded-full p-1 border border-white/5">
           {(["100g", "dish"] as const).map((v) => (
             <button
@@ -309,6 +332,7 @@ function KbruCard({
 }) {
   const { status } = useSession();
   const isAuthed = status === "authenticated";
+  const [showTooltip, setShowTooltip] = useState(false);
 
   // Data to render based on view
   let dataToRender;
@@ -332,12 +356,36 @@ function KbruCard({
   return (
     <section className="bg-[#13151a] border border-white/5 rounded-[32px] shadow-2xl overflow-hidden p-4 md:p-5">
       <div className="flex items-center justify-between mb-3 md:mb-4">
-        <h2 className="text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-2 text-orange-500">
-          <span className="w-4 h-px bg-orange-500/50" /> КБЖУ
-        </h2>
+        <div className="flex items-center gap-2">
+          <h2 className="text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-2 text-orange-500">
+            <span className="w-4 h-px bg-orange-500/50" /> КБЖУ на эталон
+          </h2>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setShowTooltip(!showTooltip)}
+              className="relative group"
+            >
+              <HelpCircle className="w-3.5 h-3.5 text-zinc-600 hover:text-orange-500 cursor-help transition-colors" />
+              <div
+                className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 bg-[#0c0d10] border border-white/10 rounded-xl p-3 transition-all duration-200 z-50 shadow-2xl ${
+                  showTooltip ? "opacity-100 visible" : "opacity-0 invisible"
+                } group-hover:opacity-100 group-hover:visible`}
+              >
+                <p className="text-[10px] text-zinc-400 font-medium leading-relaxed">
+                  Расчёт КБЖУ относительно эталонного профиля: мужчина 175 см / 70 кг / 25 лет
+                  (суточная норма ~2500 ккал).
+                </p>
+              </div>
+            </button>
+          </div>
+        </div>
         <div className="flex bg-white/5 rounded-full p-1 border border-white/5">
           <button
-            onClick={() => setView("100g")}
+            onClick={(e) => {
+              e.stopPropagation();
+              setView("100g");
+            }}
             className={`px-3 py-2 rounded-full text-[10px] font-black uppercase tracking-tight transition-all ${
               view === "100g"
                 ? "bg-orange-500 text-black shadow-lg"
