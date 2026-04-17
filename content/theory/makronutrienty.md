@@ -2,11 +2,11 @@
 title: Макронутриенты
 slug: makronutrienty
 draft: false
-date: "2026-04-18T00:00:00.000Z"
-image: ""
+date: '2026-04-18T00:00:00.000Z'
+image: ''
 categories:
   - Питание
-description: Статья о белках, жирах и углеводах — основных строительных блоках питания.
+description: 'Статья о белках, жирах и углеводах — основных строительных блоках питания.'
 tags:
   - Питание
   - Здоровье
@@ -16,15 +16,16 @@ author: Dr. Welnes
 readingTime: 6 мин
 references:
   - title: Harvard T.H. Chan School of Public Health. Carbohydrates. 2024
-    url: "https://www.hsph.harvard.edu/nutritionsource/carbohydrates/"
+    url: 'https://www.hsph.harvard.edu/nutritionsource/carbohydrates/'
   - title: National Institutes of Health. Protein and Health. 2023
-    url: "https://www.nih.gov/news-events/nih-research-matters/protein-and-health"
+    url: 'https://www.nih.gov/news-events/nih-research-matters/protein-and-health'
   - title: World Health Organization. Healthy Diet Factsheet. 2023
-    url: "https://www.who.int/news-room/fact-sheets/detail/healthy-diet"
+    url: 'https://www.who.int/news-room/fact-sheets/detail/healthy-diet'
   - title: Cleveland Clinic. The Truth About Fats. 2024
-    url: "https://health.clevelandclinic.org/the-truth-about-fats/"
-articleImages:
-cardImage:
+    url: 'https://health.clevelandclinic.org/the-truth-about-fats/'
+articleImages: null
+cardImage: /uploads/Изображения/макронутриенты.webp
+cardImagePositionY: 37
 ---
 
 # Макронутриенты
