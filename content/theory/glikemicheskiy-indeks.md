@@ -25,7 +25,8 @@ references:
       https://www.diabetes.org/healthy-living/nutrition-and-physical-activity/glycemic-index
   - title: University of Sydney. Glycemic Index Research. 2024
     url: 'https://www.glycemicindex.com/'
-articleImages: null
+articleImages:
+  - /uploads/Изображения/гликемический индекс-1.webp
 cardImage: /uploads/Изображения/гликемический индекс.webp
 cardImagePositionY: 61
 ---
