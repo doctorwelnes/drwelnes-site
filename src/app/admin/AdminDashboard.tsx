@@ -1011,8 +1011,8 @@ export default function AdminDashboard({ username = "Admin" }: { username?: stri
   return (
     <div className="h-screen w-full bg-[#0a0a0a] text-neutral-200 flex flex-col font-sans overflow-hidden capitalize-none selection:bg-amber-500/30">
       {/* HEADER */}
-      <header className="h-14 border-b border-white/5 flex items-center justify-between px-6 bg-[#0d0d0d] z-50">
-        <div className="flex items-center gap-4">
+      <header className="min-h-14 border-b border-white/5 flex flex-wrap items-center justify-between gap-3 px-3 py-2 sm:px-6 bg-[#0d0d0d] z-50">
+        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
           <button
             onClick={() => setIsExplorerVisible(!isExplorerVisible)}
             className="p-2 hover:bg-white/5 rounded-xl transition-all"
@@ -1020,52 +1020,57 @@ export default function AdminDashboard({ username = "Admin" }: { username?: stri
           >
             {isExplorerVisible ? <PanelLeftClose size={20} /> : <PanelLeft size={20} />}
           </button>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 min-w-0">
             <div className="w-8 h-8 rounded-xl bg-linear-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-[0_0_15px_rgba(245,158,11,0.3)]">
               <Activity size={18} className="text-black" />
             </div>
-            <span className="font-black text-[13px] uppercase tracking-[0.2em]">
+            <span className="font-black text-[11px] sm:text-[13px] uppercase tracking-[0.14em] sm:tracking-[0.2em] truncate max-w-30 sm:max-w-none">
               Dr. Welnes <span className="text-neutral-500 font-bold">IDE</span>
             </span>
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center justify-end flex-wrap gap-2 sm:gap-4 w-full sm:w-auto">
           {hasLocalBackup && (
             <button
               onClick={restoreFromBackup}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 text-[11px] font-black uppercase tracking-widest rounded-xl border border-blue-500/20 transition-all animate-pulse"
+              className="flex items-center gap-2 px-3 py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 text-[10px] sm:text-[11px] font-black uppercase tracking-widest rounded-xl border border-blue-500/20 transition-all animate-pulse"
             >
-              Восстановить
+              <span className="sm:hidden">Восст.</span>
+              <span className="hidden sm:inline">Восстановить</span>
             </button>
           )}
 
-          <div className="flex items-center gap-2 bg-neutral-900/50 p-1.5 rounded-2xl border border-white/5">
+          <div className="flex items-center gap-2 bg-neutral-900/50 p-1 sm:p-1.5 rounded-2xl border border-white/5 flex-wrap justify-end">
             <button
               onClick={handlePublish}
               disabled={isPublishing}
-              className={`flex items-center gap-2.5 px-6 py-2.5 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all transform active:scale-95 shadow-xl
+              className={`flex items-center gap-2 px-3 sm:px-6 py-2.5 rounded-2xl text-[10px] sm:text-[11px] font-black uppercase tracking-[0.16em] sm:tracking-[0.2em] transition-all transform active:scale-95 shadow-xl
                 ${isPublishing ? "bg-cyan-500/10 text-cyan-500/40 border border-cyan-500/10 cursor-not-allowed" : "bg-cyan-500 text-black hover:bg-cyan-400 hover:-translate-y-0.5 shadow-cyan-500/20"}`}
             >
               <UploadCloud size={16} className={isPublishing ? "animate-bounce" : ""} />
-              {isPublishing ? "Публикация..." : "Опубликовать на сервер"}
+              <span className="sm:hidden">{isPublishing ? "Публ..." : "На сервер"}</span>
+              <span className="hidden sm:inline">
+                {isPublishing ? "Публикация..." : "Опубликовать на сервер"}
+              </span>
             </button>
 
             <button
               onClick={() =>
                 window.open(activeFile ? "/" + activeFile.replace(".md", "") : "/", "_blank")
               }
-              className="flex items-center gap-2.5 px-6 py-2.5 rounded-2xl bg-indigo-500 text-white hover:bg-indigo-400 text-[11px] font-black uppercase tracking-[0.2em] transition-all transform hover:-translate-y-0.5 active:scale-95 shadow-xl shadow-indigo-500/20"
+              className="flex items-center gap-2 px-3 sm:px-6 py-2.5 rounded-2xl bg-indigo-500 text-white hover:bg-indigo-400 text-[10px] sm:text-[11px] font-black uppercase tracking-[0.16em] sm:tracking-[0.2em] transition-all transform hover:-translate-y-0.5 active:scale-95 shadow-xl shadow-indigo-500/20"
               title="Перейти на сайт"
             >
               <ExternalLink size={16} />
-              На сайт
+              <span className="sm:hidden">Сайт</span>
+              <span className="hidden sm:inline">На сайт</span>
             </button>
 
             <button
               onClick={saveFile}
               disabled={isSaving || !isDirty}
-              className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-[0.2em] transition-all
+              className={`flex items-center gap-2 px-3 sm:px-6 py-2.5 rounded-xl text-[10px] sm:text-[11px] font-black uppercase tracking-[0.16em] sm:tracking-[0.2em] transition-all
                  ${
                    isDirty
                      ? "bg-amber-500 text-black shadow-[0_0_20px_rgba(245,158,11,0.3)] hover:scale-105 active:scale-95"
@@ -1073,13 +1078,16 @@ export default function AdminDashboard({ username = "Admin" }: { username?: stri
                  }`}
             >
               <Save size={14} className={isSaving ? "animate-spin" : ""} />
-              {isSaving ? "Сохранение..." : isDirty ? "Сохранить" : "Сохранено"}
+              <span className="sm:hidden">{isSaving ? "..." : isDirty ? "Сохр." : "OK"}</span>
+              <span className="hidden sm:inline">
+                {isSaving ? "Сохранение..." : isDirty ? "Сохранить" : "Сохранено"}
+              </span>
             </button>
           </div>
 
-          <div className="w-px h-8 bg-white/5 mx-2" />
+          <div className="hidden sm:block w-px h-8 bg-white/5 mx-2" />
 
-          <div className="flex flex-col items-end px-2">
+          <div className="hidden sm:flex flex-col items-end px-2">
             <span className="text-[9px] font-black uppercase text-neutral-600 tracking-widest">
               Оператор
             </span>
