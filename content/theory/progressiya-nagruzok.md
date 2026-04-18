@@ -2,11 +2,13 @@
 title: Прогрессия нагрузок
 slug: progressiya-nagruzok
 draft: false
-date: "2026-04-18T00:00:00.000Z"
-image: ""
+date: '2026-04-18T00:00:00.000Z'
+image: ''
 categories:
   - Тренировки
-description: Статья о прогрессии нагрузок — как правильно увеличивать вес и интенсивность тренировок.
+description: >-
+  Статья о прогрессии нагрузок — как правильно увеличивать вес и интенсивность
+  тренировок.
 tags:
   - Тренировки
   - Здоровье
@@ -16,13 +18,16 @@ author: Dr. Welnes
 readingTime: 5 мин
 references:
   - title: National Strength and Conditioning Association. Progressive Overload. 2023
-    url: "https://www.nsca.com/education/articles/certified-columns/progressive-overload/"
+    url: >-
+      https://www.nsca.com/education/articles/certified-columns/progressive-overload/
   - title: American Council on Exercise. Progressive Overload. 2024
-    url: "https://www.acefitness.org/education-and-resources/professional/expert-articles/6648/progressive-overload/"
+    url: >-
+      https://www.acefitness.org/education-and-resources/professional/expert-articles/6648/progressive-overload/
   - title: PubMed. Progressive Overload and Muscle Hypertrophy. 2019
-    url: "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6628669/"
-articleImages:
-cardImage:
+    url: 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6628669/'
+articleImages: null
+cardImage: /uploads/Изображения/прогрессия нагрузок.webp
+cardImagePositionY: 26
 ---
 
 # Прогрессия нагрузок
