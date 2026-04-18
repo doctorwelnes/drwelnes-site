@@ -172,8 +172,8 @@ export default function RecipesClient({ recipes }: { recipes: Recipe[] }) {
         />
       </div>
 
-      <div className="mx-auto max-w-7xl space-y-6 md:space-y-8 lg:space-y-12 relative z-10">
-        <div className="space-y-3 md:space-y-8 lg:space-y-12 transition-all duration-500">
+      <div className="mx-auto max-w-7xl space-y-4 md:space-y-6 lg:space-y-8 relative z-10">
+        <div className="space-y-3 md:space-y-4 lg:space-y-6 transition-all duration-500">
           <div className="flex flex-col gap-3 md:gap-6 lg:gap-8 pb-3 md:pb-8 lg:pb-12">
             <PageHeader
               title="Рецепты"
