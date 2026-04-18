@@ -25,8 +25,9 @@ references:
       https://www.acefitness.org/education-and-resources/professional/expert-articles/6648/progressive-overload/
   - title: PubMed. Progressive Overload and Muscle Hypertrophy. 2019
     url: 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6628669/'
-articleImages: null
-cardImage: /uploads/Изображения/прогрессия нагрузок.webp
+articleImages:
+  - ''
+cardImage: /uploads/Изображения/прогрессия нагрузок-1.webp
 cardImagePositionY: 26
 ---
 
