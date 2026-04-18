@@ -9,7 +9,7 @@ import type {
   TheoryArticle,
   Calculator,
 } from "@/types/content";
-import { getContentDir } from "@/lib/project-root";
+import { getContentDir, getPublicDir } from "@/lib/project-root";
 
 // Re-export shared types for backward compatibility
 export type {
@@ -35,19 +35,38 @@ function normalizeMediaUrl(value?: string): string | undefined {
   const trimmed = value?.trim();
   if (!trimmed) return undefined;
 
-  if (trimmed.startsWith("/uploads/")) return trimmed;
-  if (trimmed.startsWith("uploads/")) return `/${trimmed}`;
+  let normalized = trimmed;
+
+  if (trimmed.startsWith("/uploads/")) {
+    normalized = trimmed;
+  } else if (trimmed.startsWith("uploads/")) {
+    normalized = `/${trimmed}`;
+  }
 
   try {
     const url = new URL(trimmed);
     if (url.pathname.startsWith("/uploads/")) {
-      return `${url.pathname}${url.search}${url.hash}`;
+      normalized = `${url.pathname}${url.search}${url.hash}`;
     }
   } catch {
     // Not an absolute URL; return as-is.
   }
 
-  return trimmed;
+  if (!normalized.startsWith("/uploads/")) return normalized;
+
+  try {
+    const parsed = new URL(normalized, "http://local.invalid");
+    if (parsed.searchParams.has("v")) return normalized;
+
+    const localPath = path.join(getPublicDir(), parsed.pathname.replace(/^\/+/, ""));
+    if (!fs.existsSync(localPath)) return normalized;
+
+    const version = fs.statSync(localPath).mtimeMs.toString(36);
+    const separator = parsed.search ? "&" : "?";
+    return `${parsed.pathname}${parsed.search}${parsed.hash}${separator}v=${version}`;
+  } catch {
+    return normalized;
+  }
 }
 
 function normalizeRecipeIngredients(

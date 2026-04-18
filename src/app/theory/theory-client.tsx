@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { Search, BookOpen, Tag, ChevronRight, Clock, FileText } from "lucide-react";
+import { Search, BookOpen, Tag, Clock, FileText } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import ContentGate from "@/components/ContentGate";
 import type { TheoryArticle } from "@/lib/content";
@@ -72,27 +72,31 @@ export default function TheoryClient({ articles }: { articles: TheoryArticle[] }
           <div className="flex flex-wrap gap-2 px-4 md:px-0">
             <button
               onClick={() => setActiveCategory(null)}
-              className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border
+              className={`px-4 py-2 bg-orange-500/5 border border-orange-500/20 rounded-full hover:border-orange-500/50 transition-all active:scale-95
                 ${
                   activeCategory === null
-                    ? "bg-blue-600 border-blue-600 text-white shadow-[0_0_20px_rgba(59,130,246,0.3)]"
-                    : "bg-white/5 border-white/5 text-zinc-500 hover:text-white hover:bg-white/10"
+                    ? "text-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.15)]"
+                    : "text-zinc-500 hover:text-orange-400"
                 }`}
             >
-              Все темы
+              <span className="text-[11px] font-mono font-bold tracking-tight whitespace-nowrap">
+                Все темы
+              </span>
             </button>
             {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(activeCategory === cat ? null : cat)}
-                className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border capitalize
+                className={`px-4 py-2 bg-orange-500/5 border border-orange-500/20 rounded-full hover:border-orange-500/50 transition-all active:scale-95 capitalize
                   ${
                     activeCategory === cat
-                      ? "bg-blue-600 border-blue-600 text-white shadow-[0_0_20px_rgba(59,130,246,0.3)]"
-                      : "bg-white/5 border-white/5 text-zinc-500 hover:text-white hover:bg-white/10"
+                      ? "text-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.15)]"
+                      : "text-zinc-500 hover:text-orange-400"
                   }`}
               >
-                {cat}
+                <span className="text-[11px] font-mono font-bold tracking-tight whitespace-nowrap">
+                  {cat}
+                </span>
               </button>
             ))}
           </div>
@@ -122,7 +126,6 @@ export default function TheoryClient({ articles }: { articles: TheoryArticle[] }
                   href={`/theory/${article.slug}`}
                   className="group flex flex-col bg-[#13151a] border border-white/5 rounded-4xl overflow-hidden hover:border-orange-500/30 transition-all duration-500 hover:-translate-y-2 shadow-[0_10px_30px_rgba(0,0,0,0.5)] h-full"
                 >
-                  waaaw
                   {/* Card Image */}
                   <div className="relative h-70 w-full overflow-hidden bg-[#0a0c0e] block">
                     {article.cardImage ? (
