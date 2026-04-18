@@ -2,8 +2,8 @@
 title: Травмы — профилактика и восстановление
 slug: travmy-profilaktika-i-vosstanovlenie
 draft: false
-date: "2026-04-18T00:00:00.000Z"
-image: ""
+date: '2026-04-18T00:00:00.000Z'
+image: ''
 categories:
   - Тренировки
 description: Статья о профилактике травм и восстановлении после них.
@@ -16,13 +16,14 @@ author: Dr. Welnes
 readingTime: 6 мин
 references:
   - title: American Academy of Orthopaedic Surgeons. Sports Injury Prevention. 2024
-    url: "https://orthoinfo.aaos.org/en/staying-healthy/preventing-sports-injuries/"
+    url: 'https://orthoinfo.aaos.org/en/staying-healthy/preventing-sports-injuries/'
   - title: National Institutes of Health. Sports Injury Prevention. 2023
-    url: "https://www.nih.gov/news-events/nih-research-matters/sports-injury-prevention"
+    url: >-
+      https://www.nih.gov/news-events/nih-research-matters/sports-injury-prevention
   - title: PubMed. Injury Prevention in Strength Training. 2022
-    url: "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9194575/"
-articleImages:
-cardImage:
+    url: 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9194575/'
+articleImages: null
+cardImage: /uploads/Изображения/травмы — профилактика и восстановление.webp
 ---
 
 # Травмы — профилактика и восстановление

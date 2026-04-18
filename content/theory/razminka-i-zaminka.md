@@ -2,8 +2,8 @@
 title: Разминка и заминка
 slug: razminka-i-zaminka
 draft: false
-date: "2026-04-18T00:00:00.000Z"
-image: ""
+date: '2026-04-18T00:00:00.000Z'
+image: ''
 categories:
   - Тренировки
 description: Статья о важности разминки и заминки — зачем и как их делать правильно.
@@ -16,13 +16,15 @@ author: Dr. Welnes
 readingTime: 5 мин
 references:
   - title: American Council on Exercise. Warm Up and Cool Down. 2024
-    url: "https://www.acefitness.org/education-and-resources/professional/expert-articles/6628/warm-up-and-cool-down/"
+    url: >-
+      https://www.acefitness.org/education-and-resources/professional/expert-articles/6628/warm-up-and-cool-down/
   - title: National Academy of Sports Medicine. Warm-Up and Cool-Down. 2023
-    url: "https://www.nasm.org/resources/evidence-centered-practice/warm-up-and-cool-down"
+    url: >-
+      https://www.nasm.org/resources/evidence-centered-practice/warm-up-and-cool-down
   - title: PubMed. The Effects of Warm-Up on Performance. 2022
-    url: "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9194575/"
-articleImages:
-cardImage:
+    url: 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9194575/'
+articleImages: null
+cardImage: /uploads/Изображения/разминка и заминка.webp
 ---
 
 # Разминка и заминка

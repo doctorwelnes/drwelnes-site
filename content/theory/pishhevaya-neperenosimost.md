@@ -2,8 +2,8 @@
 title: Пищевая непереносимость
 slug: pishhevaya-neperenosimost
 draft: false
-date: "2026-04-18T00:00:00.000Z"
-image: ""
+date: '2026-04-18T00:00:00.000Z'
+image: ''
 categories:
   - Питание
 description: Статья о пищевой непереносимости и её отличии от аллергии.
@@ -16,13 +16,14 @@ author: Dr. Welnes
 readingTime: 5 мин
 references:
   - title: Mayo Clinic. Food Intolerance vs. Food Allergy. 2024
-    url: "https://www.mayoclinic.org/diseases-conditions/food-allergy/expert-answers/food-intolerance/faq-20058532"
+    url: >-
+      https://www.mayoclinic.org/diseases-conditions/food-allergy/expert-answers/food-intolerance/faq-20058532
   - title: Cleveland Clinic. Food Intolerance. 2023
-    url: "https://health.clevelandclinic.org/food-intolerance/"
+    url: 'https://health.clevelandclinic.org/food-intolerance/'
   - title: World Allergy Organization. Food Allergy. 2023
-    url: "https://www.worldallergy.org/food-allergy"
-articleImages:
-cardImage:
+    url: 'https://www.worldallergy.org/food-allergy'
+articleImages: null
+cardImage: /uploads/Изображения/пищевая непереносимость.webp
 ---
 
 # Пищевая непереносимость
