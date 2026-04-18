@@ -3,7 +3,7 @@ title: Ягодно-творожная кесадилья
 slug: yagodno-tvorojnaya-kesadilьya
 published: false
 date: '2026-04-17T06:32:07.167Z'
-image: /uploads/кадры-видео/poster-1776407935672.jpg
+image: /uploads/кадры-видео/poster-1776510854022.jpg
 category: Десерт
 kcal: 0
 time: 0
@@ -58,7 +58,7 @@ tags:
   - Быстро
   - Десерт
 videoFile: /uploads/Видео/ягодно-творожная кесадилья.mp4
-videoPoster: /uploads/кадры-видео/poster-1776407935672.jpg
+videoPoster: /uploads/кадры-видео/poster-1776510854022.jpg
 imagePositionY: 45
 ---
 # Ягодно-творожная кесадилья
