@@ -54,8 +54,9 @@ cleanup_old_builds() {
     return
   fi
   log "Cleaning old build directories from $BUILD_ROOT"
-  # Remove build directories older than 1 day
-  find "$BUILD_ROOT" -maxdepth 1 -type d -mtime +1 -exec rm -rf {} + 2>/dev/null || true
+  # Remove all previous staging build directories before creating a new one.
+  # These are temporary deploy artifacts and should not accumulate between deploys.
+  find "$BUILD_ROOT" -mindepth 1 -maxdepth 1 -exec rm -rf {} + 2>/dev/null || true
 }
 
 cleanup_old_releases() {
