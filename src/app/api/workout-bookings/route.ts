@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { getPrismaClient } from "@/lib/prisma";
 import { sendTelegramHtmlMessage } from "@/lib/telegram";
+import { isTimeRangeOverlapping, normalizeDateKey } from "@/lib/workout-availability";
+
+const ACTIVE_BOOKING_STATUSES = ["PENDING", "CONFIRMED"] as const;
 
 async function notifyTelegramBooking(payload: {
   userName: string;
@@ -186,6 +189,56 @@ export async function POST(request: NextRequest) {
 
     if (slot.currentParticipants >= slot.maxParticipants) {
       return NextResponse.json({ error: "This slot is already full" }, { status: 409 });
+    }
+
+    const slotDateKey = normalizeDateKey(slot.date);
+    const bookedSlotsOnDate = await prisma.workoutSlot.findMany({
+      where: {
+        id: {
+          not: slotId,
+        },
+        date: {
+          gte: new Date(`${slotDateKey}T00:00:00.000Z`),
+          lt: new Date(`${slotDateKey}T23:59:59.999Z`),
+        },
+        bookings: {
+          some: {
+            status: {
+              in: [...ACTIVE_BOOKING_STATUSES],
+            },
+          },
+        },
+        AND: [
+          {
+            startTime: {
+              lt: slot.endTime,
+            },
+          },
+          {
+            endTime: {
+              gt: slot.startTime,
+            },
+          },
+        ],
+      },
+      select: {
+        id: true,
+        startTime: true,
+        endTime: true,
+      },
+    });
+
+    const conflictingSlot = bookedSlotsOnDate.find((candidate) =>
+      isTimeRangeOverlapping(slot.startTime, slot.endTime, candidate.startTime, candidate.endTime),
+    );
+
+    if (conflictingSlot) {
+      return NextResponse.json(
+        {
+          error: "This time overlaps with another booked workout slot",
+        },
+        { status: 409 },
+      );
     }
 
     // Проверяем, что пользователь уже записывался на этот слот

@@ -16,6 +16,7 @@ import {
   RefreshCw,
   AlertCircle,
 } from "lucide-react";
+import { isWorkoutSlotUnavailable } from "@/lib/workout-availability";
 
 interface WorkoutSlot {
   id: string;
@@ -32,6 +33,7 @@ interface WorkoutSlot {
   notes?: string;
   createdAt: string;
   updatedAt: string;
+  isBlockedByOverlap?: boolean;
   bookings?: {
     id: string;
     user?: { name?: string | null; phone?: string | null; telegram?: string | null };
@@ -429,9 +431,7 @@ export default function WorkoutSlotManager() {
   const isInitialLoading = isLoading && slots.length === 0;
   const isRefreshing = isLoading && slots.length > 0;
 
-  const availableSlots = slots.filter(
-    (slot) => slot.status === "AVAILABLE" || slot.currentParticipants < slot.maxParticipants,
-  );
+  const availableSlots = slots.filter((slot) => !isWorkoutSlotUnavailable(slot));
 
   const fullyBookedSlots = slots.filter(
     (slot) => slot.status === "FULL" || slot.currentParticipants >= slot.maxParticipants,
@@ -685,15 +685,15 @@ export default function WorkoutSlotManager() {
     }
   };
 
-  const getStatusColor = (status: string, current: number, max: number) => {
-    if (status === "FULL" || current >= max) return "text-red-500 bg-red-500/10 border-red-500/20";
-    if (status === "AVAILABLE") return "text-green-500 bg-green-500/10 border-green-500/20";
+  const getStatusColor = (slot: WorkoutSlot) => {
+    if (isWorkoutSlotUnavailable(slot)) return "text-red-500 bg-red-500/10 border-red-500/20";
+    if (slot.status === "AVAILABLE") return "text-green-500 bg-green-500/10 border-green-500/20";
     return "text-zinc-500 bg-zinc-500/10 border-zinc-500/20";
   };
 
-  const getStatusText = (status: string, current: number, max: number) => {
-    if (status === "FULL" || current >= max) return "Заполнено";
-    if (status === "AVAILABLE") return "Доступно";
+  const getStatusText = (slot: WorkoutSlot) => {
+    if (isWorkoutSlotUnavailable(slot)) return "Занято";
+    if (slot.status === "AVAILABLE") return "Доступно";
     return "Недоступно";
   };
 
@@ -1460,17 +1460,17 @@ export default function WorkoutSlotManager() {
                             <div className="flex flex-wrap items-center gap-2">
                               <span
                                 className={`rounded-lg border px-2 py-1 text-[10px] font-black uppercase tracking-[0.16em] ${getStatusColor(
-                                  slot.status,
-                                  slot.currentParticipants,
-                                  slot.maxParticipants,
+                                  slot,
                                 )}`}
                               >
-                                {getStatusText(
-                                  slot.status,
-                                  slot.currentParticipants,
-                                  slot.maxParticipants,
-                                )}
+                                {getStatusText(slot)}
                               </span>
+                              {slot.isBlockedByOverlap &&
+                                slot.currentParticipants < slot.maxParticipants && (
+                                  <span className="rounded-lg border border-[#f95700]/20 bg-[#f95700]/10 px-2 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-[#f95700]">
+                                    Пересечение
+                                  </span>
+                                )}
                             </div>
 
                             <div className="flex items-center gap-2 text-sm text-zinc-500 min-w-0">

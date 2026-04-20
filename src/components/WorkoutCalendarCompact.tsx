@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Calendar, Clock, MapPin, X, Phone, ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import CustomCalendar from "./CustomCalendar";
+import { isWorkoutSlotUnavailable } from "@/lib/workout-availability";
 
 interface WorkoutSlot {
   id: string;
@@ -18,6 +19,7 @@ interface WorkoutSlot {
   price?: number;
   notes?: string;
   bookings?: { id: string; user?: { name?: string | null } }[];
+  isBlockedByOverlap?: boolean;
 }
 
 interface WorkoutCalendarProps {
@@ -209,9 +211,7 @@ export default function WorkoutCalendar({
     }
   };
 
-  const isSlotFull = (slot: WorkoutSlot) => {
-    return slot.currentParticipants >= slot.maxParticipants;
-  };
+  const isSlotUnavailable = isWorkoutSlotUnavailable;
 
   const hasContact = Boolean(userPhone || userTelegram);
 
@@ -315,7 +315,7 @@ export default function WorkoutCalendar({
                       <div className="flex items-center gap-3 min-w-0 flex-1">
                         <div
                           className={`flex h-12 w-12 items-center justify-center rounded-xl transition-all duration-200 ${
-                            isSlotFull(slot)
+                            isSlotUnavailable(slot)
                               ? "bg-red-500/20 text-red-500"
                               : "bg-[#f95700]/15 text-[#f95700]"
                           }`}
@@ -329,10 +329,10 @@ export default function WorkoutCalendar({
                             </span>
                             <span
                               className={`rounded-lg border px-2 py-1 text-xs font-black uppercase tracking-wide ${getStatusColor(
-                                slot.status,
+                                isSlotUnavailable(slot) ? "FULL" : slot.status,
                               )}`}
                             >
-                              {getStatusText(slot.status)}
+                              {isSlotUnavailable(slot) ? "Занято" : getStatusText(slot.status)}
                             </span>
                           </div>
                           <p className="text-zinc-500 text-sm font-medium">
@@ -403,20 +403,19 @@ export default function WorkoutCalendar({
                   >
                     Отмена
                   </button>
-
                   <button
                     onClick={() => {
-                      if (isSlotFull(selectedSlot)) return;
+                      if (isSlotUnavailable(selectedSlot)) return;
                       if (!hasContact) {
                         setShowPhoneWarning(true);
                       } else {
                         handleBooking();
                       }
                     }}
-                    disabled={isBooking || isSlotFull(selectedSlot)}
+                    disabled={isBooking || isSlotUnavailable(selectedSlot)}
                     className="flex-1 rounded-xl bg-[#f95700] py-3 text-sm font-medium text-white transition-colors hover:bg-[#ff6b1a] disabled:cursor-not-allowed disabled:opacity-50 sm:text-base"
                   >
-                    {isSlotFull(selectedSlot)
+                    {isSlotUnavailable(selectedSlot)
                       ? "Слот занят"
                       : isBooking
                         ? "Запись..."

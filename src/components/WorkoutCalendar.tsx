@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { Calendar, Clock, MapPin, X, Users } from "lucide-react";
+import { isWorkoutSlotUnavailable } from "@/lib/workout-availability";
 
 interface WorkoutSlot {
   id: string;
@@ -16,6 +17,7 @@ interface WorkoutSlot {
   price?: number;
   notes?: string;
   bookings?: { id: string; user?: { name?: string | null } }[];
+  isBlockedByOverlap?: boolean;
 }
 
 interface WorkoutCalendarProps {
@@ -83,7 +85,7 @@ export default function WorkoutCalendar({
   }, [selectedSlot]);
 
   const handleBooking = async () => {
-    if (!selectedSlot || !userId) return;
+    if (!selectedSlot || !userId || selectedSlotUnavailable) return;
 
     setIsBooking(true);
     setError("");
@@ -143,6 +145,8 @@ export default function WorkoutCalendar({
     if (status === "AVAILABLE") return "Доступно";
     return "Недоступно";
   };
+
+  const selectedSlotUnavailable = selectedSlot ? isWorkoutSlotUnavailable(selectedSlot) : false;
 
   if (!isOpen) return null;
 
@@ -225,14 +229,20 @@ export default function WorkoutCalendar({
                         ? "border-orange-500 bg-orange-500/5"
                         : "border-white/10 bg-white/5 hover:border-orange-500/30"
                     }`}
-                    onClick={() => {
-                      setSelectedSlot(slot);
-                    }}
+                    onClick={() => setSelectedSlot(slot)}
                   >
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-orange-500/20 rounded-xl flex items-center justify-center">
-                          <Clock className="w-5 h-5 text-orange-500" />
+                        <div
+                          className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 ${
+                            isWorkoutSlotUnavailable(slot) ? "bg-red-500/20" : "bg-orange-500/20"
+                          }`}
+                        >
+                          <Clock
+                            className={`w-5 h-5 ${
+                              isWorkoutSlotUnavailable(slot) ? "text-red-500" : "text-orange-500"
+                            }`}
+                          />
                         </div>
                         <div>
                           <div className="flex items-center gap-2 flex-wrap">
@@ -241,13 +251,13 @@ export default function WorkoutCalendar({
                             </span>
                             <span
                               className={`px-2 py-1 rounded-lg text-xs font-medium ${getStatusColor(
-                                slot.status,
+                                isWorkoutSlotUnavailable(slot) ? "FULL" : slot.status,
                                 slot.currentParticipants,
                                 slot.maxParticipants,
                               )}`}
                             >
                               {getStatusText(
-                                slot.status,
+                                isWorkoutSlotUnavailable(slot) ? "FULL" : slot.status,
                                 slot.currentParticipants,
                                 slot.maxParticipants,
                               )}
@@ -279,6 +289,12 @@ export default function WorkoutCalendar({
                         </span>
                       </div>
                     </div>
+
+                    {isWorkoutSlotUnavailable(slot) && (
+                      <div className="mt-2 inline-flex items-center rounded-lg border border-red-500/20 bg-red-500/10 px-2 py-1 text-xs font-black uppercase tracking-wide text-red-500">
+                        Занято
+                      </div>
+                    )}
 
                     {slot.notes && <p className="text-zinc-500 text-sm mt-2">{slot.notes}</p>}
 
@@ -336,14 +352,10 @@ export default function WorkoutCalendar({
                 </button>
                 <button
                   onClick={handleBooking}
-                  disabled={
-                    isBooking ||
-                    selectedSlot.status === "FULL" ||
-                    selectedSlot.currentParticipants >= selectedSlot.maxParticipants
-                  }
+                  disabled={isBooking || selectedSlotUnavailable}
                   className="flex-1 py-3 bg-orange-500 text-white rounded-xl font-medium hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isBooking ? "Запись..." : "Записаться"}
+                  {selectedSlotUnavailable ? "Слот занят" : isBooking ? "Запись..." : "Записаться"}
                 </button>
               </div>
             </div>

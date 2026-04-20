@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getPrismaClient } from "@/lib/prisma";
+import { withWorkoutOverlapState } from "@/lib/workout-availability";
 
 function isPrismaMissingColumnError(error: unknown) {
   return (
@@ -75,7 +76,7 @@ export async function GET(request: NextRequest) {
       return slotDate > now;
     });
 
-    return NextResponse.json(activeSlots);
+    return NextResponse.json(withWorkoutOverlapState(activeSlots));
   } catch (error) {
     console.error("Error fetching workout slots:", error);
     return NextResponse.json({ error: "Failed to fetch workout slots" }, { status: 500 });

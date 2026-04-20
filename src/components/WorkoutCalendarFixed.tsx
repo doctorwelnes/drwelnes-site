@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Calendar, Clock, MapPin, X, Users } from "lucide-react";
 import CustomCalendar from "./CustomCalendar";
+import { isWorkoutSlotUnavailable } from "@/lib/workout-availability";
 
 interface WorkoutSlot {
   id: string;
@@ -16,6 +17,7 @@ interface WorkoutSlot {
   location?: string;
   price?: number;
   notes?: string;
+  isBlockedByOverlap?: boolean;
 }
 
 interface WorkoutCalendarProps {
@@ -97,7 +99,7 @@ export default function WorkoutCalendar({
   }, [isOpen, selectedDate, fetchSlots]);
 
   const handleBooking = async () => {
-    if (!selectedSlot || !userId) return;
+    if (!selectedSlot || !userId || isSlotUnavailable(selectedSlot)) return;
 
     setIsBooking(true);
     setError("");
@@ -171,9 +173,9 @@ export default function WorkoutCalendar({
     }
   };
 
-  const isSlotFull = (slot: WorkoutSlot) => {
-    return slot.currentParticipants >= slot.maxParticipants;
-  };
+  const isSlotUnavailable = isWorkoutSlotUnavailable;
+
+  const selectedSlotUnavailable = selectedSlot ? isSlotUnavailable(selectedSlot) : false;
 
   if (!isOpen) return null;
 
@@ -241,14 +243,14 @@ export default function WorkoutCalendar({
                         <div className="flex items-center gap-3">
                           <div
                             className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-200 ${
-                              isSlotFull(slot)
+                              isSlotUnavailable(slot)
                                 ? "bg-red-500/20 group-hover:bg-red-500/30"
                                 : "bg-orange-500/20 group-hover:bg-orange-500/30"
                             }`}
                           >
                             <Clock
                               className={`w-6 h-6 transition-colors duration-200 ${
-                                isSlotFull(slot) ? "text-red-500" : "text-orange-500"
+                                isSlotUnavailable(slot) ? "text-red-500" : "text-orange-500"
                               }`}
                             />
                           </div>
@@ -259,16 +261,11 @@ export default function WorkoutCalendar({
                               </span>
                               <span
                                 className={`px-2 py-1 rounded-lg text-xs font-black uppercase tracking-wide ${getStatusColor(
-                                  slot.status,
+                                  isSlotUnavailable(slot) ? "FULL" : slot.status,
                                 )}`}
                               >
-                                {getStatusText(slot.status)}
+                                {isSlotUnavailable(slot) ? "Занято" : getStatusText(slot.status)}
                               </span>
-                              {isSlotFull(slot) && (
-                                <span className="px-2 py-1 rounded-lg text-xs font-black uppercase tracking-wide bg-red-500/20 text-red-500 border border-red-500/30">
-                                  Занято
-                                </span>
-                              )}
                             </div>
                             <p className="text-zinc-500 text-sm font-medium">
                               {formatDate(slot.date)}
@@ -315,60 +312,20 @@ export default function WorkoutCalendar({
             )}
           </div>
 
-          {/* Booking Form */}
-          {selectedSlot && (
-            <div className="border-t border-white/10 p-4 sm:p-6 bg-[#13151a] shrink-0">
-              <div className="space-y-4">
-                <div>
-                  <h4 className="text-white font-medium mb-2">
-                    {selectedSlot.startTime} - {selectedSlot.endTime}
-                  </h4>
-                  <div className="text-sm text-zinc-400 space-y-1">
-                    <p>Дата: {formatDate(selectedSlot.date)}</p>
-                    {selectedSlot.location && (
-                      <p className="wrap-break-word">Место: {selectedSlot.location}</p>
-                    )}
-                    {selectedSlot.price && <p>Цена: {selectedSlot.price} ₽</p>}
-                    <div className="flex items-center gap-1">
-                      <Users className="w-4 h-4" />
-                      <span>
-                        {selectedSlot.currentParticipants}/{selectedSlot.maxParticipants} участников
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <textarea
-                  value={bookingNotes}
-                  onChange={(e) => setBookingNotes(e.target.value)}
-                  placeholder="Добавьте комментарий (необязательно)"
-                  rows={2}
-                  className="w-full px-3 sm:px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-orange-500/50 transition-colors resize-none text-sm sm:text-base"
-                />
-
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <button
-                    onClick={() => setSelectedSlot(null)}
-                    className="flex-1 py-3 bg-white/5 border border-white/10 text-white rounded-xl font-medium hover:bg-white/10 transition-colors text-sm sm:text-base"
-                  >
-                    Отмена
-                  </button>
-
-                  <button
-                    onClick={handleBooking}
-                    disabled={isBooking || isSlotFull(selectedSlot)}
-                    className="flex-1 py-3 bg-orange-500 text-white rounded-xl font-medium hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
-                  >
-                    {isSlotFull(selectedSlot)
-                      ? "Слот занят"
-                      : isBooking
-                        ? "Запись..."
-                        : "Записаться"}
-                  </button>
-                </div>
+          {/* Booking Button */}
+          <div className="p-4 sm:p-6 border-b border-white/10 shrink-0">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <button
+                  onClick={handleBooking}
+                  disabled={isBooking || selectedSlotUnavailable}
+                  className="flex-1 py-3 bg-orange-500 text-white rounded-xl font-medium hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+                >
+                  {selectedSlotUnavailable ? "Слот занят" : isBooking ? "Запись..." : "Записаться"}
+                </button>
               </div>
             </div>
-          )}
+          </div>
 
           {/* Messages */}
           {error && (

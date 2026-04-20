@@ -11,6 +11,7 @@ import {
   RefreshCw,
   Users,
 } from "lucide-react";
+import { isWorkoutSlotUnavailable } from "@/lib/workout-availability";
 
 type WorkoutBooking = {
   id: string;
@@ -37,6 +38,7 @@ type WorkoutSlot = {
   location?: string;
   price?: number;
   notes?: string;
+  isBlockedByOverlap?: boolean;
   bookings?: WorkoutBooking[];
 };
 
@@ -161,7 +163,7 @@ export default function AdminWorkoutsDashboard() {
   };
 
   const statusClasses = (slot: WorkoutSlot) => {
-    if (slot.status === "FULL" || slot.currentParticipants >= slot.maxParticipants) {
+    if (isWorkoutSlotUnavailable(slot)) {
       return "border-red-500/20 bg-red-500/10 text-red-400";
     }
     if (slot.status === "AVAILABLE") {
@@ -462,6 +464,12 @@ export default function AdminWorkoutsDashboard() {
                               <p className="text-xs text-zinc-500 truncate">
                                 {slot.workoutType || "Тренировка"}
                               </p>
+                              {slot.isBlockedByOverlap &&
+                                slot.currentParticipants < slot.maxParticipants && (
+                                  <p className="mt-1 inline-flex rounded-full border border-[#f95700]/20 bg-[#f95700]/10 px-2 py-1 text-[10px] font-black uppercase tracking-widest text-[#f95700]">
+                                    Пересечение
+                                  </p>
+                                )}
                               {slot.bookings && slot.bookings.length > 0 && (
                                 <div className="mt-2 space-y-1">
                                   {slot.bookings.slice(0, 2).map((booking) => (
