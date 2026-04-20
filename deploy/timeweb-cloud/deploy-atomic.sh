@@ -32,7 +32,7 @@ rollback_to_previous_release() {
 
   log "Rolling back to previous release: $previous_release"
   ln -sfn "$previous_release" "$CURRENT_LINK"
-  pm2 startOrReload "$PROJECT_ROOT/deploy/timeweb-cloud/ecosystem.config.cjs" --only "$APP_NAME" --env production
+  pm2 startOrReload "$PROJECT_ROOT/deploy/timeweb-cloud/ecosystem.config.cjs" --only "$APP_NAME" --env production --update-env
 
   if ! curl -fsS --max-time 10 "$HEALTHCHECK_URL" >/dev/null; then
     echo "Rollback healthcheck failed after restoring $previous_release" >&2
@@ -178,7 +178,7 @@ ln -sfn "$FINAL_RELEASE_DIR" "$CURRENT_LINK"
 trap - EXIT
 
 log "Starting or reloading PM2 process"
-pm2 startOrReload "$PROJECT_ROOT/deploy/timeweb-cloud/ecosystem.config.cjs" --only "$APP_NAME" --env production
+pm2 startOrReload "$PROJECT_ROOT/deploy/timeweb-cloud/ecosystem.config.cjs" --only "$APP_NAME" --env production --update-env
 
 log "Waiting for server to start listening on port 3000"
 MAX_WAIT=30
