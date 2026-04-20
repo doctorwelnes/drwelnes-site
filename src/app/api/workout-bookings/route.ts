@@ -1,22 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthenticatedUser } from "@/lib/auth-helpers";
 import { getPrismaClient } from "@/lib/prisma";
-
-const escapeTelegramHtml = (value: string) =>
-  value.replace(/[&<>"]/g, (char) => {
-    switch (char) {
-      case "&":
-        return "&amp;";
-      case "<":
-        return "&lt;";
-      case ">":
-        return "&gt;";
-      case '"':
-        return "&quot;";
-      default:
-        return char;
-    }
-  });
+import { sendTelegramHtmlMessage } from "@/lib/telegram";
 
 async function notifyTelegramBooking(payload: {
   userName: string;
@@ -27,43 +12,29 @@ async function notifyTelegramBooking(payload: {
   workoutType?: string | null;
   location?: string | null;
 }) {
-  const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
-  const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+  const telegramMessage = await sendTelegramHtmlMessage({
+    context: "workout-booking",
+    title: "Новая запись на тренировку!",
+    fields: [
+      { label: "Имя", value: payload.userName },
+      { label: "Телефон", value: payload.userPhone || "не указан" },
+      {
+        label: "Дата",
+        value: payload.slotDate.toLocaleDateString("ru-RU", {
+          timeZone: "Europe/Moscow",
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        }),
+      },
+      { label: "Время", value: `${payload.startTime} - ${payload.endTime}` },
+      { label: "Тренировка", value: payload.workoutType || "не указано" },
+      { label: "Локация", value: payload.location || "не указана" },
+    ],
+  });
 
-  if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) return;
-
-  const text = `<b>Новая запись на тренировку!</b>
-
-<b>Имя:</b> ${escapeTelegramHtml(payload.userName)}
-<b>Телефон:</b> ${escapeTelegramHtml(payload.userPhone || "не указан")}
-<b>Дата:</b> ${escapeTelegramHtml(
-    payload.slotDate.toLocaleDateString("ru-RU", {
-      timeZone: "Europe/Moscow",
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    }),
-  )}
-<b>Время:</b> ${escapeTelegramHtml(`${payload.startTime} - ${payload.endTime}`)}
-<b>Тренировка:</b> ${escapeTelegramHtml(payload.workoutType || "не указано")}
-<b>Локация:</b> ${escapeTelegramHtml(payload.location || "не указана")}`;
-
-  try {
-    const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: TELEGRAM_CHAT_ID,
-        text,
-        parse_mode: "HTML",
-      }),
-    });
-
-    if (!response.ok) {
-      console.error("Telegram booking notification failed:", await response.text());
-    }
-  } catch (error) {
-    console.error("Error sending workout booking notification:", error);
+  if (!telegramMessage.ok && !telegramMessage.skipped) {
+    console.warn("Telegram booking notification failed", telegramMessage.reason);
   }
 }
 
@@ -76,43 +47,29 @@ async function notifyTelegramWorkoutCancellation(payload: {
   workoutType?: string | null;
   location?: string | null;
 }) {
-  const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
-  const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+  const telegramMessage = await sendTelegramHtmlMessage({
+    context: "workout-cancellation",
+    title: "Отмена записи на тренировку",
+    fields: [
+      { label: "Имя", value: payload.userName },
+      { label: "Телефон", value: payload.userPhone || "не указан" },
+      {
+        label: "Дата",
+        value: payload.slotDate.toLocaleDateString("ru-RU", {
+          timeZone: "Europe/Moscow",
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        }),
+      },
+      { label: "Время", value: `${payload.startTime} - ${payload.endTime}` },
+      { label: "Тренировка", value: payload.workoutType || "не указано" },
+      { label: "Локация", value: payload.location || "не указана" },
+    ],
+  });
 
-  if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) return;
-
-  const text = `<b>Отмена записи на тренировку</b>
-
-<b>Имя:</b> ${escapeTelegramHtml(payload.userName)}
-<b>Телефон:</b> ${escapeTelegramHtml(payload.userPhone || "не указан")}
-<b>Дата:</b> ${escapeTelegramHtml(
-    payload.slotDate.toLocaleDateString("ru-RU", {
-      timeZone: "Europe/Moscow",
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    }),
-  )}
-<b>Время:</b> ${escapeTelegramHtml(`${payload.startTime} - ${payload.endTime}`)}
-<b>Тренировка:</b> ${escapeTelegramHtml(payload.workoutType || "не указано")}
-<b>Локация:</b> ${escapeTelegramHtml(payload.location || "не указана")}`;
-
-  try {
-    const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: TELEGRAM_CHAT_ID,
-        text,
-        parse_mode: "HTML",
-      }),
-    });
-
-    if (!response.ok) {
-      console.error("Telegram workout cancellation notification failed:", await response.text());
-    }
-  } catch (error) {
-    console.error("Error sending workout cancellation notification:", error);
+  if (!telegramMessage.ok && !telegramMessage.skipped) {
+    console.warn("Telegram workout cancellation notification failed", telegramMessage.reason);
   }
 }
 
@@ -189,6 +146,7 @@ export async function GET(request: NextRequest) {
           select: {
             id: true,
             name: true,
+            phone: true,
           },
         },
       },
@@ -258,6 +216,7 @@ export async function POST(request: NextRequest) {
               select: {
                 id: true,
                 name: true,
+                phone: true,
               },
             },
           },
@@ -289,6 +248,7 @@ export async function POST(request: NextRequest) {
             select: {
               id: true,
               name: true,
+              phone: true,
             },
           },
         },
@@ -347,6 +307,7 @@ export async function DELETE(request: NextRequest) {
           select: {
             id: true,
             name: true,
+            phone: true,
           },
         },
       },

@@ -1,23 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getPrismaClient } from "@/lib/prisma";
-
-const escapeTelegramHtml = (value: string) =>
-  value.replace(/[&<>"']/g, (char) => {
-    switch (char) {
-      case "&":
-        return "&amp;";
-      case "<":
-        return "&lt;";
-      case ">":
-        return "&gt;";
-      case '"':
-        return "&quot;";
-      case "'":
-        return "&#39;";
-      default:
-        return char;
-    }
-  });
+import { sendTelegramHtmlMessage } from "@/lib/telegram";
 
 async function notifyTelegramSlotDeleted(payload: {
   slotDate: Date;
@@ -26,41 +9,27 @@ async function notifyTelegramSlotDeleted(payload: {
   workoutType?: string | null;
   location?: string | null;
 }) {
-  const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
-  const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+  const telegramMessage = await sendTelegramHtmlMessage({
+    context: "workout-slot-deletion",
+    title: "Удален слот тренировки",
+    fields: [
+      {
+        label: "Дата",
+        value: payload.slotDate.toLocaleDateString("ru-RU", {
+          timeZone: "Europe/Moscow",
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        }),
+      },
+      { label: "Время", value: `${payload.startTime} - ${payload.endTime}` },
+      { label: "Тренировка", value: payload.workoutType || "не указано" },
+      { label: "Локация", value: payload.location || "не указана" },
+    ],
+  });
 
-  if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) return;
-
-  const text = `<b>Удален слот тренировки</b>
-
-<b>Дата:</b> ${escapeTelegramHtml(
-    payload.slotDate.toLocaleDateString("ru-RU", {
-      timeZone: "Europe/Moscow",
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    }),
-  )}
-<b>Время:</b> ${escapeTelegramHtml(`${payload.startTime} - ${payload.endTime}`)}
-<b>Тренировка:</b> ${escapeTelegramHtml(payload.workoutType || "не указано")}
-<b>Локация:</b> ${escapeTelegramHtml(payload.location || "не указана")}`;
-
-  try {
-    const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: TELEGRAM_CHAT_ID,
-        text,
-        parse_mode: "HTML",
-      }),
-    });
-
-    if (!response.ok) {
-      console.error("Telegram slot deletion notification failed:", await response.text());
-    }
-  } catch (error) {
-    console.error("Error sending workout slot deletion notification:", error);
+  if (!telegramMessage.ok && !telegramMessage.skipped) {
+    console.warn("Telegram slot deletion notification failed", telegramMessage.reason);
   }
 }
 
