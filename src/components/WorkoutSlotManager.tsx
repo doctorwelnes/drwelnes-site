@@ -45,6 +45,117 @@ const formatLocalDateKey = (date: Date) => {
   return `${year}-${month}-${day}`;
 };
 
+const timeToMinutes = (time: string) => {
+  const [hours, minutes] = time.split(":").map(Number);
+  return hours * 60 + minutes;
+};
+
+const minutesToTime = (minutes: number) => {
+  const normalized = ((minutes % (24 * 60)) + 24 * 60) % (24 * 60);
+  const hours = Math.floor(normalized / 60);
+  const mins = normalized % 60;
+  return `${hours.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}`;
+};
+
+const buildIntervalSlots = ({
+  date,
+  windowStart,
+  windowEnd,
+  durationMinutes,
+  stepMinutes,
+  maxParticipants = 1,
+  workoutType,
+  location,
+  price,
+  notes,
+}: {
+  date: string;
+  windowStart: string;
+  windowEnd: string;
+  durationMinutes: number;
+  stepMinutes: number;
+  maxParticipants?: number;
+  workoutType?: string;
+  location?: string;
+  price?: number;
+  notes?: string;
+}) => {
+  const startMinutes = timeToMinutes(windowStart);
+  const endMinutes = timeToMinutes(windowEnd);
+  const slots: {
+    date: string;
+    startTime: string;
+    endTime: string;
+    maxParticipants: number;
+    location?: string;
+    workoutType?: string;
+    price?: number;
+    notes?: string;
+  }[] = [];
+
+  for (
+    let current = startMinutes;
+    current + durationMinutes <= endMinutes;
+    current += stepMinutes
+  ) {
+    slots.push({
+      date,
+      startTime: minutesToTime(current),
+      endTime: minutesToTime(current + durationMinutes),
+      maxParticipants,
+      location,
+      workoutType,
+      price,
+      notes,
+    });
+  }
+
+  return slots;
+};
+
+const buildDateRangeKeys = (startDateValue: string, endDateValue?: string) => {
+  const start = new Date(`${startDateValue}T00:00:00`);
+  const end = new Date(`${endDateValue || startDateValue}T00:00:00`);
+
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+    return [];
+  }
+
+  const from = start <= end ? start : end;
+  const to = start <= end ? end : start;
+
+  const dates: string[] = [];
+  const current = new Date(from);
+
+  while (current <= to) {
+    dates.push(formatLocalDateKey(current));
+    current.setDate(current.getDate() + 1);
+  }
+
+  return dates;
+};
+
+const getIntervalSlotCount = (
+  windowStart: string,
+  windowEnd: string,
+  durationMinutes = 60,
+  stepMinutes = 30,
+) => {
+  const startMinutes = timeToMinutes(windowStart);
+  const endMinutes = timeToMinutes(windowEnd);
+
+  if (
+    Number.isNaN(startMinutes) ||
+    Number.isNaN(endMinutes) ||
+    endMinutes <= startMinutes ||
+    endMinutes - startMinutes < durationMinutes
+  ) {
+    return 0;
+  }
+
+  return Math.floor((endMinutes - startMinutes - durationMinutes) / stepMinutes) + 1;
+};
+
 const getDefaultFormData = (date = "") => ({
   date,
   startTime: "",
@@ -70,6 +181,20 @@ export default function WorkoutSlotManager() {
   const [eveningPackageDate, setEveningPackageDate] = useState("");
   const [isWeeklyPackageModalOpen, setIsWeeklyPackageModalOpen] = useState(false);
   const [weeklyPackageDate, setWeeklyPackageDate] = useState("");
+  const [isManualPackageModalOpen, setIsManualPackageModalOpen] = useState(false);
+  const [manualPackageUseRange, setManualPackageUseRange] = useState(false);
+  const [manualPackageStartDate, setManualPackageStartDate] = useState("");
+  const [manualPackageEndDate, setManualPackageEndDate] = useState("");
+  const [manualPackageWindowStart, setManualPackageWindowStart] = useState("17:00");
+  const [manualPackageWindowEnd, setManualPackageWindowEnd] = useState("23:00");
+  const [manualPackageMaxParticipants, setManualPackageMaxParticipants] = useState(1);
+  const [manualPackageWorkoutType, setManualPackageWorkoutType] =
+    useState("Персональная тренировка");
+  const [manualPackageLocation, setManualPackageLocation] = useState(
+    "DDX Fitness ул. Саляма Адиля, 4, РЦ Патриот, этаж -1",
+  );
+  const [manualPackagePrice, setManualPackagePrice] = useState(4000);
+  const [manualPackageNotes, setManualPackageNotes] = useState("");
   const [slotToDelete, setSlotToDelete] = useState<string | null>(null);
   const [toasts, setToasts] = useState<
     { id: string; message: string; type: "success" | "error" | "info" }[]
@@ -83,6 +208,102 @@ export default function WorkoutSlotManager() {
     }, 4000);
   };
 
+  const eveningPackageSlotCount = getIntervalSlotCount("17:00", "23:00");
+  const weeklyPackageSlotCount = eveningPackageSlotCount * 7;
+
+  const manualPackagePreviewStartDate = manualPackageStartDate || filterDate;
+  const manualPackagePreviewEndDate = manualPackageUseRange
+    ? manualPackageEndDate || manualPackagePreviewStartDate
+    : manualPackagePreviewStartDate;
+  const manualPackagePreviewDates = buildDateRangeKeys(
+    manualPackagePreviewStartDate,
+    manualPackagePreviewEndDate,
+  );
+  const manualPackagePreviewSlotsPerDay = getIntervalSlotCount(
+    manualPackageWindowStart,
+    manualPackageWindowEnd,
+  );
+  const manualPackagePreviewTotalSlots =
+    manualPackagePreviewDates.length * manualPackagePreviewSlotsPerDay;
+  const manualPackagePreviewIsValid =
+    manualPackagePreviewDates.length > 0 && manualPackagePreviewSlotsPerDay > 0;
+
+  const confirmManualPackage = async () => {
+    setError("");
+
+    const startDate = manualPackageStartDate || formatLocalDateKey(new Date());
+    const endDate = manualPackageUseRange ? manualPackageEndDate || startDate : startDate;
+    const slotDates = buildDateRangeKeys(startDate, endDate);
+
+    if (slotDates.length === 0) {
+      setError("Выберите корректную дату или диапазон дат");
+      addToast("❌ Выберите корректную дату или диапазон дат", "error");
+      return;
+    }
+
+    if (timeToMinutes(manualPackageWindowEnd) <= timeToMinutes(manualPackageWindowStart)) {
+      setError("Время окончания должно быть позже времени начала");
+      addToast("❌ Время окончания должно быть позже времени начала", "error");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const slots = slotDates.flatMap((dateKey) =>
+        buildIntervalSlots({
+          date: dateKey,
+          windowStart: manualPackageWindowStart,
+          windowEnd: manualPackageWindowEnd,
+          durationMinutes: 60,
+          stepMinutes: 30,
+          maxParticipants: manualPackageMaxParticipants,
+          location: manualPackageLocation,
+          workoutType: manualPackageWorkoutType,
+          price: manualPackagePrice,
+          notes: manualPackageNotes,
+        }),
+      );
+
+      if (slots.length === 0) {
+        setError("В указанном окне времени нет доступных получасовых интервалов");
+        addToast("❌ В указанном окне времени нет доступных получасовых интервалов", "error");
+        return;
+      }
+
+      const response = await fetch("/api/workout-slots/batch", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ slots }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        const createdCount = data.slots?.length || slots.length;
+        const skippedCount = data.skipped || 0;
+        setSuccess("Ручной пакет создан");
+        addToast(
+          `🛠️ Ручной пакет создан! ${createdCount} слотов по 30 минут${skippedCount ? `, пропущено ${skippedCount}` : ""}`,
+          "success",
+        );
+        fetchSlots();
+        setIsManualPackageModalOpen(false);
+        setTimeout(() => setSuccess(""), 3000);
+      } else {
+        setError(data.error || "Ошибка создания ручного пакета");
+        addToast("❌ Не удалось создать ручной пакет. Попробуйте еще раз", "error");
+      }
+    } catch {
+      setError("Ошибка при создании ручного пакета");
+      addToast("❌ Ошибка сети при создании ручного пакета", "error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const confirmWeeklyPackage = async () => {
     setIsLoading(true);
     setError("");
@@ -90,28 +311,29 @@ export default function WorkoutSlotManager() {
     try {
       const anchorDate = weeklyPackageDate || formatLocalDateKey(new Date());
       const weekStart = getStartOfWeek(anchorDate);
-      const slots = [];
+      const slots: ReturnType<typeof buildIntervalSlots> extends Array<infer Slot>
+        ? Slot[]
+        : never[] = [];
 
       for (let dayOffset = 0; dayOffset < 7; dayOffset += 1) {
         const currentDate = new Date(weekStart);
         currentDate.setDate(weekStart.getDate() + dayOffset);
         const dateKey = formatLocalDateKey(currentDate);
 
-        for (let hour = 17; hour <= 22; hour += 1) {
-          const startTime = `${hour.toString().padStart(2, "0")}:00`;
-          const endTime = `${(hour + 1).toString().padStart(2, "0")}:00`;
-
-          slots.push({
+        slots.push(
+          ...buildIntervalSlots({
             date: dateKey,
-            startTime,
-            endTime,
+            windowStart: "17:00",
+            windowEnd: "23:00",
+            durationMinutes: 60,
+            stepMinutes: 30,
             maxParticipants: 1,
             location: "DDX Fitness ул. Саляма Адиля, 4, РЦ Патриот, этаж -1",
             workoutType: "Персональная тренировка",
             price: 4000,
             notes: "Недельный пакет",
-          });
-        }
+          }),
+        );
       }
 
       const response = await fetch("/api/workout-slots/batch", {
@@ -128,7 +350,7 @@ export default function WorkoutSlotManager() {
         const createdCount = data.slots?.length || slots.length;
         setSuccess("Недельный пакет создан");
         addToast(
-          `📅 Недельный пакет создан! Создано ${createdCount} слотов на неделю ${formatWeekRange(anchorDate)}`,
+          `📅 Недельный пакет создан! Создано ${createdCount} слотов с шагом 30 минут на неделю ${formatWeekRange(anchorDate)}`,
           "success",
         );
         fetchSlots();
@@ -396,6 +618,21 @@ export default function WorkoutSlotManager() {
     setIsWeeklyPackageModalOpen(true);
   };
 
+  const handleManualPackage = async () => {
+    const baseDate = filterDate || formatLocalDateKey(new Date());
+    setManualPackageUseRange(false);
+    setManualPackageStartDate(baseDate);
+    setManualPackageEndDate(baseDate);
+    setManualPackageWindowStart("17:00");
+    setManualPackageWindowEnd("23:00");
+    setManualPackageMaxParticipants(1);
+    setManualPackageWorkoutType("Персональная тренировка");
+    setManualPackageLocation("DDX Fitness ул. Саляма Адиля, 4, РЦ Патриот, этаж -1");
+    setManualPackagePrice(4000);
+    setManualPackageNotes("");
+    setIsManualPackageModalOpen(true);
+  };
+
   const confirmEveningPackage = async () => {
     setIsLoading(true);
     setError("");
@@ -403,23 +640,18 @@ export default function WorkoutSlotManager() {
     try {
       const selectedDate = eveningPackageDate || formatLocalDateKey(new Date());
 
-      // Создаем 6 слотов с 17:00 до 23:00
-      const slots = [];
-      for (let hour = 17; hour <= 22; hour++) {
-        const startTime = `${hour.toString().padStart(2, "0")}:00`;
-        const endTime = `${(hour + 1).toString().padStart(2, "0")}:00`;
-
-        slots.push({
-          date: selectedDate,
-          startTime,
-          endTime,
-          maxParticipants: 1,
-          location: "DDX Fitness ул. Саляма Адиля, 4, РЦ Патриот, этаж -1",
-          workoutType: "Персональная тренировка",
-          price: 4000,
-          notes: "Вечерний пакет",
-        });
-      }
+      const slots = buildIntervalSlots({
+        date: selectedDate,
+        windowStart: "17:00",
+        windowEnd: "23:00",
+        durationMinutes: 60,
+        stepMinutes: 30,
+        maxParticipants: 1,
+        location: "DDX Fitness ул. Саляма Адиля, 4, РЦ Патриот, этаж -1",
+        workoutType: "Персональная тренировка",
+        price: 4000,
+        notes: "Вечерний пакет",
+      });
 
       // Создаем все слоты одним запросом
       const response = await fetch("/api/workout-slots/batch", {
@@ -435,7 +667,7 @@ export default function WorkoutSlotManager() {
       if (response.ok) {
         setSuccess("Вечерний пакет создан");
         addToast(
-          `🌅 Вечерний пакет создан! Создано ${data.slots?.length || 6} слотов с 17:00 до 23:00 на ${selectedDate}`,
+          `🌅 Вечерний пакет создан! Создано ${data.slots?.length || slots.length} слотов с шагом 30 минут с 17:00 до 23:00 на ${selectedDate}`,
           "success",
         );
         fetchSlots();
@@ -527,7 +759,7 @@ export default function WorkoutSlotManager() {
                 <div>
                   <h2 className="text-xl font-black text-white">Недельный пакет</h2>
                   <p className="text-neutral-500 text-sm mt-1">
-                    Создать вечерние слоты на всю неделю, начиная с выбранной даты.
+                    Создать вечерние слоты на всю неделю с шагом 30 минут в окне 17:00–23:00.
                   </p>
                 </div>
               </div>
@@ -549,6 +781,12 @@ export default function WorkoutSlotManager() {
                 )}
               </div>
 
+              <div className="mb-6 rounded-2xl border border-cyan-500/20 bg-cyan-500/5 p-4 text-sm text-zinc-300">
+                Будет создано{" "}
+                <span className="font-black text-white">{weeklyPackageSlotCount}</span> слотов: по{" "}
+                <span className="font-black text-white">{eveningPackageSlotCount}</span> в день.
+              </div>
+
               <div className="flex gap-3">
                 <button
                   onClick={() => setIsWeeklyPackageModalOpen(false)}
@@ -559,6 +797,231 @@ export default function WorkoutSlotManager() {
                 <button
                   onClick={confirmWeeklyPackage}
                   className="flex-1 bg-cyan-500 hover:bg-cyan-400 text-black shadow-cyan-500/20 py-4 rounded-2xl transition-all"
+                >
+                  Создать пакет
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Модальное окно ручного пакета */}
+      {isManualPackageModalOpen && (
+        <div
+          className="fixed inset-0 bg-black/80 z-600 flex items-center justify-center p-6 backdrop-blur-md"
+          onClick={() => setIsManualPackageModalOpen(false)}
+        >
+          <div
+            className="bg-[#141414] border border-neutral-800 rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-8">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-orange-500/10 text-orange-400">
+                  <Plus size={24} />
+                </div>
+                <div>
+                  <h2 className="text-xl font-black text-white">Ручной пакет</h2>
+                  <p className="text-neutral-500 text-sm mt-1">
+                    Выберите одну дату или диапазон дат, затем задайте окно времени. Слоты будут
+                    созданы с шагом 30 минут.
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-zinc-400 mb-2">
+                    Дата начала
+                  </label>
+                  <input
+                    type="date"
+                    value={manualPackageStartDate}
+                    onChange={(e) => {
+                      setManualPackageStartDate(e.target.value);
+                      if (!manualPackageUseRange) {
+                        setManualPackageEndDate(e.target.value);
+                      }
+                    }}
+                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-orange-500/50"
+                  />
+                </div>
+
+                <div className="flex items-end gap-3 rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <input
+                    id="manual-range-toggle"
+                    type="checkbox"
+                    checked={manualPackageUseRange}
+                    onChange={(e) => {
+                      setManualPackageUseRange(e.target.checked);
+                      if (!e.target.checked) {
+                        setManualPackageEndDate(manualPackageStartDate);
+                      }
+                    }}
+                    className="h-4 w-4 rounded border-white/20 bg-transparent text-orange-500 focus:ring-orange-500"
+                  />
+                  <label htmlFor="manual-range-toggle" className="text-sm text-white font-medium">
+                    Использовать диапазон дат
+                  </label>
+                </div>
+
+                {manualPackageUseRange ? (
+                  <div>
+                    <label className="block text-sm font-medium text-zinc-400 mb-2">
+                      Дата окончания
+                    </label>
+                    <input
+                      type="date"
+                      value={manualPackageEndDate}
+                      onChange={(e) => setManualPackageEndDate(e.target.value)}
+                      className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-orange-500/50"
+                    />
+                  </div>
+                ) : (
+                  <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                    <p className="text-[10px] font-black uppercase tracking-[0.22em] text-zinc-500">
+                      Режим
+                    </p>
+                    <p className="mt-2 text-sm font-semibold text-white">Одна дата</p>
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-sm font-medium text-zinc-400 mb-2">
+                    Время начала окна
+                  </label>
+                  <input
+                    type="time"
+                    step={1800}
+                    value={manualPackageWindowStart}
+                    onChange={(e) => setManualPackageWindowStart(e.target.value)}
+                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-orange-500/50"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-zinc-400 mb-2">
+                    Время окончания окна
+                  </label>
+                  <input
+                    type="time"
+                    step={1800}
+                    value={manualPackageWindowEnd}
+                    onChange={(e) => setManualPackageWindowEnd(e.target.value)}
+                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-orange-500/50"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-zinc-400 mb-2">
+                    Макс. участников
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={manualPackageMaxParticipants}
+                    onChange={(e) => setManualPackageMaxParticipants(parseInt(e.target.value))}
+                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-orange-500/50"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-zinc-400 mb-2">
+                    Вид тренировки
+                  </label>
+                  <select
+                    value={manualPackageWorkoutType}
+                    onChange={(e) => setManualPackageWorkoutType(e.target.value)}
+                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-orange-500/50"
+                  >
+                    <option value="Персональная тренировка">Персональная тренировка</option>
+                    <option value="Групповая тренировка">Групповая тренировка</option>
+                    <option value="Фитнес-консультация">Фитнес-консультация</option>
+                    <option value="Спортивное питание">Спортивное питание</option>
+                    <option value="Восстановление">Восстановление</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-zinc-400 mb-2">
+                    Местоположение
+                  </label>
+                  <input
+                    type="text"
+                    value={manualPackageLocation}
+                    onChange={(e) => setManualPackageLocation(e.target.value)}
+                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-orange-500/50"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-zinc-400 mb-2">Цена (₽)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={manualPackagePrice}
+                    onChange={(e) => setManualPackagePrice(parseInt(e.target.value))}
+                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-orange-500/50"
+                  />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-zinc-400 mb-2">Примечания</label>
+                  <textarea
+                    value={manualPackageNotes}
+                    onChange={(e) => setManualPackageNotes(e.target.value)}
+                    rows={2}
+                    className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-orange-500/50 resize-none"
+                  />
+                </div>
+              </div>
+
+              <div className="mt-6 rounded-2xl border border-orange-500/20 bg-orange-500/5 p-4 text-sm text-zinc-300">
+                Интервал создания: <span className="font-black text-white">30 минут</span>.{" "}
+                Длительность слота: <span className="font-black text-white">60 минут</span>.
+              </div>
+
+              <div className="mt-4 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4 text-sm text-zinc-300">
+                <p className="font-black uppercase tracking-[0.22em] text-emerald-300 text-[10px]">
+                  Предпросмотр
+                </p>
+                <p className="mt-2">
+                  Дат:{" "}
+                  <span className="font-black text-white">{manualPackagePreviewDates.length}</span>
+                </p>
+                <p className="mt-1">
+                  Слотов в день:{" "}
+                  <span className="font-black text-white">{manualPackagePreviewSlotsPerDay}</span>
+                </p>
+                <p className="mt-1">
+                  Итого:{" "}
+                  <span className="font-black text-white">{manualPackagePreviewTotalSlots}</span>
+                </p>
+                {manualPackagePreviewDates.length > 0 && (
+                  <p className="mt-2 text-zinc-400 text-xs leading-5">
+                    {manualPackagePreviewDates[0]}
+                    {manualPackagePreviewDates.length > 1
+                      ? ` — ${manualPackagePreviewDates[manualPackagePreviewDates.length - 1]}`
+                      : ""}
+                  </p>
+                )}
+                {!manualPackagePreviewIsValid && (
+                  <p className="mt-2 text-xs text-red-400">Проверьте дату и окно времени.</p>
+                )}
+              </div>
+
+              <div className="flex gap-3 mt-6">
+                <button
+                  onClick={() => setIsManualPackageModalOpen(false)}
+                  className="flex-1 bg-neutral-900 hover:bg-neutral-800 text-neutral-400 font-bold py-4 rounded-2xl transition-all border border-neutral-800"
+                >
+                  Отмена
+                </button>
+                <button
+                  onClick={confirmManualPackage}
+                  disabled={!manualPackagePreviewIsValid || isLoading}
+                  className="flex-1 bg-orange-500 hover:bg-orange-400 text-black shadow-orange-500/20 py-4 rounded-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Создать пакет
                 </button>
@@ -629,8 +1092,8 @@ export default function WorkoutSlotManager() {
                 <div>
                   <h2 className="text-xl font-black text-white">Вечерний пакет</h2>
                   <p className="text-neutral-500 text-sm mt-1">
-                    Создать вечерний пакет на выбранную дату? Будет создано 6 слотов с 17:00 до
-                    23:00.
+                    Создать вечерний пакет на выбранную дату? Будут созданы слоты с шагом 30 минут в
+                    окне 17:00–23:00.
                   </p>
                 </div>
               </div>
@@ -645,6 +1108,12 @@ export default function WorkoutSlotManager() {
                   onChange={(e) => setEveningPackageDate(e.target.value)}
                   className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-orange-500/50"
                 />
+              </div>
+
+              <div className="mb-6 rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4 text-sm text-zinc-300">
+                Для выбранной даты будет создано{" "}
+                <span className="font-black text-white">{eveningPackageSlotCount}</span> слотов с
+                шагом <span className="font-black text-white">30 минут</span>.
               </div>
 
               <div className="flex gap-3">
@@ -740,7 +1209,7 @@ export default function WorkoutSlotManager() {
               className="flex items-center justify-center gap-2 px-4 py-2 bg-purple-500 text-white rounded-lg font-medium hover:bg-purple-600 transition-colors disabled:opacity-50 text-sm"
             >
               <Calendar className="w-4 h-4" />
-              <span className="truncate">Вечерний пакет</span>
+              <span className="truncate">Вечер 30м</span>
             </button>
             <button
               onClick={handleWeeklyPackage}
@@ -748,7 +1217,15 @@ export default function WorkoutSlotManager() {
               className="flex items-center justify-center gap-2 px-4 py-2 bg-cyan-500 text-white rounded-lg font-medium hover:bg-cyan-600 transition-colors disabled:opacity-50 text-sm"
             >
               <Calendar className="w-4 h-4" />
-              <span className="truncate">Недельный пакет</span>
+              <span className="truncate">Неделя 30м</span>
+            </button>
+            <button
+              onClick={handleManualPackage}
+              disabled={isLoading}
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-emerald-500 text-white rounded-lg font-medium hover:bg-emerald-600 transition-colors disabled:opacity-50 text-sm"
+            >
+              <Plus className="w-4 h-4" />
+              <span className="truncate">Ручной пакет</span>
             </button>
             <button
               onClick={handleClearAll}
@@ -793,6 +1270,7 @@ export default function WorkoutSlotManager() {
               <label className="block text-sm font-medium text-zinc-400 mb-2">Время начала</label>
               <input
                 type="time"
+                step={1800}
                 value={formData.startTime}
                 onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
                 className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-orange-500/50"

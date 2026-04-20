@@ -3,30 +3,14 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Play, Heart } from "lucide-react";
+import { Play } from "lucide-react";
 
 interface HomeHeroProps {
   onBookingClick: () => void;
 }
 
 export const HomeHero = ({ onBookingClick }: HomeHeroProps) => {
-  const [bpm, setBpm] = useState(65);
   const [userCount, setUserCount] = useState(2);
-
-  useEffect(() => {
-    // BPM Live simulation
-    const bpmInterval = setInterval(() => {
-      setBpm((prev) => {
-        const change = Math.random() > 0.5 ? 1 : -1;
-        const newVal = prev + change;
-        return newVal > 70 ? 70 : newVal < 60 ? 60 : newVal;
-      });
-    }, 2000);
-
-    return () => {
-      clearInterval(bpmInterval);
-    };
-  }, []);
 
   useEffect(() => {
     const updateUserCount = () => {
@@ -114,18 +98,6 @@ export const HomeHero = ({ onBookingClick }: HomeHeroProps) => {
             </button>
             <div className="absolute inset-0 rounded-full border border-white/20 animate-ping opacity-20 pointer-events-none" />
           </div>
-
-          <Link
-            href="/calculators/hr-zones"
-            className="flex items-center gap-3 rounded-full bg-[#16181d] backdrop-blur-xl border border-white/5 shadow-2xl transition-all hover:bg-[#1f2229] hover:border-[#f95700]/30 hover:scale-105 active:scale-95 group/bpm px-4 lg:px-5 py-2 lg:py-2.5"
-          >
-            <Heart className="w-4 h-4 md:w-3 md:h-3 text-[#f95700] animate-heartbeat fill-[#f95700]/10 group-hover/bpm:scale-110 transition-transform" />
-            <div className="flex flex-col">
-              <span className="text-white font-black leading-none tabular-nums text-[14px] md:text-xs lg:text-sm">
-                {bpm}
-              </span>
-            </div>
-          </Link>
         </div>
       </div>
     </div>
