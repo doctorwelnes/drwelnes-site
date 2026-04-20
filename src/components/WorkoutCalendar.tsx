@@ -36,6 +36,7 @@ export default function WorkoutCalendar({
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [slots, setSlots] = useState<WorkoutSlot[]>([]);
   const [selectedSlot, setSelectedSlot] = useState<WorkoutSlot | null>(null);
+  const [hasAssignedSlots, setHasAssignedSlots] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [bookingNotes, setBookingNotes] = useState("");
   const [isBooking, setIsBooking] = useState(false);
@@ -52,6 +53,7 @@ export default function WorkoutCalendar({
   const fetchSlots = useCallback(async () => {
     setIsLoading(true);
     setError("");
+    setSelectedSlot(null);
 
     try {
       const dateStr = formatLocalDateKey(selectedDate);
@@ -61,7 +63,10 @@ export default function WorkoutCalendar({
 
       if (response.ok) {
         const data = await response.json();
-        setSlots(data);
+        const rawSlots: WorkoutSlot[] = data.slots || data;
+        setHasAssignedSlots(rawSlots.length > 0);
+        const availableSlots = rawSlots.filter((slot) => !isWorkoutSlotUnavailable(slot));
+        setSlots(availableSlots);
       } else {
         setError("Ошибка при загрузке расписания тренировок");
       }
@@ -84,8 +89,10 @@ export default function WorkoutCalendar({
     console.log("Selected slot changed:", selectedSlot);
   }, [selectedSlot]);
 
+  if (!isOpen) return null;
+
   const handleBooking = async () => {
-    if (!selectedSlot || !userId || selectedSlotUnavailable) return;
+    if (!selectedSlot || !userId) return;
 
     setIsBooking(true);
     setError("");
@@ -133,20 +140,6 @@ export default function WorkoutCalendar({
       day: "numeric",
     });
   };
-
-  const getStatusColor = (status: string, current: number, max: number) => {
-    if (status === "FULL" || current >= max) return "text-red-500 bg-red-500/10 border-red-500/20";
-    if (status === "AVAILABLE") return "text-green-500 bg-green-500/10 border-green-500/20";
-    return "text-zinc-500 bg-zinc-500/10 border-zinc-500/20";
-  };
-
-  const getStatusText = (status: string, current: number, max: number) => {
-    if (status === "FULL" || current >= max) return "Занято";
-    if (status === "AVAILABLE") return "Доступно";
-    return "Недоступно";
-  };
-
-  const selectedSlotUnavailable = selectedSlot ? isWorkoutSlotUnavailable(selectedSlot) : false;
 
   if (!isOpen) return null;
 
@@ -216,8 +209,14 @@ export default function WorkoutCalendar({
             {!isLoading && !error && slots.length === 0 ? (
               <div className="text-center py-8">
                 <Calendar className="w-12 h-12 text-zinc-600 mx-auto mb-4" />
-                <p className="text-zinc-500">Нет доступных слотов</p>
-                <p className="text-zinc-600 text-sm mt-2">Выберите другую дату</p>
+                <p className="text-zinc-500">
+                  {hasAssignedSlots
+                    ? "Нет доступных слотов"
+                    : "Расписание уточняется, ждите обновления слотов"}
+                </p>
+                <p className="text-zinc-600 text-sm mt-2">
+                  {hasAssignedSlots ? "Выберите другую дату" : "Проверьте позже"}
+                </p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -234,33 +233,17 @@ export default function WorkoutCalendar({
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-3">
                         <div
-                          className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 ${
-                            isWorkoutSlotUnavailable(slot) ? "bg-red-500/20" : "bg-orange-500/20"
-                          }`}
+                          className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-200 bg-orange-500/20`}
                         >
-                          <Clock
-                            className={`w-5 h-5 ${
-                              isWorkoutSlotUnavailable(slot) ? "text-red-500" : "text-orange-500"
-                            }`}
-                          />
+                          <Clock className="w-5 h-5 text-orange-500" />
                         </div>
                         <div>
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className="text-white font-medium">
                               {slot.startTime} - {slot.endTime}
                             </span>
-                            <span
-                              className={`px-2 py-1 rounded-lg text-xs font-medium ${getStatusColor(
-                                isWorkoutSlotUnavailable(slot) ? "FULL" : slot.status,
-                                slot.currentParticipants,
-                                slot.maxParticipants,
-                              )}`}
-                            >
-                              {getStatusText(
-                                isWorkoutSlotUnavailable(slot) ? "FULL" : slot.status,
-                                slot.currentParticipants,
-                                slot.maxParticipants,
-                              )}
+                            <span className="px-2 py-1 rounded-lg text-xs font-medium text-green-500 bg-green-500/10 border border-green-500/20">
+                              Доступно
                             </span>
                           </div>
                           {slot.workoutType && (
@@ -289,12 +272,6 @@ export default function WorkoutCalendar({
                         </span>
                       </div>
                     </div>
-
-                    {isWorkoutSlotUnavailable(slot) && (
-                      <div className="mt-2 inline-flex items-center rounded-lg border border-red-500/20 bg-red-500/10 px-2 py-1 text-xs font-black uppercase tracking-wide text-red-500">
-                        Занято
-                      </div>
-                    )}
 
                     {slot.notes && <p className="text-zinc-500 text-sm mt-2">{slot.notes}</p>}
 
@@ -352,10 +329,10 @@ export default function WorkoutCalendar({
                 </button>
                 <button
                   onClick={handleBooking}
-                  disabled={isBooking || selectedSlotUnavailable}
+                  disabled={isBooking}
                   className="flex-1 py-3 bg-orange-500 text-white rounded-xl font-medium hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {selectedSlotUnavailable ? "Слот занят" : isBooking ? "Запись..." : "Записаться"}
+                  {isBooking ? "Запись..." : "Записаться"}
                 </button>
               </div>
             </div>

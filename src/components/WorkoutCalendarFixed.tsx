@@ -38,6 +38,7 @@ export default function WorkoutCalendar({
   const [selectedSlot, setSelectedSlot] = useState<WorkoutSlot | null>(null);
   const [availableDates, setAvailableDates] = useState<string[]>([]);
   const [bookedDates, setBookedDates] = useState<string[]>([]);
+  const [hasAssignedSlots, setHasAssignedSlots] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [bookingNotes, setBookingNotes] = useState("");
   const [isBooking, setIsBooking] = useState(false);
@@ -49,6 +50,7 @@ export default function WorkoutCalendar({
   const fetchSlots = useCallback(async () => {
     setIsLoading(true);
     setError("");
+    setSelectedSlot(null);
 
     try {
       const dateStr = selectedDate.toISOString().split("T")[0];
@@ -58,26 +60,38 @@ export default function WorkoutCalendar({
 
       if (response.ok) {
         const data = await response.json();
-        setSlots(data.slots || data);
+        const rawSlots: WorkoutSlot[] = data.slots || data;
+        setHasAssignedSlots(rawSlots.length > 0);
+        const availableSlots = rawSlots.filter((slot) => !isWorkoutSlotUnavailable(slot));
+        setSlots(availableSlots);
 
         // Загружаем данные для календаря - доступные и забронированные даты
         const calendarResponse = await fetch(`/api/workout-slots?userId=${userId || ""}`);
         if (calendarResponse.ok) {
           const calendarData = await calendarResponse.json();
-          const allSlots = calendarData.slots || calendarData;
+          const allSlots = (calendarData.slots || calendarData) as WorkoutSlot[];
 
-          // Собираем доступные даты (есть слоты)
-          const available = allSlots
+          const slotsByDate = allSlots.reduce<Record<string, WorkoutSlot[]>>(
+            (acc, slot) => {
+              const dateKey = slot.date.split("T")[0];
+              (acc[dateKey] ||= []).push(slot);
+              return acc;
+            },
+            {} as Record<string, WorkoutSlot[]>,
+          );
+
+          // Доступные даты: есть хотя бы один реально доступный слот
+          const available = Object.entries(slotsByDate)
+            .filter(([, dateSlots]) => dateSlots.some((slot) => !isWorkoutSlotUnavailable(slot)))
+            .map(([dateKey]) => dateKey);
+
+          // Забронированные даты: слоты есть, но все из них недоступны
+          const booked = Object.entries(slotsByDate)
             .filter(
-              (slot: WorkoutSlot) =>
-                slot.status === "AVAILABLE" || slot.currentParticipants < slot.maxParticipants,
+              ([, dateSlots]) =>
+                dateSlots.length > 0 && dateSlots.every((slot) => isWorkoutSlotUnavailable(slot)),
             )
-            .map((slot: WorkoutSlot) => slot.date.split("T")[0]) as string[];
-
-          // Собираем забронированные даты (все слоты заполнены)
-          const booked = allSlots
-            .filter((slot: WorkoutSlot) => slot.currentParticipants >= slot.maxParticipants)
-            .map((slot: WorkoutSlot) => slot.date.split("T")[0]) as string[];
+            .map(([dateKey]) => dateKey);
 
           setAvailableDates([...new Set(available)]);
           setBookedDates([...new Set(booked)]);
@@ -227,8 +241,14 @@ export default function WorkoutCalendar({
             ) : slots.length === 0 ? (
               <div className="text-center py-8">
                 <Calendar className="w-12 h-12 text-zinc-600 mx-auto mb-4" />
-                <p className="text-zinc-500">Нет доступных слотов</p>
-                <p className="text-zinc-600 text-sm mt-2">Выберите другую дату</p>
+                <p className="text-zinc-500">
+                  {hasAssignedSlots
+                    ? "Нет доступных слотов"
+                    : "Расписание уточняется, ждите обновления слотов"}
+                </p>
+                <p className="text-zinc-600 text-sm mt-2">
+                  {hasAssignedSlots ? "Выберите другую дату" : "Проверьте позже"}
+                </p>
               </div>
             ) : (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

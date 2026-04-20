@@ -1,4 +1,5 @@
 const TELEGRAM_API_BASE = "https://api.telegram.org";
+const TELEGRAM_REQUEST_TIMEOUT_MS = 2500;
 
 function escapeTelegramHtml(value: string) {
   return value.replace(/[&<>"']/g, (char) => {
@@ -30,16 +31,20 @@ type TelegramMessageInput = {
   fields: TelegramField[];
 };
 
-type TelegramSendResult =
-  | { ok: true }
-  | { ok: false; skipped?: boolean; reason: string };
+type TelegramSendResult = { ok: true } | { ok: false; skipped?: boolean; reason: string };
 
 function buildTelegramHtmlMessage(title: string, fields: TelegramField[]) {
-  const lines = fields.map(({ label, value }) => `<b>${escapeTelegramHtml(label)}:</b> ${escapeTelegramHtml(value)}`);
+  const lines = fields.map(
+    ({ label, value }) => `<b>${escapeTelegramHtml(label)}:</b> ${escapeTelegramHtml(value)}`,
+  );
   return [`<b>${escapeTelegramHtml(title)}</b>`, "", ...lines].join("\n");
 }
 
-export async function sendTelegramHtmlMessage({ context, title, fields }: TelegramMessageInput): Promise<TelegramSendResult> {
+export async function sendTelegramHtmlMessage({
+  context,
+  title,
+  fields,
+}: TelegramMessageInput): Promise<TelegramSendResult> {
   const telegramBotToken = process.env.TELEGRAM_BOT_TOKEN?.trim();
   const telegramChatId = process.env.TELEGRAM_CHAT_ID?.trim();
 
@@ -49,11 +54,14 @@ export async function sendTelegramHtmlMessage({ context, title, fields }: Telegr
   }
 
   const text = buildTelegramHtmlMessage(title, fields);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), TELEGRAM_REQUEST_TIMEOUT_MS);
 
   try {
     const response = await fetch(`${TELEGRAM_API_BASE}/bot${telegramBotToken}/sendMessage`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      signal: controller.signal,
       body: JSON.stringify({
         chat_id: telegramChatId,
         text,
@@ -70,8 +78,17 @@ export async function sendTelegramHtmlMessage({ context, title, fields }: Telegr
 
     return { ok: true };
   } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") {
+      console.error(
+        `[Telegram:${context}] Request timed out after ${TELEGRAM_REQUEST_TIMEOUT_MS}ms`,
+      );
+      return { ok: false, reason: "telegram_request_timeout" };
+    }
+
     console.error(`[Telegram:${context}] Request failed`, error);
     return { ok: false, reason: "telegram_request_failed" };
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
 

@@ -76,6 +76,14 @@ async function notifyTelegramWorkoutCancellation(payload: {
   }
 }
 
+function queueTelegramNotification(task: () => Promise<void>) {
+  setTimeout(() => {
+    void task().catch((error) => {
+      console.error("Telegram notification task failed", error);
+    });
+  }, 0);
+}
+
 type BookingRelations = {
   user?: { name?: string | null; phone?: string | null; telegram?: string | null } | null;
   slot?: {
@@ -323,14 +331,16 @@ export async function POST(request: NextRequest) {
 
     const bookingWithRelations = booking as BookingRelations;
 
-    await notifyTelegramBooking({
-      userName: bookingWithRelations.user?.name || "Неизвестно",
-      userPhone: bookingWithRelations.user?.phone ?? null,
-      slotDate: slot.date,
-      startTime: slot.startTime,
-      endTime: slot.endTime,
-      workoutType: slot.workoutType,
-      location: slot.location,
+    queueTelegramNotification(async () => {
+      await notifyTelegramBooking({
+        userName: bookingWithRelations.user?.name || "Неизвестно",
+        userPhone: bookingWithRelations.user?.phone ?? null,
+        slotDate: slot.date,
+        startTime: slot.startTime,
+        endTime: slot.endTime,
+        workoutType: slot.workoutType,
+        location: slot.location,
+      });
     });
 
     return NextResponse.json(booking, { status: 201 });
@@ -400,14 +410,16 @@ export async function DELETE(request: NextRequest) {
         },
       });
 
-      await notifyTelegramWorkoutCancellation({
-        userName: bookingWithRelations.user?.name || "Неизвестно",
-        userPhone: bookingWithRelations.user?.phone ?? null,
-        slotDate: bookingWithRelations.slot.date,
-        startTime: bookingWithRelations.slot.startTime,
-        endTime: bookingWithRelations.slot.endTime,
-        workoutType: bookingWithRelations.slot.workoutType,
-        location: bookingWithRelations.slot.location,
+      queueTelegramNotification(async () => {
+        await notifyTelegramWorkoutCancellation({
+          userName: bookingWithRelations.user?.name || "Неизвестно",
+          userPhone: bookingWithRelations.user?.phone ?? null,
+          slotDate: bookingWithRelations.slot.date,
+          startTime: bookingWithRelations.slot.startTime,
+          endTime: bookingWithRelations.slot.endTime,
+          workoutType: bookingWithRelations.slot.workoutType,
+          location: bookingWithRelations.slot.location,
+        });
       });
 
       // Уведомляем первого в очереди, если есть
