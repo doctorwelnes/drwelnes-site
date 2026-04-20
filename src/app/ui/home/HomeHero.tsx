@@ -109,7 +109,7 @@ export const HomeHero = ({ onBookingClick }: HomeHeroProps) => {
               onClick={onBookingClick}
               className="relative z-10 rounded-full bg-white text-black font-black uppercase tracking-widest transition-all hover:bg-[#f95700] hover:text-white hover:scale-105 active:scale-95 overflow-hidden shadow-[0_0_30px_rgba(255,255,255,0.1)] hover:shadow-[0_0_40px_rgba(249,87,0,0.4)] px-6 lg:px-8 py-3 lg:py-3.5 text-[11px] md:text-[9px]"
             >
-              <span className="relative z-10">Записаться на консультацию</span>
+              <span className="relative z-10">Записаться на занятие</span>
               <div className="absolute inset-0 -translate-x-full group-hover/btn:animate-shimmer bg-linear-to-r from-transparent via-white/40 to-transparent skew-x-12" />
             </button>
             <div className="absolute inset-0 rounded-full border border-white/20 animate-ping opacity-20 pointer-events-none" />
@@ -123,9 +123,6 @@ export const HomeHero = ({ onBookingClick }: HomeHeroProps) => {
             <div className="flex flex-col">
               <span className="text-white font-black leading-none tabular-nums text-[14px] md:text-xs lg:text-sm">
                 {bpm}
-              </span>
-              <span className="font-black text-zinc-500 uppercase tracking-widest leading-none mt-1 text-[9px] md:text-[5px]">
-                BPM Avg
               </span>
             </div>
           </Link>
