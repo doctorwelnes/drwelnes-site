@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -31,6 +31,7 @@ export default function SettingsPage() {
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [profileSuccess, setProfileSuccess] = useState(false);
   const [profileError, setProfileError] = useState("");
+  const [isDeletingProfile, setIsDeletingProfile] = useState(false);
 
   // Загружаем данные из сессии после монтирования компонента
   useEffect(() => {
@@ -97,6 +98,35 @@ export default function SettingsPage() {
       return `+${cleanDigits.slice(0, 1)} (${cleanDigits.slice(1, 4)}) ${cleanDigits.slice(4, 7)}-${cleanDigits.slice(7)}`;
     } else {
       return `+${cleanDigits.slice(0, 1)} (${cleanDigits.slice(1, 4)}) ${cleanDigits.slice(4, 7)}-${cleanDigits.slice(7, 9)}-${cleanDigits.slice(9, 11)}`;
+    }
+  };
+
+  const handleDeleteProfile = async () => {
+    const confirmed = window.confirm(
+      "Удалить профиль? Это действие нельзя отменить, а все ваши данные будут удалены.",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setIsDeletingProfile(true);
+    setProfileError("");
+
+    try {
+      const response = await fetch("/api/user/profile", {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        throw new Error(data?.error || "Ошибка удаления профиля");
+      }
+
+      await signOut({ callbackUrl: "/login" });
+    } catch (error) {
+      setProfileError(error instanceof Error ? error.message : "Ошибка удаления профиля");
+      setIsDeletingProfile(false);
     }
   };
 
@@ -635,6 +665,37 @@ export default function SettingsPage() {
               )}
             </button>
           </form>
+        </div>
+
+        {/* Danger Zone */}
+        <div className="bg-red-500/5 border border-red-500/10 rounded-4xl p-6 shadow-2xl">
+          <h2 className="text-sm font-black uppercase tracking-widest text-red-300 mb-3 flex items-center gap-2">
+            <Trash2 className="w-4 h-4 text-red-400" />
+            Удаление профиля
+          </h2>
+          <p className="text-sm text-zinc-400 leading-6">
+            После удаления аккаунта все ваши данные будут удалены из системы. Это действие
+            необратимо.
+          </p>
+
+          <button
+            type="button"
+            onClick={handleDeleteProfile}
+            disabled={isDeletingProfile}
+            className="mt-4 w-full h-12 rounded-[18px] bg-red-500/10 border border-red-500/20 text-red-300 font-black uppercase tracking-widest text-xs hover:bg-red-500/15 hover:border-red-400/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isDeletingProfile ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Удаление...
+              </>
+            ) : (
+              <>
+                <Trash2 className="w-4 h-4" />
+                Удалить профиль
+              </>
+            )}
+          </button>
         </div>
 
         <div className="text-center text-[10px] font-black uppercase tracking-[0.3em] text-zinc-700 pb-12">

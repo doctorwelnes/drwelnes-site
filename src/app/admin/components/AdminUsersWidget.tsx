@@ -1,7 +1,17 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ShieldCheck, RefreshCw, Mail, Phone, MessageSquare, Users } from "lucide-react";
+import { useSession } from "next-auth/react";
+import {
+  ShieldCheck,
+  RefreshCw,
+  Mail,
+  Phone,
+  MessageSquare,
+  Users,
+  Trash2,
+  Loader2,
+} from "lucide-react";
 
 type AdminUser = {
   id: string;
@@ -15,9 +25,11 @@ type AdminUser = {
 };
 
 export default function AdminUsersWidget() {
+  const { data: session } = useSession();
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
 
   const fetchUsers = useCallback(async () => {
     setIsLoading(true);
@@ -45,6 +57,39 @@ export default function AdminUsersWidget() {
 
   const totalUsers = useMemo(() => users.length, [users]);
   const adminUsers = useMemo(() => users.filter((user) => user.role === "ADMIN").length, [users]);
+  const currentUserId = session?.user?.id;
+
+  const handleDeleteUser = useCallback(async (user: AdminUser) => {
+    const confirmed = window.confirm(
+      `Удалить пользователя ${user.name || user.email || user.phone || user.id}? Это действие нельзя отменить.`,
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setDeletingUserId(user.id);
+    setError("");
+
+    try {
+      const response = await fetch(`/api/admin/users/${user.id}`, {
+        method: "DELETE",
+      });
+      const data = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        throw new Error(data?.error || "Не удалось удалить пользователя");
+      }
+
+      setUsers((currentUsers) => currentUsers.filter((item) => item.id !== user.id));
+    } catch (deleteError) {
+      setError(
+        deleteError instanceof Error ? deleteError.message : "Не удалось удалить пользователя",
+      );
+    } finally {
+      setDeletingUserId(null);
+    }
+  }, []);
 
   return (
     <section className="space-y-4">
@@ -135,6 +180,32 @@ export default function AdminUsersWidget() {
                     <span className="truncate">{user.telegram}</span>
                   </div>
                 )}
+              </div>
+
+              <div className="mt-4 flex items-center justify-between gap-3">
+                {user.id === currentUserId ? (
+                  <span className="text-[10px] font-black uppercase tracking-[0.22em] text-zinc-600">
+                    Это вы
+                  </span>
+                ) : (
+                  <span className="text-[10px] font-black uppercase tracking-[0.22em] text-zinc-600">
+                    Пользователь
+                  </span>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => handleDeleteUser(user)}
+                  disabled={deletingUserId === user.id || user.id === currentUserId}
+                  className="inline-flex items-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs font-black uppercase tracking-widest text-red-300 transition-colors hover:bg-red-500/15 hover:text-red-200 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {deletingUserId === user.id ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Trash2 className="h-4 w-4" />
+                  )}
+                  Удалить
+                </button>
               </div>
             </article>
           ))}
