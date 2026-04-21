@@ -5,12 +5,12 @@ import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const TESTIMONIALS = [
-  { id: 1, image: "/uploads/testimonials/client-1.jpg" },
-  { id: 2, image: "/uploads/testimonials/client-2.jpg" },
-  { id: 3, image: "/uploads/testimonials/client-3.jpg" },
-  { id: 4, image: "/uploads/testimonials/client-4.jpg" },
-  { id: 5, image: "/uploads/testimonials/client-5.jpg" },
-  { id: 6, image: "/uploads/testimonials/client-6.jpg" },
+  { id: 1, image: "/uploads/testimonials/client-1.JPG" },
+  { id: 2, image: "/uploads/testimonials/client-2.JPG" },
+  { id: 3, image: "/uploads/testimonials/client-3.JPG" },
+  { id: 4, image: "/uploads/testimonials/client-4.JPG" },
+  { id: 5, image: "/uploads/testimonials/client-5.JPG" },
+  { id: 6, image: "/uploads/testimonials/client-6.JPG" },
 ];
 
 export default function TestimonialsSection() {
