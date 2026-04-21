@@ -16,9 +16,6 @@ import {
   Smartphone,
   UserPlus,
   Lock,
-  MoreVertical,
-  Share2,
-  Plus,
   Sparkles,
   X,
 } from "lucide-react";
@@ -686,7 +683,7 @@ export default function DashboardPage() {
           )}
         </div>
 
-        {/* PWA Install Section */}
+        {/* Browser Install Section */}
         <div className="space-y-3">
           <div className="flex items-center justify-between gap-3">
             <h2 className="text-sm font-black uppercase tracking-widest text-white flex items-center gap-2">
@@ -696,39 +693,7 @@ export default function DashboardPage() {
 
             <div className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-zinc-400">
               <Sparkles className="w-3.5 h-3.5 text-orange-400" />
-              PWA
-            </div>
-          </div>
-
-          <div className="grid grid-cols-3 gap-2">
-            <div className="rounded-2xl border border-white/5 bg-[#16181d] p-3">
-              <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.18em] text-zinc-500">
-                <MoreVertical className="w-3.5 h-3.5 text-orange-500" />
-                Android
-              </div>
-              <p className="mt-2 text-[11px] font-semibold text-white leading-tight">
-                Ищите <span className="text-orange-400">⋮</span> в Chrome
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-white/5 bg-[#16181d] p-3">
-              <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.18em] text-zinc-500">
-                <Share2 className="w-3.5 h-3.5 text-orange-500" />
-                iOS
-              </div>
-              <p className="mt-2 text-[11px] font-semibold text-white leading-tight">
-                Через <span className="text-orange-400">Поделиться</span>
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-white/5 bg-[#16181d] p-3">
-              <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.18em] text-zinc-500">
-                <Plus className="w-3.5 h-3.5 text-orange-500" />
-                На экран
-              </div>
-              <p className="mt-2 text-[11px] font-semibold text-white leading-tight">
-                Добавьте иконку в один тап
-              </p>
+              Yandex
             </div>
           </div>
 
@@ -744,18 +709,14 @@ export default function DashboardPage() {
                 </div>
                 <div className="text-left">
                   <span className="text-sm font-bold text-white block">
-                    iPhone / iPad (iOS, Safari)
+                    iPhone / iPad (Яндекс Браузер)
                   </span>
                   <span className="text-[10px] font-black uppercase tracking-[0.18em] text-zinc-500">
-                    Меню ↗ → Домой
+                    Меню → На экран Домой
                   </span>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <span className="hidden sm:inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-zinc-400">
-                  <Share2 className="w-3 h-3 text-orange-400" />
-                  Share
-                </span>
                 <ChevronRight
                   className={`w-4 h-4 text-zinc-500 transition-transform duration-200 ${
                     expandedPWA === "ios" ? "rotate-90" : ""
@@ -766,10 +727,10 @@ export default function DashboardPage() {
             {expandedPWA === "ios" && (
               <div className="px-4 pb-4 space-y-2.5">
                 {[
-                  "Откройте сайт в браузере Safari",
-                  "Нажмите кнопку \u00ABПоделиться\u00BB (квадрат со стрелкой вверх) внизу экрана",
-                  "Прокрутите список и выберите \u00ABНа экран \u00ABДомой\u00BB\u00BB",
-                  "Нажмите \u00ABДобавить\u00BB — иконка появится на рабочем столе",
+                  "Откройте сайт в Яндекс Браузере на iPhone или iPad",
+                  "Нажмите кнопку меню внизу или сверху браузера",
+                  "Выберите \u00ABНа экран Домой\u00BB или \u00ABДобавить ярлык\u00BB, если пункт доступен",
+                  "Подтвердите добавление — иконка появится на рабочем столе",
                 ].map((step, i) => (
                   <div
                     key={i}
@@ -796,17 +757,15 @@ export default function DashboardPage() {
                   🤖
                 </div>
                 <div className="text-left">
-                  <span className="text-sm font-bold text-white block">Android (Chrome)</span>
+                  <span className="text-sm font-bold text-white block">
+                    Android (Яндекс Браузер)
+                  </span>
                   <span className="text-[10px] font-black uppercase tracking-[0.18em] text-zinc-500">
-                    ⋮ → Установить
+                    Меню → Установить
                   </span>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <span className="hidden sm:inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-zinc-400">
-                  <MoreVertical className="w-3 h-3 text-orange-400" />
-                  Menu
-                </span>
                 <ChevronRight
                   className={`w-4 h-4 text-zinc-500 transition-transform duration-200 ${
                     expandedPWA === "android" ? "rotate-90" : ""
@@ -817,10 +776,10 @@ export default function DashboardPage() {
             {expandedPWA === "android" && (
               <div className="px-4 pb-4 space-y-2.5">
                 {[
-                  "Откройте сайт в браузере Chrome",
-                  "Нажмите \u22EE (три точки) в правом верхнем углу",
-                  "Выберите \u00ABДобавить на главный экран\u00BB или \u00ABУстановить приложение\u00BB",
-                  "Нажмите \u00ABДобавить\u00BB — иконка появится на рабочем столе",
+                  "Откройте сайт в Яндекс Браузере на Android",
+                  "Нажмите меню браузера (три точки или значок меню)",
+                  "Выберите \u00ABУстановить приложение\u00BB или \u00ABДобавить на главный экран\u00BB",
+                  "Подтвердите установку — ярлык появится на рабочем столе",
                 ].map((step, i) => (
                   <div
                     key={i}
