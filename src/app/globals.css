@@ -265,6 +265,16 @@ body {
     }
   }
 
+  @keyframes pulse-glow {
+    0%,
+    100% {
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    }
+    50% {
+      box-shadow: 0 20px 50px rgba(249, 87, 0, 0.4);
+    }
+  }
+
   .animate-float {
     animation: float 20s ease-in-out infinite;
   }

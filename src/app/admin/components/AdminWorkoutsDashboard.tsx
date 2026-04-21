@@ -279,7 +279,7 @@ export default function AdminWorkoutsDashboard() {
                   <button
                     key={slot.id}
                     onClick={() => setSelectedSlotId(slot.id)}
-                    className={`w-full rounded-2xl border p-4 text-left transition-colors ${selectedSlotId === slot.id ? "border-[#f95700]/30 bg-[#f95700]/10" : "border-white/10 bg-white/5 hover:bg-white/10"}`}
+                    className={`w-full rounded-2xl border p-4 text-left transition-all ${selectedSlotId === slot.id ? "border-[#f95700]/30 bg-[#f95700]/10" : slot.bookings && slot.bookings.length > 0 ? "border-[#f95700]/40 bg-[#f95700]/5 shadow-[0_0_20px_rgba(249,87,0,0.15)]" : "border-white/10 bg-white/5 hover:bg-white/10"}`}
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                       <div className="min-w-0 space-y-2">
@@ -454,7 +454,7 @@ export default function AdminWorkoutsDashboard() {
                             setViewMode("day");
                             setSelectedSlotId(slot.id);
                           }}
-                          className={`w-full rounded-xl border p-3 text-left transition-colors ${selectedSlotId === slot.id ? "border-[#f95700]/30 bg-[#f95700]/10" : "border-white/10 bg-white/5 hover:bg-white/10"}`}
+                          className={`w-full rounded-xl border p-3 text-left transition-all ${selectedSlotId === slot.id ? "border-[#f95700]/30 bg-[#f95700]/10" : slot.bookings && slot.bookings.length > 0 ? "border-[#f95700]/40 bg-[#f95700]/5 shadow-[0_0_15px_rgba(249,87,0,0.12)]" : "border-white/10 bg-white/5 hover:bg-white/10"}`}
                         >
                           <div className="flex items-start justify-between gap-2">
                             <div className="min-w-0">

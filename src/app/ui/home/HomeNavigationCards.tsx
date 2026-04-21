@@ -122,8 +122,8 @@ export const HomeNavigationCards = ({ onBookingClick }: HomeNavigationCardsProps
               className={`
                 ${card.color} ${card.textColor} ${card.rotate}
                 ${card.border || ""}
-                w-full max-w-[190px] md:max-w-[210px] lg:max-w-[230px] aspect-[4/5] p-6 md:p-6 rounded-[36px] 
-                shadow-[0_20px_40px_rgba(0,0,0,0.5)] transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] 
+                w-full max-w-[190px] md:max-w-[210px] lg:max-w-[230px] aspect-[4/5] p-6 md:p-6 rounded-[36px]
+                shadow-[0_20px_40px_rgba(0,0,0,0.5)] transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]
                 pointer-events-auto flex flex-col relative overflow-hidden
                 animate-in fade-in slide-in-from-bottom-10
                 ${isThisHovered ? "translate-y-0 scale-110 shadow-[0_40px_80px_rgba(0,0,0,0.8)] brightness-100" : "translate-y-[40%] grayscale-[0.1] opacity-90 hover:opacity-100 hover:grayscale-0"}

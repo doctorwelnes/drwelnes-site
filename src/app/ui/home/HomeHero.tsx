@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Play } from "lucide-react";
+import { Play, Calendar } from "lucide-react";
 
 interface HomeHeroProps {
   onBookingClick: () => void;
@@ -70,14 +70,9 @@ export const HomeHero = ({ onBookingClick }: HomeHeroProps) => {
           </span>
         </h1>
 
-        <p className="text-zinc-500 font-medium max-w-[45ch] leading-relaxed animate-in fade-in slide-in-from-left-4 duration-700 delay-300 mt-3 md:mt-6 lg:mt-8 text-[9px] md:text-xs lg:text-sm">
-          Персональный подход к вашему здоровью <br className="hidden md:block" /> в одном месте —{" "}
-          Dr.Welnes
-        </p>
-
         <div className="flex flex-wrap items-center gap-4 lg:gap-6 mt-3 md:mt-6 lg:mt-12 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-500">
           <Link href="/about" className="group flex items-center gap-4 outline-none">
-            <span className="font-black uppercase tracking-[0.2em] text-white group-hover:text-[#f95700] transition-colors text-[11px] md:text-[9px]">
+            <span className="font-black uppercase tracking-[0.2em] leading-none text-white group-hover:text-[#f95700] transition-colors text-[11px] md:text-[9px]">
               Подробнее о проекте
             </span>
             <div className="relative w-9 h-9 lg:w-11 lg:h-11 rounded-full border border-white/10 flex items-center justify-center transition-all duration-500 group-hover:border-[#f95700]/50 shadow-lg">
@@ -88,11 +83,12 @@ export const HomeHero = ({ onBookingClick }: HomeHeroProps) => {
             </div>
           </Link>
 
-          <div className="relative group/btn">
+          <div className="relative group/btn self-center">
             <button
               onClick={onBookingClick}
-              className="relative z-10 rounded-full bg-white text-black font-black uppercase tracking-widest transition-all hover:bg-[#f95700] hover:text-white hover:scale-105 active:scale-95 overflow-hidden shadow-[0_0_30px_rgba(255,255,255,0.1)] hover:shadow-[0_0_40px_rgba(249,87,0,0.4)] px-6 lg:px-8 py-3 lg:py-3.5 text-[11px] md:text-[9px]"
+              className="relative z-10 rounded-full bg-white text-black font-black uppercase tracking-widest leading-none transition-all hover:bg-[#f95700] hover:text-white hover:scale-105 active:scale-95 overflow-hidden shadow-[0_0_30px_rgba(255,255,255,0.1)] hover:shadow-[0_0_40px_rgba(249,87,0,0.4)] px-5 lg:px-7 h-9 lg:h-11 flex items-center justify-center gap-2 text-[11px] md:text-[9px] animate-[pulse-glow_3s_ease-in-out_infinite]"
             >
+              <Calendar className="w-3.5 h-3.5 lg:w-4 lg:h-4" />
               <span className="relative z-10">Записаться на занятие</span>
               <div className="absolute inset-0 -translate-x-full group-hover/btn:animate-shimmer bg-linear-to-r from-transparent via-white/40 to-transparent skew-x-12" />
             </button>
