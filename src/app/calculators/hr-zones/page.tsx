@@ -1,12 +1,16 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Heart, ChevronRight, Activity, Zap, Timer } from "lucide-react";
+import { Heart, ChevronRight, Activity, Zap, Timer, Copy, Check } from "lucide-react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 export default function HrZonesPage() {
   const [age, setAge] = useState(30);
   const [restHr, setRestHr] = useState(60);
+  const [copied, setCopied] = useState(false);
+  const { data: session } = useSession();
+  const isAdmin = (session?.user as { role?: string } | undefined)?.role === "ADMIN";
 
   const stats = useMemo(() => {
     const maxHr = 220 - age;
@@ -56,7 +60,35 @@ export default function HrZonesPage() {
       max: Math.round(hrr * z.maxP + restHr),
     }));
 
-    return { maxHr, resultZones };
+    const zoneDetails = [
+      {
+        name: "Зона 1: Восстановление",
+        purpose:
+          "Активный отдых, разминка и заминка после тяжёлых тренировок. Ускоряет восстановление, улучшает кровоснабжение.",
+      },
+      {
+        name: "Зона 2: Жиросжигание",
+        purpose:
+          "Лёгкий бег и длительные кардио-сессии. Основная зона для сжигания жира (до 60–70% энергии из жиров), развивает аэробную базу выносливости.",
+      },
+      {
+        name: "Зона 3: Аэробная",
+        purpose:
+          "Темповые тренировки. Укрепляет сердечно-сосудистую систему, повышает общую выносливость. Граница комфортного разговора.",
+      },
+      {
+        name: "Зона 4: Анаэробная",
+        purpose:
+          "Интервальные и пороговые тренировки. Повышает порог лактата, улучшает скоростную выносливость. Тяжело говорить во время нагрузки.",
+      },
+      {
+        name: "Зона 5: Максимальная",
+        purpose:
+          "Спринты и МПК-интервалы. Развивает максимальное потребление кислорода (VO2max). Короткие работы — не более 1–2 мин подряд.",
+      },
+    ];
+
+    return { maxHr, resultZones, zoneDetails };
   }, [age, restHr]);
 
   return (
@@ -178,6 +210,44 @@ export default function HrZonesPage() {
               целей».
             </p>
           </div>
+
+          {isAdmin && (
+            <button
+              onClick={() => {
+                const lines: string[] = [];
+                lines.push(`🫀 Пульсовые зоны`);
+                lines.push(`Возраст: ${age} лет | ЧСС покоя: ${restHr} уд/мин`);
+                lines.push(`Макс. пульс (220 − возраст): ${stats.maxHr} уд/мин`);
+                lines.push(``);
+                stats.resultZones.forEach((z, i) => {
+                  lines.push(`${z.name}`);
+                  lines.push(`📊 Диапазон: ${z.min} – ${z.max} уд/мин`);
+                  lines.push(`🎯 Для чего: ${stats.zoneDetails[i].purpose}`);
+                  lines.push(``);
+                });
+                lines.push(`💡 Рекомендации:`);
+                lines.push(`• Зона 1–2 — 70–80% всех тренировок (аэробная база)`);
+                lines.push(`• Зона 3 — умеренные темповые нагрузки, 1–2 раза в неделю`);
+                lines.push(`• Зона 4 — интервалы, 1 раз в неделю при хорошем восстановлении`);
+                lines.push(`• Зона 5 — спринты, не чаще 1 раза в неделю и только после базы`);
+                lines.push(`• ЧСС покоя ниже 60 — признак хорошей тренированности`);
+                navigator.clipboard.writeText(lines.join("\n"));
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+              }}
+              className="w-full flex items-center justify-center gap-2 rounded-2xl border border-orange-500/40 bg-orange-500/10 px-4 py-3 text-xs font-black uppercase tracking-widest text-orange-400 transition-all hover:bg-orange-500/20 hover:text-orange-300"
+            >
+              {copied ? (
+                <>
+                  <Check className="w-4 h-4" /> Скопировано!
+                </>
+              ) : (
+                <>
+                  <Copy className="w-4 h-4" /> Скопировать для клиента
+                </>
+              )}
+            </button>
+          )}
         </aside>
       </div>
     </main>
