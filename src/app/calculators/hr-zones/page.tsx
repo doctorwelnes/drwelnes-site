@@ -231,6 +231,12 @@ export default function HrZonesPage() {
                 lines.push(`• Зона 4 — интервалы, 1 раз в неделю при хорошем восстановлении`);
                 lines.push(`• Зона 5 — спринты, не чаще 1 раза в неделю и только после базы`);
                 lines.push(`• ЧСС покоя ниже 60 — признак хорошей тренированности`);
+                lines.push(``);
+                lines.push(`📌 Мои ресурсы по спорту, питанию и здоровью:`);
+                lines.push(`• Telegram-канал — интересные статьи: https://t.me/dr_welnes`);
+                lines.push(
+                  `• Сайт/приложение — рецепты, тренировки, инструменты для здоровья, удобная запись: https://drwelnes.ru/`,
+                );
                 navigator.clipboard.writeText(lines.join("\n"));
                 setCopied(true);
                 setTimeout(() => setCopied(false), 2000);
